@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{BA908745-A43A-47A5-ADB6-E086639EDAF2}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>TorchMonitor</RootNamespace>
+        <AssemblyName>TorchMonitor</AssemblyName>
+        <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>x64</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>x64</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Web" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System" />
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="System.Numerics" />
+        <Reference Include="mscorlib" />
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>$(SolutionDir)\TorchBinaries\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="NLog">
+            <HintPath>$(SolutionDir)\TorchBinaries\NLog.dll</HintPath>
+        </Reference>
+        <Reference Include="Torch">
+            <HintPath>$(SolutionDir)\TorchBinaries\Torch.dll</HintPath>
+        </Reference>
+        <Reference Include="Torch.API">
+            <HintPath>$(SolutionDir)\TorchBinaries\Torch.API.dll</HintPath>
+        </Reference>
+        <Reference Include="Torch.Server">
+            <HintPath>$(SolutionDir)\TorchBinaries\Torch.Server.exe</HintPath>
+        </Reference>
+        <Reference Include="InfluxDB.Client">
+            <HintPath>$(SolutionDir)\TorchBinaries\InfluxDB.Client.dll</HintPath>
+        </Reference>
+        <Reference Include="InfluxDB.Client.Core">
+            <HintPath>$(SolutionDir)\TorchBinaries\InfluxDB.Client.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Ansel">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Ansel.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Audio">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Audio.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Dedicated">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Dedicated.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Game">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Game.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Game.XmlSerializers">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Game.XmlSerializers.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Input">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Input.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Library">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Library.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Math">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Math.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Math.XmlSerializers">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Math.XmlSerializers.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.NativeAftermath">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.NativeAftermath.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.NativeWrapper">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.NativeWrapper.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Network">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Network.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Platform.Windows">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Platform.Windows.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.RemoteClient.Core">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.RemoteClient.Core.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Render">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Render.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Render11">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Render11.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Scripting">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Scripting.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.Steam">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Steam.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.UserInterface">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.UserInterface.dll</HintPath>
+        </Reference>
+        <Reference Include="VRage.XmlSerializers">
+            <HintPath>$(SolutionDir)\VRageBinaries\VRage.XmlSerializers.dll</HintPath>
+        </Reference>
+        <Reference Include="Sandbox.Common">
+            <HintPath>$(SolutionDir)\VRageBinaries\Sandbox.Common.dll</HintPath>
+        </Reference>
+        <Reference Include="Sandbox.Game">
+            <HintPath>$(SolutionDir)\VRageBinaries\Sandbox.Game.dll</HintPath>
+        </Reference>
+        <Reference Include="Sandbox.Game.XmlSerializers">
+            <HintPath>$(SolutionDir)\VRageBinaries\Sandbox.Game.XmlSerializers.dll</HintPath>
+        </Reference>
+        <Reference Include="Sandbox.Graphics">
+            <HintPath>$(SolutionDir)\VRageBinaries\Sandbox.Graphics.dll</HintPath>
+        </Reference>
+        <Reference Include="Sandbox.RenderDirect">
+            <HintPath>$(SolutionDir)\VRageBinaries\Sandbox.RenderDirect.dll</HintPath>
+        </Reference>
+        <Reference Include="SpaceEngineers.Game">
+            <HintPath>$(SolutionDir)\VRageBinaries\SpaceEngineers.Game.dll</HintPath>
+        </Reference>
+        <Reference Include="SpaceEngineers.ObjectBuilders">
+            <HintPath>$(SolutionDir)\VRageBinaries\SpaceEngineers.ObjectBuilders.dll</HintPath>
+        </Reference>
+        <Reference Include="SpaceEngineers.ObjectBuilders.XmlSerializers">
+            <HintPath>$(SolutionDir)\VRageBinaries\SpaceEngineers.ObjectBuilders.XmlSerializers.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Source\Business\AsteroidMonitor.cs" />
+        <Compile Include="Source\Business\CpuUsageMonitor.cs" />
+        <Compile Include="Source\Business\FloatingObjectsMonitor.cs" />
+        <Compile Include="Source\Business\IMonitor.cs" />
+        <Compile Include="Source\Business\PlayersMonitor.cs" />
+        <Compile Include="Source\Business\ServerStatMonitor.cs" />
+        <Compile Include="Source\Business\RamUsageMonitor.cs" />
+        <Compile Include="Source\Business\GridMonitor.cs" />
+        <Compile Include="Source\Views\TMCommands.cs" />
+        <Compile Include="Source\Views\TMPlugin.cs" />
+        <Compile Include="Source\Views\ViewConsts.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="JsonSubTypes" Version="1.6.0" />
+      <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+      <PackageReference Include="System.Buffers" Version="4.5.1" />
+      <PackageReference Include="System.IO" Version="4.3.0" />
+      <PackageReference Include="System.Runtime" Version="4.3.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="manifest.xml" />
+      <Content Include="postbuild.bat" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\..\HnzTorchPlugins\TorchUtils\TorchUtils.csproj">
+        <Project>{86cd4e24-b010-4718-8be1-6e6f080fc9fa}</Project>
+        <Name>TorchUtils</Name>
+      </ProjectReference>
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+    <PropertyGroup>
+        <PostBuildEvent>
+          [ -z "$NoDeploy" ] || $(ProjectDir)postbuild.bat $(ProjectName) $(SolutionDir)
+        </PostBuildEvent>
+    </PropertyGroup>
+
+</Project>
