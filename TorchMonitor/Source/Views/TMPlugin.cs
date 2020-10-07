@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NLog;
-using Torch.API;
 using Torch.API.Managers;
 using Torch.Server.InfluxDb;
 using TorchMonitor.Business;
@@ -21,11 +20,6 @@ namespace TorchMonitor.Views
         public TMPlugin()
         {
             _monitors = new List<IMonitor>();
-        }
-
-        public void Ping(string message)
-        {
-            _client.WritePing(message);
         }
 
         protected override void OnGameLoaded()
@@ -95,6 +89,11 @@ namespace TorchMonitor.Views
                 intervalSinceStart += 1;
                 canceller.WaitHandle.WaitOne(TimeSpan.FromSeconds(1f));
             }
+        }
+
+        public void Ping(string message)
+        {
+            _client.WritePing(message);
         }
     }
 }

@@ -40,6 +40,9 @@
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="System.Numerics" />
         <Reference Include="mscorlib" />
+        <Reference Include="TorchUtils">
+            <HintPath>..\..\HnzTorchPlugins\TorchUtils\bin\Release\TorchUtils.dll</HintPath>
+        </Reference>
         <Reference Include="Newtonsoft.Json">
             <HintPath>$(SolutionDir)\TorchBinaries\Newtonsoft.Json.dll</HintPath>
         </Reference>
@@ -173,12 +176,6 @@
     <ItemGroup>
       <Content Include="manifest.xml" />
       <Content Include="postbuild.bat" />
-    </ItemGroup>
-    <ItemGroup>
-      <ProjectReference Include="..\..\HnzTorchPlugins\TorchUtils\TorchUtils.csproj">
-        <Project>{86cd4e24-b010-4718-8be1-6e6f080fc9fa}</Project>
-        <Name>TorchUtils</Name>
-      </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
