@@ -6,7 +6,6 @@ using InfluxDB.Client.Writes;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
-using Torch;
 using Torch.Server.InfluxDb;
 using TorchUtils.Utils;
 using VRage.Game.Entity;
@@ -95,6 +94,8 @@ namespace TorchMonitor.Business
 
             if (intervalsSinceStart % 60 == 0)
             {
+                var points = new List<PointData>();
+
                 var groups = MyCubeGridGroups.Static.Logical.Groups
                     .Select(g => g.Nodes.Select(n => n.NodeData).ToArray())
                     .ToArray();
@@ -102,6 +103,8 @@ namespace TorchMonitor.Business
                 var players = new HashSet<long>();
                 var totalBlockCountsPerPlayer = new Dictionary<long, int>();
                 var activeBlockCountsPerPlayer = new Dictionary<long, int>();
+                var totalPcuPerPlayer = new Dictionary<long, int>();
+                var activePcuPerPlayer = new Dictionary<long, int>();
 
                 foreach (var grid in groups.SelectMany(g => g))
                 {
@@ -109,47 +112,76 @@ namespace TorchMonitor.Business
 
                     foreach (var block in grid.CubeBlocks)
                     {
-                        players.Add(block.OwnerId);
-                        totalBlockCountsPerPlayer.TryGetValue(block.OwnerId, out var totalCount);
-                        totalBlockCountsPerPlayer[block.OwnerId] = totalCount + 1;
+                        var player = block.OwnerId;
+                        players.Add(player);
+
+                        totalBlockCountsPerPlayer.TryGetValue(player, out var totalBlockCount);
+                        totalBlockCountsPerPlayer[player] = totalBlockCount + 1;
+
+                        totalPcuPerPlayer.TryGetValue(player, out var totalPcu);
+                        totalPcuPerPlayer[player] = totalPcu + block.BlockDefinition.PCU;
 
                         if (isActive)
                         {
-                            activeBlockCountsPerPlayer.TryGetValue(block.OwnerId, out var activeCount);
-                            activeBlockCountsPerPlayer[block.OwnerId] = activeCount + 1;
+                            activeBlockCountsPerPlayer.TryGetValue(player, out var activeBlockCount);
+                            activeBlockCountsPerPlayer[player] = activeBlockCount + 1;
+
+                            activePcuPerPlayer.TryGetValue(player, out var activePcu);
+                            activePcuPerPlayer[player] = activePcu + block.BlockDefinition.PCU;
                         }
                     }
                 }
 
                 _logger.Trace($"all players with blocks: {players.ToStringSeq()}");
 
-                var topPlayersWithTotalBlockCount = totalBlockCountsPerPlayer.OrderByDescending(p => p.Value).Select(p => p.Key).Take(15);
-                var topPlayersWithActiveBlockCount = activeBlockCountsPerPlayer.OrderByDescending(p => p.Value).Select(p => p.Key).Take(15);
-                var topPlayersWithSomeBlockCount = new HashSet<long>();
-                topPlayersWithSomeBlockCount.UnionWith(topPlayersWithTotalBlockCount);
-                topPlayersWithSomeBlockCount.UnionWith(topPlayersWithActiveBlockCount);
+                const int MaxPlayerCount = 10;
 
-                _logger.Trace($"top players with blocks: {topPlayersWithSomeBlockCount.ToStringSeq()}");
+                var topPlayers = new HashSet<long>();
 
-                var points = new List<PointData>();
-                foreach (var playerId in topPlayersWithSomeBlockCount)
+                topPlayers.UnionWith(
+                    totalBlockCountsPerPlayer
+                        .OrderByDescending(p => p.Value)
+                        .Select(p => p.Key)
+                        .Take(MaxPlayerCount));
+
+                topPlayers.UnionWith(
+                    activeBlockCountsPerPlayer
+                        .OrderByDescending(p => p.Value)
+                        .Select(p => p.Key)
+                        .Take(MaxPlayerCount));
+
+                topPlayers.UnionWith(
+                    totalPcuPerPlayer
+                        .OrderByDescending(p => p.Value)
+                        .Select(p => p.Key)
+                        .Take(MaxPlayerCount));
+
+                topPlayers.UnionWith(
+                    activePcuPerPlayer
+                        .OrderByDescending(p => p.Value)
+                        .Select(p => p.Key)
+                        .Take(MaxPlayerCount));
+
+                _logger.Trace($"top players: {topPlayers.ToStringSeq()}");
+
+                foreach (var playerId in topPlayers)
                 {
                     var steamId = MySession.Static.Players.TryGetSteamId(playerId);
                     if (steamId == 0) continue; // npc
 
                     var playerName = MySession.Static.Players.TryGetIdentityNameFromSteamId(steamId);
-
                     var totalBlockCount = totalBlockCountsPerPlayer[playerId];
-
-                    if (totalBlockCount == 0) continue; // empty data
-
                     var activeBlockCount = activeBlockCountsPerPlayer.TryGetValue(playerId, out var c) ? c : 0;
+                    var totalPcu = totalPcuPerPlayer.TryGetValue(playerId, out var q) ? q : 0;
+                    var activePcu = activePcuPerPlayer.TryGetValue(playerId, out var r) ? r : 0;
 
                     var point = _client.MakePointIn("grids_per_player")
                         .Tag("steam_id", $"{steamId}")
                         .Tag("player_name", playerName)
                         .Field("total_block_count", totalBlockCount)
-                        .Field("active_block_count", activeBlockCount);
+                        .Field("active_block_count", activeBlockCount)
+                        .Field("total_pcu", totalPcu)
+                        .Field("active_pcu", activePcu);
 
                     points.Add(point);
 
