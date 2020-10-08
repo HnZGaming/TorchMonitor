@@ -9,8 +9,6 @@ using Sandbox.Game.World;
 using Torch.Server.InfluxDb;
 using TorchUtils.Utils;
 using VRage.Game.Entity;
-using VRage.ModAPI;
-using IMyEntity = VRage.ModAPI.IMyEntity;
 
 namespace TorchMonitor.Business
 {
@@ -60,7 +58,7 @@ namespace TorchMonitor.Business
 
                 var activeGrids = groups
                     .SelectMany(g => g)
-                    .Where(g => !IsConcealed(g))
+                    .Where(g => !g.IsConcealed())
                     .Select(g => (g.IsStatic, g.BlocksCount))
                     .ToArray();
 
@@ -71,7 +69,7 @@ namespace TorchMonitor.Business
                 var sessionPcu = MySession.Static.TotalSessionPCU;
                 var activePcu = groups
                     .SelectMany(g => g)
-                    .Where(g => !IsConcealed(g))
+                    .Where(g => !g.IsConcealed())
                     .Select(g => g.BlocksPCU)
                     .Sum();
 
@@ -96,8 +94,8 @@ namespace TorchMonitor.Business
             {
                 var points = new List<PointData>();
 
-                var groups = MyCubeGridGroups.Static.Logical.Groups
-                    .Select(g => g.Nodes.Select(n => n.NodeData).ToArray())
+                var grids = MyCubeGridGroups.Static.Logical.Groups
+                    .SelectMany(g => g.Nodes.Select(n => n.NodeData))
                     .ToArray();
 
                 var players = new HashSet<long>();
@@ -106,9 +104,9 @@ namespace TorchMonitor.Business
                 var totalPcuPerPlayer = new Dictionary<long, int>();
                 var activePcuPerPlayer = new Dictionary<long, int>();
 
-                foreach (var grid in groups.SelectMany(g => g))
+                foreach (var grid in grids)
                 {
-                    var isActive = !IsConcealed(grid);
+                    var isActive = !grid.IsConcealed();
 
                     foreach (var block in grid.CubeBlocks)
                     {
@@ -170,6 +168,8 @@ namespace TorchMonitor.Business
                     if (steamId == 0) continue; // npc
 
                     var playerName = MySession.Static.Players.TryGetIdentityNameFromSteamId(steamId);
+                    if (string.IsNullOrEmpty(playerName)) continue; // idk why this happens
+
                     var totalBlockCount = totalBlockCountsPerPlayer[playerId];
                     var activeBlockCount = activeBlockCountsPerPlayer.TryGetValue(playerId, out var c) ? c : 0;
                     var totalPcu = totalPcuPerPlayer.TryGetValue(playerId, out var q) ? q : 0;
@@ -213,12 +213,6 @@ namespace TorchMonitor.Business
         static bool IsUnnamed(MyEntity grid)
         {
             return NamePattern.IsMatch(grid.DisplayName);
-        }
-
-        static bool IsConcealed(IMyEntity entity)
-        {
-            // Concealment plugin uses `4` as a flag to prevent game from updating grids
-            return (long) (entity.Flags & (EntityFlags) 4) != 0;
         }
     }
 }

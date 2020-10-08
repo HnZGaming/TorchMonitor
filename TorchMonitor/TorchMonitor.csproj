@@ -162,6 +162,8 @@
         <Compile Include="Source\Business\ServerStatMonitor.cs" />
         <Compile Include="Source\Business\RamUsageMonitor.cs" />
         <Compile Include="Source\Business\GridMonitor.cs" />
+        <Compile Include="Source\Business\Utils.cs" />
+        <Compile Include="Source\Business\WelderMonitor.cs" />
         <Compile Include="Source\Views\TMCommands.cs" />
         <Compile Include="Source\Views\TMPlugin.cs" />
         <Compile Include="Source\Views\ViewConsts.cs" />
