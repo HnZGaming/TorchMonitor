@@ -93,7 +93,7 @@ namespace TorchMonitor.Business
                 _client.WritePoints(point);
             }
 
-            if (intervalsSinceStart % 20 == 0)
+            if (intervalsSinceStart % 60 == 0)
             {
                 var groups = MyCubeGridGroups.Static.Logical.Groups
                     .Select(g => g.Nodes.Select(n => n.NodeData).ToArray())
