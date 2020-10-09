@@ -4,7 +4,7 @@ using InfluxDB.Client.Writes;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
-using Sandbox.ModAPI;
+using SpaceEngineers.Game.Entities.Blocks;
 using Torch.Server.InfluxDb;
 
 namespace TorchMonitor.Business
@@ -13,12 +13,12 @@ namespace TorchMonitor.Business
     {
         static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         readonly InfluxDbClient _client;
-        readonly List<IMyShipWelder> _welderBlocks;
+        readonly List<MyShipWelder> _welderBlocks;
 
         public WelderMonitor(InfluxDbClient client)
         {
             _client = client;
-            _welderBlocks = new List<IMyShipWelder>();
+            _welderBlocks = new List<MyShipWelder>();
         }
 
         public void OnInterval(int intervalsSinceStart)
@@ -40,7 +40,7 @@ namespace TorchMonitor.Business
                     var player = MySession.Static.Players.TryGetSteamId(block.OwnerId);
                     if (player == 0) continue; // npc
 
-                    if (!(block.FatBlock is IMyShipWelder welderBlock)) continue; // not a welder block
+                    if (!(block.FatBlock is MyShipWelder welderBlock)) continue; // not a welder block
 
                     _welderBlocks.Add(welderBlock);
                 }
@@ -55,6 +55,7 @@ namespace TorchMonitor.Business
                     if (welderBlock.Closed) continue; // destroyed
                     if (welderBlock.IsConcealed()) continue; // concealed
                     if (!welderBlock.Enabled) continue; // not active
+                    if (!welderBlock.IsShooting) continue; // not welding
 
                     var player = MySession.Static.Players.TryGetSteamId(welderBlock.OwnerId);
                     if (player == 0) continue; // npc
