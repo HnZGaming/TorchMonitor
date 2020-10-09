@@ -25,7 +25,7 @@ namespace TorchMonitor.Business
         public void OnInterval(int intervalsSinceStart)
         {
             if (intervalsSinceStart % IntervalsPerWrite == 0 &&
-                intervalsSinceStart > 20) // don't monitor first seconds
+                intervalsSinceStart > 40) // don't monitor first seconds
             {
                 var maxSimSpeed = _simSpeeds.Max();
                 var minSimSpeed = _simSpeeds.Min();
