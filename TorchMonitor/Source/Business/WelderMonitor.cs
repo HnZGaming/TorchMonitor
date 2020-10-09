@@ -6,7 +6,6 @@ using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using Torch.Server.InfluxDb;
-using VRage.ObjectBuilders;
 
 namespace TorchMonitor.Business
 {
@@ -14,14 +13,12 @@ namespace TorchMonitor.Business
     {
         static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         readonly InfluxDbClient _client;
-        readonly MyObjectBuilderType _welderType;
-        readonly List<IMyFunctionalBlock> _welderBlocks;
+        readonly List<IMyShipWelder> _welderBlocks;
 
         public WelderMonitor(InfluxDbClient client)
         {
             _client = client;
-            _welderType = MyObjectBuilderType.Parse("MyObjectBuilder_ShipWelder");
-            _welderBlocks = new List<IMyFunctionalBlock>();
+            _welderBlocks = new List<IMyShipWelder>();
         }
 
         public void OnInterval(int intervalsSinceStart)
@@ -43,10 +40,8 @@ namespace TorchMonitor.Business
                     var player = MySession.Static.Players.TryGetSteamId(block.OwnerId);
                     if (player == 0) continue; // npc
 
-                    var blockType = block.BlockDefinition.Id.TypeId;
-                    if (!blockType.Equals(_welderType)) continue; // not welder
+                    if (!(block.FatBlock is IMyShipWelder welderBlock)) continue; // not a welder block
 
-                    var welderBlock = (IMyFunctionalBlock) block.FatBlock;
                     _welderBlocks.Add(welderBlock);
                 }
             }
