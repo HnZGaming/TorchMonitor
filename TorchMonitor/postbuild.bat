@@ -25,7 +25,7 @@ TorchPluginPackager ^
     -n %PROJ_NAME% ^
     -m %MANIFEST_PATH% ^
     -b %BUILD_DIR% ^
-    -r "%SOLUTION_DIR%TorchBinaries" "%SOLUTION_DIR%VRageBinaries" ^
+    -r "%SOLUTION_DIR%TorchBinaries" "%SOLUTION_DIR%GameBinaries" ^
     -o %PLUGINS_DIR%
 
 REM Restarts the torch app. Comment out below if you don't want it.

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using NLog;
 using Torch.API.Managers;
 using Torch.Server.InfluxDb;
+using Torch.Server.Utils;
 using TorchMonitor.Business;
-using TorchUtils.Utils;
 
 namespace TorchMonitor.Views
 {

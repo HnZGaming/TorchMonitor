@@ -40,14 +40,11 @@
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="System.Numerics" />
         <Reference Include="mscorlib" />
-        <Reference Include="TorchUtils">
-            <HintPath>..\..\HnzTorchPlugins\TorchUtils\bin\Release\TorchUtils.dll</HintPath>
-        </Reference>
-        <Reference Include="Newtonsoft.Json">
-            <HintPath>$(SolutionDir)\TorchBinaries\Newtonsoft.Json.dll</HintPath>
-        </Reference>
         <Reference Include="NLog">
             <HintPath>$(SolutionDir)\TorchBinaries\NLog.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json, Version=12.0.0.0">
+            <HintPath>..\TorchBinaries\Newtonsoft.Json.dll</HintPath>
         </Reference>
         <Reference Include="Torch">
             <HintPath>$(SolutionDir)\TorchBinaries\Torch.dll</HintPath>
@@ -65,91 +62,91 @@
             <HintPath>$(SolutionDir)\TorchBinaries\InfluxDB.Client.Core.dll</HintPath>
         </Reference>
         <Reference Include="VRage">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Ansel">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Ansel.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Ansel.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Audio">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Audio.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Audio.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Dedicated">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Dedicated.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Dedicated.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Game">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Game.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Game.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Game.XmlSerializers">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Game.XmlSerializers.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Game.XmlSerializers.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Input">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Input.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Input.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Library">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Library.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Library.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Math">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Math.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Math.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Math.XmlSerializers">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Math.XmlSerializers.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Math.XmlSerializers.dll</HintPath>
         </Reference>
         <Reference Include="VRage.NativeAftermath">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.NativeAftermath.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.NativeAftermath.dll</HintPath>
         </Reference>
         <Reference Include="VRage.NativeWrapper">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.NativeWrapper.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.NativeWrapper.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Network">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Network.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Network.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Platform.Windows">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Platform.Windows.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Platform.Windows.dll</HintPath>
         </Reference>
         <Reference Include="VRage.RemoteClient.Core">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.RemoteClient.Core.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.RemoteClient.Core.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Render">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Render.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Render.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Render11">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Render11.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Render11.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Scripting">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Scripting.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Scripting.dll</HintPath>
         </Reference>
         <Reference Include="VRage.Steam">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.Steam.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.Steam.dll</HintPath>
         </Reference>
         <Reference Include="VRage.UserInterface">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.UserInterface.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.UserInterface.dll</HintPath>
         </Reference>
         <Reference Include="VRage.XmlSerializers">
-            <HintPath>$(SolutionDir)\VRageBinaries\VRage.XmlSerializers.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\VRage.XmlSerializers.dll</HintPath>
         </Reference>
         <Reference Include="Sandbox.Common">
-            <HintPath>$(SolutionDir)\VRageBinaries\Sandbox.Common.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\Sandbox.Common.dll</HintPath>
         </Reference>
         <Reference Include="Sandbox.Game">
-            <HintPath>$(SolutionDir)\VRageBinaries\Sandbox.Game.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\Sandbox.Game.dll</HintPath>
         </Reference>
         <Reference Include="Sandbox.Game.XmlSerializers">
-            <HintPath>$(SolutionDir)\VRageBinaries\Sandbox.Game.XmlSerializers.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\Sandbox.Game.XmlSerializers.dll</HintPath>
         </Reference>
         <Reference Include="Sandbox.Graphics">
-            <HintPath>$(SolutionDir)\VRageBinaries\Sandbox.Graphics.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\Sandbox.Graphics.dll</HintPath>
         </Reference>
         <Reference Include="Sandbox.RenderDirect">
-            <HintPath>$(SolutionDir)\VRageBinaries\Sandbox.RenderDirect.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\Sandbox.RenderDirect.dll</HintPath>
         </Reference>
         <Reference Include="SpaceEngineers.Game">
-            <HintPath>$(SolutionDir)\VRageBinaries\SpaceEngineers.Game.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\SpaceEngineers.Game.dll</HintPath>
         </Reference>
         <Reference Include="SpaceEngineers.ObjectBuilders">
-            <HintPath>$(SolutionDir)\VRageBinaries\SpaceEngineers.ObjectBuilders.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\SpaceEngineers.ObjectBuilders.dll</HintPath>
         </Reference>
         <Reference Include="SpaceEngineers.ObjectBuilders.XmlSerializers">
-            <HintPath>$(SolutionDir)\VRageBinaries\SpaceEngineers.ObjectBuilders.XmlSerializers.dll</HintPath>
+            <HintPath>$(SolutionDir)\GameBinaries\SpaceEngineers.ObjectBuilders.XmlSerializers.dll</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>
