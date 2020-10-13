@@ -9,5 +9,5 @@ obj/
 /packages/
 !packages/repositories.config
 
-VRageBinaries/
+GameBinaries/
 TorchBinaries/
