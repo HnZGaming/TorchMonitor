@@ -3,11 +3,11 @@ using Torch.Server.InfluxDb;
 
 namespace TorchMonitor.Business
 {
-    public class PlayersMonitor : IMonitor
+    public class PlayerCountMonitor : IMonitor
     {
         readonly InfluxDbClient _client;
 
-        public PlayersMonitor(InfluxDbClient client)
+        public PlayerCountMonitor(InfluxDbClient client)
         {
             _client = client;
         }
