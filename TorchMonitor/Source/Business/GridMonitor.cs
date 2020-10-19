@@ -34,7 +34,7 @@ namespace TorchMonitor.Business
 
             var startTimeOrNull = (DateTime?) null;
 
-            if (intervalsSinceStart % 10 == 0)
+            if (intervalsSinceStart % 30 == 0)
             {
                 startTimeOrNull = DateTime.UtcNow;
 
