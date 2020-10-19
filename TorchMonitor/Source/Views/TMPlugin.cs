@@ -49,6 +49,7 @@ namespace TorchMonitor.Views
                 new CpuUsageMonitor(_client),
                 //new AsteroidMonitor(_client),
                 //new WelderMonitor(_client),
+                new PlayersMonitor(_client),
             });
 
             _client.WritePing("torch init");
