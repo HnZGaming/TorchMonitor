@@ -29,18 +29,19 @@ namespace TorchMonitor.Business
             var points = new List<PointData>();
             var onlineMemberCountPerFactions = new Dictionary<string, int>();
 
-            var onlinePlayers = MySession.Static.Players.GetOnlinePlayers();
-            foreach (var player in onlinePlayers)
+            var allIdentities = MySession.Static.Players.GetAllIdentities();
+            foreach (var player in allIdentities)
             {
+                if (!GetActiveTimeIfOnline(player, out var activeTime)) continue;
+
                 var playerName = player.DisplayName;
-                var factionOrNull = GetFactionOrNull(player);
-                var factionTag = factionOrNull?.Tag ?? "<single>";
+                var factionTag = GetFactionOrNull(player)?.Tag ?? "<single>";
 
                 var point = _dbClient
                     .MakePointIn("players_players")
                     .Tag("player_name", playerName)
                     .Tag("faction_tag", factionTag)
-                    .Field("logged_in", 1);
+                    .Field("active_time", activeTime.TotalMinutes);
 
                 points.Add(point);
 
@@ -61,9 +62,19 @@ namespace TorchMonitor.Business
             _dbClient.WritePoints(points.ToArray());
         }
 
-        IMyFaction GetFactionOrNull(MyPlayer player)
+        bool GetActiveTimeIfOnline(MyIdentity player, out TimeSpan activeTime)
         {
-            var playerId = player.Identity.IdentityId;
+            activeTime = default;
+
+            if (!MySession.Static.Players.IsPlayerOnline(player.IdentityId)) return false;
+
+            activeTime = DateTime.Now - player.LastLoginTime;
+            return true;
+        }
+
+        IMyFaction GetFactionOrNull(MyIdentity player)
+        {
+            var playerId = player.IdentityId;
             var factionOrNull = _factions.FirstOrDefault(f => f.Members.ContainsKey(playerId));
             return factionOrNull;
         }

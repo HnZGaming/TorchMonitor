@@ -1,6 +1,6 @@
 ﻿using VRage.ModAPI;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Utils
 {
     public static class Utils
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NLog;
+using Torch.API;
 using Torch.API.Managers;
 using Torch.Server.InfluxDb;
 using Torch.Server.Utils;
@@ -12,14 +13,30 @@ namespace TorchMonitor.Views
 {
     public class TMPlugin : TorchPluginBaseEx
     {
-        static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        const string ConfigFileName = "TMConfig.config";
+        static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
         readonly List<IMonitor> _monitors;
         CancellationTokenSource _canceller;
         InfluxDbClient _client;
+        TMConfig _config;
 
         public TMPlugin()
         {
             _monitors = new List<IMonitor>();
+        }
+
+        public override void Init(ITorchBase torch)
+        {
+            base.Init(torch);
+
+            if (!TryFindConfigFile(ConfigFileName, out _config))
+            {
+                Log.Info("Creating a new TMConfig file with default content");
+                CreateConfigFile(ConfigFileName, new TMConfig());
+
+                TryFindConfigFile(ConfigFileName, out _config);
+            }
         }
 
         protected override void OnGameLoaded()
@@ -50,13 +67,14 @@ namespace TorchMonitor.Views
                 //new AsteroidMonitor(_client),
                 //new WelderMonitor(_client),
                 new PlayersMonitor(_client),
+                new FactionConcealmentMonitor(_client, _config),
             });
 
             _client.WritePing("torch init");
 
             Task.Factory
                 .StartNew(() => ObserveServerStat(token), token)
-                .Forget(_logger);
+                .Forget(Log);
         }
 
         protected override void OnGameUnloading()
@@ -84,18 +102,13 @@ namespace TorchMonitor.Views
                     }
                     catch (Exception e)
                     {
-                        _logger.Error(e);
+                        Log.Error(e);
                     }
                 }
 
                 intervalSinceStart += 1;
                 canceller.WaitHandle.WaitOne(TimeSpan.FromSeconds(1f));
             }
-        }
-
-        public void Ping(string message)
-        {
-            _client.WritePing(message);
         }
     }
 }
