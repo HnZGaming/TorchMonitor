@@ -61,11 +61,12 @@ namespace TorchMonitor.Business
 
             foreach (var grid in _collectedGrids)
             {
+                var activeBlockCount = grid.IsConcealed() ? 0 : grid.BlocksCount;
                 var point = _client
                     .MakePointIn("faction_grids")
                     .Tag("faction_tag", _config.FactionTag)
                     .Tag("grid_name", grid.DisplayName)
-                    .Field("concealed", grid.IsConcealed());
+                    .Field("active_block_count", activeBlockCount);
 
                 points.Add(point);
             }
@@ -79,6 +80,7 @@ namespace TorchMonitor.Business
                     .Tag("faction_tag", _config.FactionTag)
                     .Field("total_count", totalCount)
                     .Field("active_count", activeCount);
+                
 
                 points.Add(point);
             }

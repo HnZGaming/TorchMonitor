@@ -60,7 +60,7 @@ namespace TorchMonitor.Views
             {
                 new ServerStatMonitor(_client),
                 new PlayerCountMonitor(_client),
-                //new GridMonitor(_client),
+                new GridMonitor(_client),
                 //new FloatingObjectsMonitor(_client),
                 new RamUsageMonitor(_client),
                 new CpuUsageMonitor(_client),
