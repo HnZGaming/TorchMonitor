@@ -58,7 +58,8 @@ namespace TorchMonitor.Views
 
             _monitors.AddRange(new IMonitor[]
             {
-                new ServerStatMonitor(_client),
+                new ServerStatMonitor(_client), 
+                new SyncMonitor(_client),
                 new PlayerCountMonitor(_client),
                 new GridMonitor(_client),
                 //new FloatingObjectsMonitor(_client),
