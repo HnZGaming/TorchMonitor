@@ -2,7 +2,7 @@
 
 namespace TorchMonitor.Business
 {
-    public sealed class TMConfig : IFactionConcealmentMonitorConfig
+    public sealed class TMConfig : FactionConcealmentMonitor.IConfig
     {
         [XmlElement("FactionConcealmentMonitor.CollectIntervalSecs")]
         public int CollectIntervalSecs { get; set; } = 20;

@@ -19,6 +19,9 @@ namespace TorchMonitor.Business
 
         public void OnInterval(int intervalsSinceStart)
         {
+            var simSpeed = Sync.ServerSimulationRatio;
+            _simSpeeds[intervalsSinceStart % _simSpeeds.Length] = simSpeed;
+
             if (intervalsSinceStart % IntervalsPerWrite == 0 &&
                 intervalsSinceStart > 40) // don't monitor first seconds
             {
@@ -33,9 +36,6 @@ namespace TorchMonitor.Business
 
                 _client.WritePoints(point);
             }
-
-            var simSpeed = Sync.ServerSimulationRatio;
-            _simSpeeds[intervalsSinceStart % IntervalsPerWrite] = simSpeed;
         }
     }
 }

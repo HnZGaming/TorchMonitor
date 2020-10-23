@@ -157,7 +157,6 @@
         <Compile Include="Source\Business\ServerStatMonitor.cs" />
         <Compile Include="Source\Business\TMConfig.cs" />
         <Compile Include="Source\Business\FloatingObjectsMonitor.cs" />
-        <Compile Include="Source\Business\IFactionConcealmentMonitorConfig.cs" />
         <Compile Include="Source\Business\IMonitor.cs" />
         <Compile Include="Source\Business\PlayerCountMonitor.cs" />
         <Compile Include="Source\Business\PlayersMonitor.cs" />

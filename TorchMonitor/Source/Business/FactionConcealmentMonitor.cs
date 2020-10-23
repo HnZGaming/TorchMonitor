@@ -11,13 +11,20 @@ namespace TorchMonitor.Business
 {
     public sealed class FactionConcealmentMonitor : IMonitor
     {
+        public interface IConfig
+        {
+            int CollectIntervalSecs { get; }
+            int WriteIntervalSecs { get; }
+            string FactionTag { get; }
+        }
+        
         readonly InfluxDbClient _client;
         readonly List<MyCubeGrid> _collectedGrids;
-        readonly IFactionConcealmentMonitorConfig _config;
+        readonly IConfig _config;
 
         public FactionConcealmentMonitor(
             InfluxDbClient client,
-            IFactionConcealmentMonitorConfig config)
+            IConfig config)
         {
             _client = client;
             _config = config;
