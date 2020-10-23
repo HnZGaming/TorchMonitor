@@ -58,7 +58,7 @@ namespace TorchMonitor.Views
 
             _monitors.AddRange(new IMonitor[]
             {
-                new ServerStatMonitor(_client), 
+                new ServerStatMonitor(_client),
                 new SyncMonitor(_client),
                 new PlayerCountMonitor(_client),
                 new GridMonitor(_client),
@@ -95,20 +95,31 @@ namespace TorchMonitor.Views
 
             while (!canceller.IsCancellationRequested)
             {
-                foreach (var monitor in _monitors)
+                var startTime = DateTime.UtcNow;
+
+                var intervalsSinceStartCopy = intervalSinceStart;
+                Parallel.ForEach(_monitors, monitor =>
                 {
                     try
                     {
-                        monitor.OnInterval(intervalSinceStart);
+                        monitor.OnInterval(intervalsSinceStartCopy);
                     }
                     catch (Exception e)
                     {
                         Log.Error(e);
                     }
-                }
+                });
 
                 intervalSinceStart += 1;
-                canceller.WaitHandle.WaitOne(TimeSpan.FromSeconds(1f));
+
+                var spentTime = (DateTime.UtcNow - startTime).TotalSeconds;
+                if (spentTime > 1f)
+                {
+                    Log.Warn($"Monitor spent more than 1 second: {spentTime}s");
+                }
+                
+                var waitTime = 1f - spentTime;
+                canceller.WaitHandle.WaitOne(TimeSpan.FromSeconds(waitTime));
             }
         }
     }
