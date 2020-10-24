@@ -116,6 +116,7 @@ namespace TorchMonitor.Views
                 if (spentTime > 1f)
                 {
                     Log.Warn($"Monitor spent more than 1 second: {spentTime}s");
+                    continue;
                 }
                 
                 var waitTime = 1f - spentTime;

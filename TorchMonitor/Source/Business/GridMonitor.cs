@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using InfluxDB.Client.Writes;
 using NLog;
 using Sandbox.Game.Entities;
+using Sandbox.Game.Entities.Blocks;
+using Sandbox.Game.GameSystems.Conveyors;
+using Sandbox.ModAPI;
 using Torch.Server.InfluxDb;
 using TorchMonitor.Utils;
 using VRage.Game.Entity;
@@ -61,25 +65,81 @@ namespace TorchMonitor.Business
                 }
 
                 // active
+                var activeGroups = groups.Where(gr => gr.Any(g => !g.IsConcealed()));
+                Parallel.ForEach(activeGroups, group =>
                 {
-                    foreach (var group in groups)
+                    var biggestGrid = group.GetBiggestGrid();
+                    var groupName = biggestGrid.DisplayName;
+                    var grids = group.Where(g => !IsWheelGrid(g)).ToArray();
+
+                    var conveyorCount = 0;
+                    var sorterCount = 0;
+                    var endpointCount = 0;
+                    var productionBlockCount = 0;
+                    var programmableBlockCount = 0;
+                    var shipToolCount = 0;
+                    foreach (var grid in grids)
+                    foreach (var slimBlock in grid.CubeBlocks)
                     {
-                        if (group.Any(g => g.IsConcealed())) continue;
+                        var block = slimBlock.FatBlock;
 
-                        var biggestGrid = GetBiggestGrid(group);
-                        var groupName = biggestGrid.DisplayName;
-                        var blockCount = group.Sum(g => g.BlocksCount);
-                        var totalPcu = group.Sum(g => g.BlocksPCU);
+                        // skip inactive
+                        if (block is IMyFunctionalBlock functionalBlock)
+                        {
+                            if (!functionalBlock.IsWorking) continue;
+                            if (!functionalBlock.Enabled) continue;
+                        }
 
-                        var point = _client
-                            .MakePointIn("active_grids")
-                            .Tag("grid_name", groupName)
-                            .Field("block_count", blockCount)
-                            .Field("pcu", totalPcu);
+                        if (block is IMyConveyor ||
+                            block is IMyConveyorTube)
+                        {
+                            conveyorCount += 1;
+                        }
 
+                        if (block is MyConveyorSorter)
+                        {
+                            sorterCount += 1;
+                        }
+
+                        if (block is IMyConveyorEndpointBlock endpointBlock)
+                        {
+                            endpointCount += endpointBlock.ConveyorEndpoint.GetLineCount();
+                        }
+
+                        if (block is IMyProductionBlock)
+                        {
+                            productionBlockCount += 1;
+                        }
+
+                        if (block is IMyProgrammableBlock)
+                        {
+                            programmableBlockCount += 1;
+                        }
+
+                        if (block is IMyShipToolBase)
+                        {
+                            shipToolCount += 1;
+                        }
+                    }
+
+                    var point = _client
+                        .MakePointIn("active_grids")
+                        .Tag("grid_name", groupName)
+                        .Field("pcu", grids.Sum(g => g.BlocksPCU))
+                        .Field("block_count", grids.Sum(g => g.BlocksCount))
+                        .Field("subgrid_count", grids.Length - 1)
+                        .Field("conveyor_count", conveyorCount)
+                        .Field("sorter_count", sorterCount)
+                        .Field("endpoint_count", endpointCount)
+                        .Field("production_block_count", productionBlockCount)
+                        .Field("programmable_block_count", programmableBlockCount)
+                        .Field("ship_tool_count", shipToolCount);
+
+                    lock (points)
+                    {
                         points.Add(point);
                     }
-                }
+                });
 
                 _client.WritePoints(points.ToArray());
             }
@@ -102,21 +162,13 @@ namespace TorchMonitor.Business
             return NamePattern.IsMatch(grid.DisplayName);
         }
 
-        static MyCubeGrid GetBiggestGrid(IEnumerable<MyCubeGrid> grids)
+        static bool IsWheelGrid(MyCubeGrid grid)
         {
-            var myCubeGrid = (MyCubeGrid) null;
-            var num = 0.0;
-            foreach (var grid in grids)
-            {
-                var volume = grid.PositionComp.WorldAABB.Size.Volume;
-                if (volume > num)
-                {
-                    num = volume;
-                    myCubeGrid = grid;
-                }
-            }
+            var blocks = grid.CubeBlocks;
+            if (blocks.Count != 1) return false;
 
-            return myCubeGrid;
+            var block = blocks.ElementAt(0);
+            return block.FatBlock is MyWheel;
         }
     }
 }
