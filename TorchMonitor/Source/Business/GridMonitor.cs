@@ -66,11 +66,11 @@ namespace TorchMonitor.Business
 
                 // active
                 var activeGroups = groups.Where(gr => gr.Any(g => !g.IsConcealed()));
-                Parallel.ForEach(activeGroups, group =>
+                Parallel.ForEach(activeGroups, activeGroup =>
                 {
-                    var biggestGrid = group.GetBiggestGrid();
+                    var biggestGrid = activeGroup.GetBiggestGrid();
                     var groupName = biggestGrid.DisplayName;
-                    var grids = group.Where(g => !IsWheelGrid(g)).ToArray();
+                    var multiBlockGrids = activeGroup.Where(g => !IsWheelGrid(g)).ToArray();
 
                     var conveyorCount = 0;
                     var sorterCount = 0;
@@ -78,8 +78,8 @@ namespace TorchMonitor.Business
                     var productionBlockCount = 0;
                     var programmableBlockCount = 0;
                     var shipToolCount = 0;
-                    foreach (var grid in grids)
-                    foreach (var slimBlock in grid.CubeBlocks)
+                    foreach (var multiBlockGrid in multiBlockGrids)
+                    foreach (var slimBlock in multiBlockGrid.CubeBlocks)
                     {
                         var block = slimBlock.FatBlock;
 
@@ -125,9 +125,9 @@ namespace TorchMonitor.Business
                     var point = _client
                         .MakePointIn("active_grids")
                         .Tag("grid_name", groupName)
-                        .Field("pcu", grids.Sum(g => g.BlocksPCU))
-                        .Field("block_count", grids.Sum(g => g.BlocksCount))
-                        .Field("subgrid_count", grids.Length - 1)
+                        .Field("pcu", multiBlockGrids.Sum(g => g.BlocksPCU))
+                        .Field("block_count", multiBlockGrids.Sum(g => g.BlocksCount))
+                        .Field("subgrid_count", multiBlockGrids.Length - 1)
                         .Field("conveyor_count", conveyorCount)
                         .Field("sorter_count", sorterCount)
                         .Field("endpoint_count", endpointCount)
