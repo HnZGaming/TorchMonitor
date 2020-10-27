@@ -8,6 +8,7 @@ using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.GameSystems.Conveyors;
+using Sandbox.Game.World;
 using Sandbox.ModAPI;
 using Torch.Server.InfluxDb;
 using TorchMonitor.Utils;
@@ -41,6 +42,8 @@ namespace TorchMonitor.Business
                     .Select(g => g.Nodes.Select(n => n.NodeData).ToArray())
                     .ToArray();
 
+                var activeGroups = groups.Where(gr => gr.Any(g => !g.IsConcealed())).ToArray();
+
                 // total
                 {
                     var groupCount = groups.Length;
@@ -59,13 +62,13 @@ namespace TorchMonitor.Business
                         .Field("total_delta", groupCountDelta)
                         .Field("deletable", deletableGridCount)
                         .Field("total_blocks", blockCount)
-                        .Field("total_blocks_delta", blockCountDelta);
+                        .Field("total_blocks_delta", blockCountDelta)
+                        .Field("active_total", activeGroups.Length);
 
                     points.Add(point);
                 }
 
-                // active
-                var activeGroups = groups.Where(gr => gr.Any(g => !g.IsConcealed()));
+                // each active grid
                 Parallel.ForEach(activeGroups, activeGroup =>
                 {
                     var biggestGrid = activeGroup.GetBiggestGrid();
@@ -122,9 +125,15 @@ namespace TorchMonitor.Business
                         }
                     }
 
+                    var factionTag = biggestGrid.BigOwners
+                        .Select(o => MySession.Static.Factions.TryGetPlayerFaction(o))
+                        .FirstOrDefault()
+                        ?.Tag ?? "<single>";
+
                     var point = _client
                         .MakePointIn("active_grids")
                         .Tag("grid_name", groupName)
+                        .Tag("faction_tag", factionTag)
                         .Field("pcu", multiBlockGrids.Sum(g => g.BlocksPCU))
                         .Field("block_count", multiBlockGrids.Sum(g => g.BlocksCount))
                         .Field("subgrid_count", multiBlockGrids.Length - 1)
