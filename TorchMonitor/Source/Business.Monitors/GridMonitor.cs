@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -14,9 +13,9 @@ using Torch.Server.InfluxDb;
 using TorchMonitor.Utils;
 using VRage.Game.Entity;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public class GridMonitor : IMonitor
+    public class GridMonitor : IIntervalListener
     {
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
         static readonly Regex NamePattern = new Regex(@"^(Static|Large|Small)\s(Grid|Ship)\s\d+$");
@@ -34,7 +33,7 @@ namespace TorchMonitor.Business
         {
             if (intervalsSinceStart < 120) return;
 
-            if (intervalsSinceStart % 20 == 0)
+            if (intervalsSinceStart % 60 == 0)
             {
                 var points = new List<PointData>();
 

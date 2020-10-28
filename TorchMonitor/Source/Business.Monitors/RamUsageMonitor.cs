@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using Torch.Server.InfluxDb;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public class RamUsageMonitor : IMonitor
+    public class RamUsageMonitor : IIntervalListener
     {
         readonly InfluxDbClient _client;
         readonly Process _process;

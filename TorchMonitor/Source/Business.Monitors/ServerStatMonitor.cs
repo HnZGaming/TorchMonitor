@@ -3,9 +3,9 @@ using System.Linq;
 using Sandbox.Game.World;
 using Torch.Server.InfluxDb;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public class ServerStatMonitor : IMonitor
+    public class ServerStatMonitor : IIntervalListener
     {
         const int IntervalsPerWrite = 5;
 

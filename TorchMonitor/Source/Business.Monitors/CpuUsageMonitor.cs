@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using Torch.Server.InfluxDb;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public class CpuUsageMonitor : IMonitor
+    public class CpuUsageMonitor : IIntervalListener
     {
         readonly InfluxDbClient _client;
         readonly PerformanceCounter _cpuUsageCounter;

@@ -8,9 +8,9 @@ using SpaceEngineers.Game.Entities.Blocks;
 using Torch.Server.InfluxDb;
 using TorchMonitor.Utils;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public sealed class WelderMonitor : IMonitor
+    public sealed class WelderMonitor : IIntervalListener
     {
         static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         readonly InfluxDbClient _client;

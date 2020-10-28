@@ -2,9 +2,9 @@
 using Sandbox.Game.Entities;
 using Torch.Server.InfluxDb;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public class AsteroidMonitor : IMonitor
+    public class AsteroidMonitor : IIntervalListener
     {
         readonly InfluxDbClient _client;
         int? _lastAsteroidCount;

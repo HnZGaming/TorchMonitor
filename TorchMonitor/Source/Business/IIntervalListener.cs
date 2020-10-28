@@ -1,6 +1,6 @@
 ﻿namespace TorchMonitor.Business
 {
-    public interface IMonitor
+    public interface IIntervalListener
     {
         /// <summary>
         /// Called every interval

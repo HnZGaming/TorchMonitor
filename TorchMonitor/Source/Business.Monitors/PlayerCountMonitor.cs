@@ -1,9 +1,9 @@
 ﻿using Sandbox.Game.World;
 using Torch.Server.InfluxDb;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public class PlayerCountMonitor : IMonitor
+    public class PlayerCountMonitor : IIntervalListener
     {
         readonly InfluxDbClient _client;
 

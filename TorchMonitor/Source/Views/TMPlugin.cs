@@ -8,6 +8,7 @@ using Torch.API.Managers;
 using Torch.Server.InfluxDb;
 using Torch.Server.Utils;
 using TorchMonitor.Business;
+using TorchMonitor.Business.Monitors;
 
 namespace TorchMonitor.Views
 {
@@ -16,14 +17,14 @@ namespace TorchMonitor.Views
         const string ConfigFileName = "TMConfig.config";
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-        readonly List<IMonitor> _monitors;
+        readonly List<IIntervalListener> _monitors;
         CancellationTokenSource _canceller;
         InfluxDbClient _client;
         TMConfig _config;
 
         public TMPlugin()
         {
-            _monitors = new List<IMonitor>();
+            _monitors = new List<IIntervalListener>();
         }
 
         public override void Init(ITorchBase torch)
@@ -56,7 +57,7 @@ namespace TorchMonitor.Views
                 throw new Exception("Manager found but client is not set");
             }
 
-            _monitors.AddRange(new IMonitor[]
+            _monitors.AddRange(new IIntervalListener[]
             {
                 new ServerStatMonitor(_client),
                 new SyncMonitor(_client),

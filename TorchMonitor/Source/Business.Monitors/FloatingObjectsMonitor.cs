@@ -2,9 +2,9 @@
 using Sandbox.Game.Entities;
 using Torch.Server.InfluxDb;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public class FloatingObjectsMonitor : IMonitor
+    public class FloatingObjectsMonitor : IIntervalListener
     {
         readonly InfluxDbClient _client;
 

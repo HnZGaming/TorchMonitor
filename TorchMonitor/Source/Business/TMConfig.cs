@@ -1,4 +1,5 @@
 ﻿using System.Xml.Serialization;
+using TorchMonitor.Business.Monitors;
 
 namespace TorchMonitor.Business
 {

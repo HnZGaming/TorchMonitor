@@ -7,9 +7,9 @@ using Torch.Server.InfluxDb;
 using Torch.Server.Utils;
 using TorchMonitor.Utils;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public sealed class FactionConcealmentMonitor : IMonitor
+    public sealed class FactionConcealmentMonitor : IIntervalListener
     {
         public interface IConfig
         {

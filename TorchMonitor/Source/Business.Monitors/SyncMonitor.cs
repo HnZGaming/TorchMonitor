@@ -2,9 +2,9 @@
 using Sandbox.Game.Multiplayer;
 using Torch.Server.InfluxDb;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public class SyncMonitor : IMonitor
+    public class SyncMonitor : IIntervalListener
     {
         const int IntervalsPerWrite = 5;
 

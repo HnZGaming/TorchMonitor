@@ -6,9 +6,9 @@ using Sandbox.Game.World;
 using Torch.Server.InfluxDb;
 using VRage.Game.ModAPI;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor.Business.Monitors
 {
-    public sealed class PlayersMonitor : IMonitor
+    public sealed class PlayersMonitor : IIntervalListener
     {
         readonly InfluxDbClient _dbClient;
         readonly List<IMyFaction> _factions;
