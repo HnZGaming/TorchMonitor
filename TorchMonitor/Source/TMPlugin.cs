@@ -8,7 +8,7 @@ using Torch.Server.Utils;
 using TorchMonitor.Business;
 using TorchMonitor.Business.Monitors;
 
-namespace TorchMonitor.Views
+namespace TorchMonitor
 {
     public class TMPlugin : TorchPluginBaseEx
     {
