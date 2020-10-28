@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using Torch.API;
@@ -17,14 +15,13 @@ namespace TorchMonitor.Views
         const string ConfigFileName = "TMConfig.config";
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-        readonly List<IIntervalListener> _monitors;
-        CancellationTokenSource _canceller;
+        readonly IntervalRunner _intervalRunner;
         InfluxDbClient _client;
         TMConfig _config;
 
         public TMPlugin()
         {
-            _monitors = new List<IIntervalListener>();
+            _intervalRunner = new IntervalRunner(1);
         }
 
         public override void Init(ITorchBase torch)
@@ -42,9 +39,6 @@ namespace TorchMonitor.Views
 
         protected override void OnGameLoaded()
         {
-            _canceller = new CancellationTokenSource();
-            var token = _canceller.Token;
-
             var manager = Torch.Managers.GetManager<InfluxDbManager>();
             if (manager == null)
             {
@@ -57,7 +51,7 @@ namespace TorchMonitor.Views
                 throw new Exception("Manager found but client is not set");
             }
 
-            _monitors.AddRange(new IIntervalListener[]
+            _intervalRunner.AddListeners(new IIntervalListener[]
             {
                 new ServerStatMonitor(_client),
                 new SyncMonitor(_client),
@@ -75,54 +69,17 @@ namespace TorchMonitor.Views
             _client.WritePing("torch init");
 
             Task.Factory
-                .StartNew(() => ObserveServerStat(token), token)
+                .StartNew(_intervalRunner.RunIntervals)
                 .Forget(Log);
+
+            _client.WritePing("session loaded");
         }
 
         protected override void OnGameUnloading()
         {
-            _canceller?.Cancel();
-            _canceller?.Dispose();
-            _canceller = null;
+            _intervalRunner.Dispose();
 
             _client.WritePing("session unloaded");
-        }
-
-        void ObserveServerStat(CancellationToken canceller)
-        {
-            _client.WritePing("session loaded");
-
-            var intervalSinceStart = 0;
-
-            while (!canceller.IsCancellationRequested)
-            {
-                var startTime = DateTime.UtcNow;
-
-                var intervalsSinceStartCopy = intervalSinceStart;
-                Parallel.ForEach(_monitors, monitor =>
-                {
-                    try
-                    {
-                        monitor.OnInterval(intervalsSinceStartCopy);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e);
-                    }
-                });
-
-                intervalSinceStart += 1;
-
-                var spentTime = (DateTime.UtcNow - startTime).TotalSeconds;
-                if (spentTime > 1f)
-                {
-                    Log.Warn($"Monitor spent more than 1 second: {spentTime}s");
-                    continue;
-                }
-                
-                var waitTime = 1f - spentTime;
-                canceller.WaitHandle.WaitOne(TimeSpan.FromSeconds(waitTime));
-            }
         }
     }
 }

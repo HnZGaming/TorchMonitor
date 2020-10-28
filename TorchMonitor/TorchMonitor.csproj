@@ -162,6 +162,7 @@
         <Compile Include="Source\Business.Monitors\ServerStatMonitor.cs" />
         <Compile Include="Source\Business.Monitors\SyncMonitor.cs" />
         <Compile Include="Source\Business.Monitors\WelderMonitor.cs" />
+        <Compile Include="Source\Business\IntervalRunner.cs" />
         <Compile Include="Source\Business\TMConfig.cs" />
         <Compile Include="Source\Business\IIntervalListener.cs" />
         <Compile Include="Source\Utils\Utils.cs" />
