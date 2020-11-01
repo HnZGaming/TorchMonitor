@@ -21,7 +21,7 @@ You need following things in order to run this plugin.
 How to Use
 ---
 
-1. Run the plugin once and you'll see a config file generated in the Instance folder.
+1. Run Torch once and you'll see a config file generated in the root folder.
 2. Set your InfluxDB instance's IP/port and whatever blank in the config.
 3. Create tables in InfluxDB according to the plugin code.
 3. Restart Torch.
