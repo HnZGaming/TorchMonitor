@@ -166,6 +166,7 @@
         <Compile Include="Source\Business\TMConfig.cs" />
         <Compile Include="Source\Business\IIntervalListener.cs" />
         <Compile Include="Source\TMPlugin.cs" />
+        <Compile Include="Source\Utils\ActionDisposable.cs" />
         <Compile Include="Source\Utils\Utils.cs" />
     </ItemGroup>
     <ItemGroup>

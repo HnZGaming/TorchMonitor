@@ -28,17 +28,26 @@ namespace TorchMonitor.Business
 
         public void AddListener(IIntervalListener listener)
         {
-            _listeners.Add(listener);
+            lock (_listeners)
+            {
+                _listeners.Add(listener);
+            }
         }
 
         public void AddListeners(IEnumerable<IIntervalListener> listeners)
         {
-            _listeners.AddRange(listeners);
+            lock (_listeners)
+            {
+                _listeners.AddRange(listeners);
+            }
         }
 
         public void RemoveListener(IIntervalListener listener)
         {
-            _listeners.Remove(listener);
+            lock (_listeners)
+            {
+                _listeners.Remove(listener);
+            }
         }
 
         public void RunIntervals()
@@ -50,17 +59,20 @@ namespace TorchMonitor.Business
                 var startTime = DateTime.UtcNow;
 
                 var intervalsSinceStartCopy = intervalSinceStart; // closure
-                Parallel.ForEach(_listeners, monitor =>
+                lock (_listeners)
                 {
-                    try
+                    Parallel.ForEach(_listeners, monitor =>
                     {
-                        monitor.OnInterval(intervalsSinceStartCopy);
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Error(e);
-                    }
-                });
+                        try
+                        {
+                            monitor.OnInterval(intervalsSinceStartCopy);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.Error(e);
+                        }
+                    });
+                }
 
                 intervalSinceStart += 1;
 

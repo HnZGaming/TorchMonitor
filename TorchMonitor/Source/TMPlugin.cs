@@ -7,6 +7,7 @@ using Torch.Server.InfluxDb;
 using Torch.Server.Utils;
 using TorchMonitor.Business;
 using TorchMonitor.Business.Monitors;
+using TorchMonitor.Utils;
 
 namespace TorchMonitor
 {
@@ -80,6 +81,12 @@ namespace TorchMonitor
             _intervalRunner.Dispose();
 
             _client.WritePing("session unloaded");
+        }
+
+        public IDisposable RunListener(IIntervalListener listener)
+        {
+            _intervalRunner.AddListener(listener);
+            return new ActionDisposable(() => _intervalRunner.RemoveListener(listener));
         }
     }
 }
