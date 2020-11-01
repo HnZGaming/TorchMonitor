@@ -54,15 +54,12 @@ namespace TorchMonitor
 
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
-                new ServerStatMonitor(_client),
                 new SyncMonitor(_client),
                 new PlayerCountMonitor(_client),
                 new GridMonitor(_client),
-                //new FloatingObjectsMonitor(_client),
+                new FloatingObjectsMonitor(_client),
                 new RamUsageMonitor(_client),
-                new CpuUsageMonitor(_client),
-                //new AsteroidMonitor(_client),
-                //new WelderMonitor(_client),
+                new AsteroidMonitor(_client),
                 new PlayersMonitor(_client),
                 new FactionConcealmentMonitor(_client, _config),
             });

@@ -152,16 +152,13 @@
     <ItemGroup>
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Source\Business.Monitors\AsteroidMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\CpuUsageMonitor.cs" />
         <Compile Include="Source\Business.Monitors\FactionConcealmentMonitor.cs" />
         <Compile Include="Source\Business.Monitors\FloatingObjectsMonitor.cs" />
         <Compile Include="Source\Business.Monitors\GridMonitor.cs" />
         <Compile Include="Source\Business.Monitors\PlayerCountMonitor.cs" />
         <Compile Include="Source\Business.Monitors\PlayersMonitor.cs" />
         <Compile Include="Source\Business.Monitors\RamUsageMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\ServerStatMonitor.cs" />
         <Compile Include="Source\Business.Monitors\SyncMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\WelderMonitor.cs" />
         <Compile Include="Source\Business\IntervalRunner.cs" />
         <Compile Include="Source\Business\TMConfig.cs" />
         <Compile Include="Source\Business\IIntervalListener.cs" />
