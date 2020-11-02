@@ -4,7 +4,6 @@ using NLog;
 using Torch.API;
 using Torch.API.Managers;
 using Torch.Server.InfluxDb;
-using Torch.Server.Utils;
 using TorchMonitor.Business;
 using TorchMonitor.Business.Monitors;
 using TorchMonitor.Utils;
@@ -64,20 +63,14 @@ namespace TorchMonitor
                 new FactionConcealmentMonitor(_client, _config),
             });
 
-            _client.WritePing("torch init");
-
             Task.Factory
                 .StartNew(_intervalRunner.RunIntervals)
                 .Forget(Log);
-
-            _client.WritePing("session loaded");
         }
 
         protected override void OnGameUnloading()
         {
             _intervalRunner.Dispose();
-
-            _client.WritePing("session unloaded");
         }
 
         public IDisposable RunListener(IIntervalListener listener)

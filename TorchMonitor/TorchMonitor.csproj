@@ -164,7 +164,12 @@
         <Compile Include="Source\Business\IIntervalListener.cs" />
         <Compile Include="Source\TMPlugin.cs" />
         <Compile Include="Source\Utils\ActionDisposable.cs" />
+        <Compile Include="Source\Utils\LinqUtils.cs" />
+        <Compile Include="Source\Utils\TaskUtils.cs" />
+        <Compile Include="Source\Utils\ThreadPoolTask.cs" />
+        <Compile Include="Source\Utils\TorchPluginBaseEx.cs" />
         <Compile Include="Source\Utils\Utils.cs" />
+        <Compile Include="Source\Utils\VRageUtils.cs" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="JsonSubTypes" Version="1.6.0" />

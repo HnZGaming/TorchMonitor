@@ -4,7 +4,6 @@ using InfluxDB.Client.Writes;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using Torch.Server.InfluxDb;
-using Torch.Server.Utils;
 using TorchMonitor.Utils;
 
 namespace TorchMonitor.Business.Monitors
