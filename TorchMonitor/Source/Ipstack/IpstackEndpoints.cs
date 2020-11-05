@@ -9,7 +9,7 @@ namespace TorchMonitor.Ipstack
     public sealed class IpstackEndpoints : IDisposable
     {
         public const string ApiKeyPlaceholder = "APIKEY";
-        const string Base = "http://api.steampowered.com";
+        const string Base = "http://api.ipstack.com";
         readonly string _apiKey;
         readonly HttpClient _httpClient;
 

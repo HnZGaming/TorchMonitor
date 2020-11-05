@@ -77,8 +77,9 @@ namespace TorchMonitor.Business.Monitors
 
                 if (_ipLocations.TryGetValue(steamId, out var ipLocation))
                 {
-                    continents.Increment(ipLocation.ContinentCode);
-                    countries.Increment(ipLocation.CountryCode);
+                    // null when localhost
+                    continents.Increment(ipLocation.ContinentName ?? "<unknown>");
+                    countries.Increment(ipLocation.CountryName ?? "<unknown>");
                 }
                 else
                 {
@@ -123,21 +124,21 @@ namespace TorchMonitor.Business.Monitors
                 points.Add(point);
             }
 
-            foreach (var (continentCode, count) in continents)
+            foreach (var (continentName, count) in continents)
             {
                 var point = _dbClient
                     .MakePointIn("players_continents")
-                    .Tag("continent_code", continentCode)
+                    .Tag("continent_name", continentName)
                     .Field("online_player_count", count);
 
                 points.Add(point);
             }
 
-            foreach (var (countryCode, count) in countries)
+            foreach (var (countryName, count) in countries)
             {
                 var point = _dbClient
                     .MakePointIn("players_countries")
-                    .Tag("country_code", countryCode)
+                    .Tag("country_name", countryName)
                     .Field("online_player_count", count);
 
                 points.Add(point);
@@ -157,8 +158,9 @@ namespace TorchMonitor.Business.Monitors
         {
             var state = new MyP2PSessionState();
             MySteamServiceWrapper.Static.Peer2Peer.GetSessionState(steamId, ref state);
-            var ip = new IPAddress(BitConverter.GetBytes(state.RemoteIP).Reverse().ToArray());
-            var location = await _ipstackEndpoints.Query(ip.ToString());
+            var ip = BitConverter.GetBytes(state.RemoteIP).Reverse().ToArray();
+            var ipAddress = new IPAddress(ip).ToString();
+            var location = await _ipstackEndpoints.Query(ipAddress);
             _ipLocations[steamId] = location;
         }
 
