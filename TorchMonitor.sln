@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorchMonitor", "TorchMonitor\TorchMonitor.csproj", "{3B854B71-D28C-4BA2-BEC3-E94C327A0AFA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quickies", "Quickies\Quickies.csproj", "{196F6FAF-24E0-4DB5-8B83-6FB72E0A6E34}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{3B854B71-D28C-4BA2-BEC3-E94C327A0AFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B854B71-D28C-4BA2-BEC3-E94C327A0AFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B854B71-D28C-4BA2-BEC3-E94C327A0AFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{196F6FAF-24E0-4DB5-8B83-6FB72E0A6E34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{196F6FAF-24E0-4DB5-8B83-6FB72E0A6E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{196F6FAF-24E0-4DB5-8B83-6FB72E0A6E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{196F6FAF-24E0-4DB5-8B83-6FB72E0A6E34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

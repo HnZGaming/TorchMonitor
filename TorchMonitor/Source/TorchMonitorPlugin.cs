@@ -6,20 +6,23 @@ using Torch.API.Managers;
 using Torch.Server.InfluxDb;
 using TorchMonitor.Business;
 using TorchMonitor.Business.Monitors;
+using TorchMonitor.Ipstack;
+using TorchMonitor.Steam;
 using TorchMonitor.Utils;
 
 namespace TorchMonitor
 {
-    public class TMPlugin : TorchPluginBaseEx
+    public class TorchMonitorPlugin : TorchPluginBaseEx
     {
-        const string ConfigFileName = "TMConfig.config";
+        const string ConfigFileName = "TorchMonitorConfig.config";
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         readonly IntervalRunner _intervalRunner;
-        InfluxDbClient _client;
-        TMConfig _config;
+        TorchMonitorConfig _config;
+        SteamApiEndpoints _steamApiEndpoints;
+        IpstackEndpoints _ipstackEndpoints;
 
-        public TMPlugin()
+        public TorchMonitorPlugin()
         {
             _intervalRunner = new IntervalRunner(1);
         }
@@ -30,11 +33,14 @@ namespace TorchMonitor
 
             if (!TryFindConfigFile(ConfigFileName, out _config))
             {
-                Log.Info("Creating a new TMConfig file with default content");
-                CreateConfigFile(ConfigFileName, new TMConfig());
+                Log.Info("Creating a new TorchMonitorConfig file with default content");
+                CreateConfigFile(ConfigFileName, new TorchMonitorConfig());
 
                 TryFindConfigFile(ConfigFileName, out _config);
             }
+            
+            _steamApiEndpoints = new SteamApiEndpoints(_config.SteamApiKey);
+            _ipstackEndpoints = new IpstackEndpoints(_config.IpstackApiKey);
         }
 
         protected override void OnGameLoaded()
@@ -45,22 +51,21 @@ namespace TorchMonitor
                 throw new Exception($"{nameof(InfluxDbManager)} not found");
             }
 
-            _client = manager.Client;
-            if (_client == null)
+            var client = manager.Client;
+            if (client == null)
             {
                 throw new Exception("Manager found but client is not set");
             }
 
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
-                new SyncMonitor(_client),
-                new PlayerCountMonitor(_client),
-                new GridMonitor(_client),
-                new FloatingObjectsMonitor(_client),
-                new RamUsageMonitor(_client),
-                new AsteroidMonitor(_client),
-                new PlayersMonitor(_client),
-                new FactionConcealmentMonitor(_client, _config),
+                new SyncMonitor(client),
+                new GridMonitor(client),
+                new FloatingObjectsMonitor(client),
+                new RamUsageMonitor(client),
+                new AsteroidMonitor(client),
+                new OnlinePlayersMonitor(client, _steamApiEndpoints, _ipstackEndpoints),
+                new FactionConcealmentMonitor(client, _config),
             });
 
             Task.Factory
@@ -71,6 +76,7 @@ namespace TorchMonitor
         protected override void OnGameUnloading()
         {
             _intervalRunner.Dispose();
+            _steamApiEndpoints?.Dispose();
         }
 
         public IDisposable RunListener(IIntervalListener listener)

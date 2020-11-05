@@ -1,9 +1,11 @@
 ﻿using System.Xml.Serialization;
 using TorchMonitor.Business.Monitors;
+using TorchMonitor.Ipstack;
+using TorchMonitor.Steam;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor
 {
-    public sealed class TMConfig : FactionConcealmentMonitor.IConfig
+    public sealed class TorchMonitorConfig : FactionConcealmentMonitor.IConfig
     {
         [XmlElement("FactionConcealmentMonitor.CollectIntervalSecs")]
         public int CollectIntervalSecs { get; set; } = 20;
@@ -13,5 +15,11 @@ namespace TorchMonitor.Business
 
         [XmlElement("FactionConcealmentMonitor.FactionTag")]
         public string FactionTag { get; set; } = "MME";
+
+        [XmlElement("SteamApiKey")]
+        public string SteamApiKey { get; set; } = SteamApiEndpoints.ApiKeyPlaceholder;
+
+        [XmlElement("IpstackApiKey")]
+        public string IpstackApiKey { get; set; } = IpstackEndpoints.ApiKeyPlaceholder;
     }
 }
