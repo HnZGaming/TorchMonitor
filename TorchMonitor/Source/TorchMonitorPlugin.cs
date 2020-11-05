@@ -6,6 +6,7 @@ using Torch.API.Managers;
 using Torch.Server.InfluxDb;
 using TorchMonitor.Business;
 using TorchMonitor.Business.Monitors;
+using TorchMonitor.Ipstack;
 using TorchMonitor.Steam;
 using TorchMonitor.Utils;
 
@@ -18,6 +19,8 @@ namespace TorchMonitor
 
         readonly IntervalRunner _intervalRunner;
         TorchMonitorConfig _config;
+        SteamApiEndpoints _steamApiEndpoints;
+        IpstackEndpoints _ipstackEndpoints;
 
         public TorchMonitorPlugin()
         {
@@ -35,6 +38,9 @@ namespace TorchMonitor
 
                 TryFindConfigFile(ConfigFileName, out _config);
             }
+            
+            _steamApiEndpoints = new SteamApiEndpoints(_config.SteamApiKey);
+            _ipstackEndpoints = new IpstackEndpoints(_config.IpstackApiKey);
         }
 
         protected override void OnGameLoaded()
@@ -50,8 +56,6 @@ namespace TorchMonitor
             {
                 throw new Exception("Manager found but client is not set");
             }
-            
-            var steamApiEndpoints = new SteamApiEndpoints(_config.SteamApiKey);
 
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
@@ -60,7 +64,7 @@ namespace TorchMonitor
                 new FloatingObjectsMonitor(client),
                 new RamUsageMonitor(client),
                 new AsteroidMonitor(client),
-                new OnlinePlayersMonitor(client, steamApiEndpoints),
+                new OnlinePlayersMonitor(client, _steamApiEndpoints, _ipstackEndpoints),
                 new FactionConcealmentMonitor(client, _config),
             });
 
@@ -72,6 +76,7 @@ namespace TorchMonitor
         protected override void OnGameUnloading()
         {
             _intervalRunner.Dispose();
+            _steamApiEndpoints?.Dispose();
         }
 
         public IDisposable RunListener(IIntervalListener listener)

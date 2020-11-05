@@ -161,12 +161,13 @@
         <Compile Include="Source\Business.Monitors\SyncMonitor.cs" />
         <Compile Include="Source\Business\IntervalRunner.cs" />
         <Compile Include="Source\Business\IIntervalListener.cs" />
+        <Compile Include="Source\Ipstack\IpstackEndpoints.cs" />
+        <Compile Include="Source\Ipstack\IpstackLocation.cs" />
         <Compile Include="Source\Steam\Models\SteamCommunityVisibility.cs" />
         <Compile Include="Source\Steam\Models\SteamOwnedGame.cs" />
         <Compile Include="Source\Steam\Models\SteamOwnedGames.cs" />
         <Compile Include="Source\Steam\Models\SteamPlayerSummaries.cs" />
         <Compile Include="Source\Steam\Models\SteamPlayerSummary.cs" />
-        <Compile Include="Source\Steam\Models\SteamResponseException.cs" />
         <Compile Include="Source\Steam\SteamApiEndpoints.cs" />
         <Compile Include="Source\TorchMonitorConfig.cs" />
         <Compile Include="Source\TorchMonitorPlugin.cs" />

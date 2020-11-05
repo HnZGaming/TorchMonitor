@@ -16,5 +16,8 @@ namespace TorchMonitor
 
         [XmlElement("SteamApiKey")]
         public string SteamApiKey { get; set; } = "";
+
+        [XmlElement("IpstackApiKey")]
+        public string IpstackApiKey { get; set; } = "";
     }
 }

@@ -46,11 +46,11 @@ namespace TorchMonitor.Steam
         async Task<T> Get<T>(string resource, params (string, string)[] query)
         {
             var url = MakeSteamApiResourceUrl(resource, query);
-            using (var res = await _httpClient.GetAsync(url))
+            using (var res = await _httpClient.GetAsync(url).ConfigureAwait(false))
             {
                 if (!res.IsSuccessStatusCode)
                 {
-                    throw new SteamResponseException(res.StatusCode, res.ReasonPhrase);
+                    throw new Exception($"Failed to get '{resource}' for '{res.ReasonPhrase}' ({res.StatusCode})");
                 }
 
                 var json = await res.Content.ReadAsStringAsync();
