@@ -155,8 +155,8 @@
         <Compile Include="Source\Business.Monitors\FactionConcealmentMonitor.cs" />
         <Compile Include="Source\Business.Monitors\FloatingObjectsMonitor.cs" />
         <Compile Include="Source\Business.Monitors\GridMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\PlayerCountMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\PlayersMonitor.cs" />
+        <Compile Include="Source\Business.Monitors\OnlinePlayersMonitor.cs" />
+        <Compile Include="Source\Business.Monitors\OnlinePlayersMonitor.Structs.cs" />
         <Compile Include="Source\Business.Monitors\RamUsageMonitor.cs" />
         <Compile Include="Source\Business.Monitors\SyncMonitor.cs" />
         <Compile Include="Source\Business\IntervalRunner.cs" />

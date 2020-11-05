@@ -6,6 +6,7 @@ using Torch.API.Managers;
 using Torch.Server.InfluxDb;
 using TorchMonitor.Business;
 using TorchMonitor.Business.Monitors;
+using TorchMonitor.Steam;
 using TorchMonitor.Utils;
 
 namespace TorchMonitor
@@ -16,7 +17,6 @@ namespace TorchMonitor
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         readonly IntervalRunner _intervalRunner;
-        InfluxDbClient _client;
         TorchMonitorConfig _config;
 
         public TMPlugin()
@@ -45,22 +45,23 @@ namespace TorchMonitor
                 throw new Exception($"{nameof(InfluxDbManager)} not found");
             }
 
-            _client = manager.Client;
-            if (_client == null)
+            var client = manager.Client;
+            if (client == null)
             {
                 throw new Exception("Manager found but client is not set");
             }
+            
+            var steamApiEndpoints = new SteamApiEndpoints(_config.SteamApiKey);
 
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
-                new SyncMonitor(_client),
-                new PlayerCountMonitor(_client),
-                new GridMonitor(_client),
-                new FloatingObjectsMonitor(_client),
-                new RamUsageMonitor(_client),
-                new AsteroidMonitor(_client),
-                new PlayersMonitor(_client),
-                new FactionConcealmentMonitor(_client, _config),
+                new SyncMonitor(client),
+                new GridMonitor(client),
+                new FloatingObjectsMonitor(client),
+                new RamUsageMonitor(client),
+                new AsteroidMonitor(client),
+                new OnlinePlayersMonitor(client, steamApiEndpoints),
+                new FactionConcealmentMonitor(client, _config),
             });
 
             Task.Factory

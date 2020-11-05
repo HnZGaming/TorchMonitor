@@ -49,5 +49,11 @@ namespace TorchMonitor.Utils
         {
             return $"[{string.Join(", ", self)}]";
         }
+
+        public static void Increment<K>(this IDictionary<K, int> self, K key)
+        {
+            self.TryGetValue(key, out var v);
+            self[key] = v + 1;
+        }
     }
 }

@@ -13,5 +13,8 @@ namespace TorchMonitor
 
         [XmlElement("FactionConcealmentMonitor.FactionTag")]
         public string FactionTag { get; set; } = "MME";
+
+        [XmlElement("SteamApiKey")]
+        public string SteamApiKey { get; set; } = "";
     }
 }
