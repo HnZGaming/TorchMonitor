@@ -1,5 +1,7 @@
 ﻿using System.Xml.Serialization;
 using TorchMonitor.Business.Monitors;
+using TorchMonitor.Ipstack;
+using TorchMonitor.Steam;
 
 namespace TorchMonitor
 {
@@ -15,9 +17,9 @@ namespace TorchMonitor
         public string FactionTag { get; set; } = "MME";
 
         [XmlElement("SteamApiKey")]
-        public string SteamApiKey { get; set; } = "";
+        public string SteamApiKey { get; set; } = SteamApiEndpoints.ApiKeyPlaceholder;
 
         [XmlElement("IpstackApiKey")]
-        public string IpstackApiKey { get; set; } = "";
+        public string IpstackApiKey { get; set; } = IpstackEndpoints.ApiKeyPlaceholder;
     }
 }

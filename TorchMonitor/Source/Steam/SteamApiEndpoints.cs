@@ -17,15 +17,16 @@ namespace TorchMonitor.Steam
             public T Response { get; private set; }
         }
 
+        public const string ApiKeyPlaceholder = "APIKEY";
         const string Base = "http://api.steampowered.com";
         readonly string _apiKey;
         readonly HttpClient _httpClient;
 
         public SteamApiEndpoints(string apiKey)
         {
-            if (string.IsNullOrEmpty(apiKey))
+            if (string.IsNullOrEmpty(apiKey) || apiKey == ApiKeyPlaceholder)
             {
-                throw new Exception("Steam API Key null or empty");
+                throw new Exception("Steam API Key null, empty or placeholder");
             }
             
             _apiKey = apiKey;

@@ -8,15 +8,16 @@ namespace TorchMonitor.Ipstack
     // https://ipstack.com/quickstart
     public sealed class IpstackEndpoints : IDisposable
     {
+        public const string ApiKeyPlaceholder = "APIKEY";
         const string Base = "http://api.steampowered.com";
         readonly string _apiKey;
         readonly HttpClient _httpClient;
 
         public IpstackEndpoints(string apiKey)
         {
-            if (string.IsNullOrEmpty(apiKey))
+            if (string.IsNullOrEmpty(apiKey) || apiKey == ApiKeyPlaceholder)
             {
-                throw new Exception("Steam API Key null or empty");
+                throw new Exception("Ipstack API Key null, empty or placeholder");
             }
 
             _apiKey = apiKey;
