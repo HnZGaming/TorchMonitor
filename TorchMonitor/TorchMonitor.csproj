@@ -162,6 +162,13 @@
         <Compile Include="Source\Business\IntervalRunner.cs" />
         <Compile Include="Source\Business\TMConfig.cs" />
         <Compile Include="Source\Business\IIntervalListener.cs" />
+        <Compile Include="Source\Steam\Models\SteamCommunityVisibility.cs" />
+        <Compile Include="Source\Steam\Models\SteamOwnedGame.cs" />
+        <Compile Include="Source\Steam\Models\SteamOwnedGames.cs" />
+        <Compile Include="Source\Steam\Models\SteamPlayerSummaries.cs" />
+        <Compile Include="Source\Steam\Models\SteamPlayerSummary.cs" />
+        <Compile Include="Source\Steam\Models\SteamResponseException.cs" />
+        <Compile Include="Source\Steam\SteamApiEndpoints.cs" />
         <Compile Include="Source\TMPlugin.cs" />
         <Compile Include="Source\Utils\ActionDisposable.cs" />
         <Compile Include="Source\Utils\LinqUtils.cs" />
