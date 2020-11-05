@@ -1,9 +1,9 @@
 ﻿using System.Xml.Serialization;
 using TorchMonitor.Business.Monitors;
 
-namespace TorchMonitor.Business
+namespace TorchMonitor
 {
-    public sealed class TMConfig : FactionConcealmentMonitor.IConfig
+    public sealed class TorchMonitorConfig : FactionConcealmentMonitor.IConfig
     {
         [XmlElement("FactionConcealmentMonitor.CollectIntervalSecs")]
         public int CollectIntervalSecs { get; set; } = 20;

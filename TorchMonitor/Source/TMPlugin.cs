@@ -12,12 +12,12 @@ namespace TorchMonitor
 {
     public class TMPlugin : TorchPluginBaseEx
     {
-        const string ConfigFileName = "TMConfig.config";
+        const string ConfigFileName = "TorchMonitorConfig.config";
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         readonly IntervalRunner _intervalRunner;
         InfluxDbClient _client;
-        TMConfig _config;
+        TorchMonitorConfig _config;
 
         public TMPlugin()
         {
@@ -30,8 +30,8 @@ namespace TorchMonitor
 
             if (!TryFindConfigFile(ConfigFileName, out _config))
             {
-                Log.Info("Creating a new TMConfig file with default content");
-                CreateConfigFile(ConfigFileName, new TMConfig());
+                Log.Info("Creating a new TorchMonitorConfig file with default content");
+                CreateConfigFile(ConfigFileName, new TorchMonitorConfig());
 
                 TryFindConfigFile(ConfigFileName, out _config);
             }
