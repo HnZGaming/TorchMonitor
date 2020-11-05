@@ -169,7 +169,7 @@
         <Compile Include="Source\Steam\Models\SteamResponseException.cs" />
         <Compile Include="Source\Steam\SteamApiEndpoints.cs" />
         <Compile Include="Source\TorchMonitorConfig.cs" />
-        <Compile Include="Source\TMPlugin.cs" />
+        <Compile Include="Source\TorchMonitorPlugin.cs" />
         <Compile Include="Source\Utils\ActionDisposable.cs" />
         <Compile Include="Source\Utils\LinqUtils.cs" />
         <Compile Include="Source\Utils\TaskUtils.cs" />

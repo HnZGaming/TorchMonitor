@@ -11,7 +11,7 @@ using TorchMonitor.Utils;
 
 namespace TorchMonitor
 {
-    public class TMPlugin : TorchPluginBaseEx
+    public class TorchMonitorPlugin : TorchPluginBaseEx
     {
         const string ConfigFileName = "TorchMonitorConfig.config";
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
@@ -19,7 +19,7 @@ namespace TorchMonitor
         readonly IntervalRunner _intervalRunner;
         TorchMonitorConfig _config;
 
-        public TMPlugin()
+        public TorchMonitorPlugin()
         {
             _intervalRunner = new IntervalRunner(1);
         }
