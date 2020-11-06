@@ -32,14 +32,9 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="System.Core" />
-        <Reference Include="System.Data" />
-        <Reference Include="System.Web" />
-        <Reference Include="System.Xml" />
-        <Reference Include="System" />
-        <Reference Include="Microsoft.CSharp" />
-        <Reference Include="System.Numerics" />
-        <Reference Include="mscorlib" />
+        <Reference Include="TorchDatabaseIntegration">
+            <HintPath>$(SolutionDir)\..\TorchDatabaseIntegration\TorchDatabaseIntegration\bin\Release\TorchDatabaseIntegration.dll</HintPath>
+        </Reference>
         <Reference Include="NLog">
             <HintPath>$(SolutionDir)\TorchBinaries\NLog.dll</HintPath>
         </Reference>
@@ -54,12 +49,6 @@
         </Reference>
         <Reference Include="Torch.Server">
             <HintPath>$(SolutionDir)\TorchBinaries\Torch.Server.exe</HintPath>
-        </Reference>
-        <Reference Include="InfluxDB.Client">
-            <HintPath>$(SolutionDir)\TorchBinaries\InfluxDB.Client.dll</HintPath>
-        </Reference>
-        <Reference Include="InfluxDB.Client.Core">
-            <HintPath>$(SolutionDir)\TorchBinaries\InfluxDB.Client.Core.dll</HintPath>
         </Reference>
         <Reference Include="VRage">
             <HintPath>$(SolutionDir)\GameBinaries\VRage.dll</HintPath>
@@ -148,6 +137,14 @@
         <Reference Include="SpaceEngineers.ObjectBuilders.XmlSerializers">
             <HintPath>$(SolutionDir)\GameBinaries\SpaceEngineers.ObjectBuilders.XmlSerializers.dll</HintPath>
         </Reference>
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Web" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System" />
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="System.Numerics" />
+        <Reference Include="mscorlib" />
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Properties\AssemblyInfo.cs" />

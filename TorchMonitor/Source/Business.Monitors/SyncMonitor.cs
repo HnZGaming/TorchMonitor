@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Sandbox.Game.Multiplayer;
-using Torch.Server.InfluxDb;
+using TorchDatabaseIntegration.InfluxDB;
 
 namespace TorchMonitor.Business.Monitors
 {
@@ -8,12 +8,10 @@ namespace TorchMonitor.Business.Monitors
     {
         const int IntervalsPerWrite = 5;
 
-        readonly InfluxDbClient _client;
         readonly float[] _simSpeeds;
 
-        public SyncMonitor(InfluxDbClient client)
+        public SyncMonitor()
         {
-            _client = client;
             _simSpeeds = new float[IntervalsPerWrite];
         }
 
@@ -24,17 +22,17 @@ namespace TorchMonitor.Business.Monitors
 
             if (intervalsSinceStart < 120) return; // the first some minutes are noisy
             if (intervalsSinceStart % IntervalsPerWrite != 0) return;
-            
+
             var maxSimSpeed = _simSpeeds.Max();
             var minSimSpeed = _simSpeeds.Min();
             var avgSimSpeed = _simSpeeds.Average();
 
-            var point = _client.MakePointIn("server_sync")
+            InfluxDbPointFactory
+                .Measurement("server_sync")
                 .Field("sim_speed", avgSimSpeed)
                 .Field("sim_speed_min", minSimSpeed)
-                .Field("sim_speed_max", maxSimSpeed);
-
-            _client.WritePoints(point);
+                .Field("sim_speed_max", maxSimSpeed)
+                .Write();
         }
     }
 }

@@ -2,14 +2,13 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using InfluxDB.Client.Writes;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.GameSystems.Conveyors;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
-using Torch.Server.InfluxDb;
+using TorchDatabaseIntegration.InfluxDB;
 using TorchMonitor.Utils;
 using VRage.Game.Entity;
 
@@ -19,15 +18,9 @@ namespace TorchMonitor.Business.Monitors
     {
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
         static readonly Regex NamePattern = new Regex(@"^(Static|Large|Small)\s(Grid|Ship)\s\d+$");
-        readonly InfluxDbClient _client;
 
         int? _lastGroupCount;
         int? _lastBlockCount;
-
-        public GridMonitor(InfluxDbClient client)
-        {
-            _client = client;
-        }
 
         public void OnInterval(int intervalsSinceStart)
         {
@@ -35,8 +28,6 @@ namespace TorchMonitor.Business.Monitors
 
             if (intervalsSinceStart % 60 == 0)
             {
-                var points = new List<PointData>();
-
                 var groups = MyCubeGridGroups.Static.Logical.Groups
                     .Select(g => g.Nodes.Select(n => n.NodeData).ToArray())
                     .ToArray();
@@ -55,16 +46,15 @@ namespace TorchMonitor.Business.Monitors
 
                     var deletableGridCount = groups.Count(g => IsGridGroupDeletable(g));
 
-                    var point = _client
-                        .MakePointIn("grids")
+                    InfluxDbPointFactory
+                        .Measurement("grids")
                         .Field("total", groupCount)
                         .Field("total_delta", groupCountDelta)
                         .Field("deletable", deletableGridCount)
                         .Field("total_blocks", blockCount)
                         .Field("total_blocks_delta", blockCountDelta)
-                        .Field("active_total", activeGroups.Length);
-
-                    points.Add(point);
+                        .Field("active_total", activeGroups.Length)
+                        .Write();
                 }
 
                 // each active grid
@@ -129,8 +119,8 @@ namespace TorchMonitor.Business.Monitors
                         .FirstOrDefault()
                         ?.Tag ?? "<single>";
 
-                    var point = _client
-                        .MakePointIn("active_grids")
+                    InfluxDbPointFactory
+                        .Measurement("active_grids")
                         .Tag("grid_name", groupName)
                         .Tag("faction_tag", factionTag)
                         .Field("pcu", multiBlockGrids.Sum(g => g.BlocksPCU))
@@ -141,15 +131,9 @@ namespace TorchMonitor.Business.Monitors
                         .Field("endpoint_count", endpointCount)
                         .Field("production_block_count", productionBlockCount)
                         .Field("programmable_block_count", programmableBlockCount)
-                        .Field("ship_tool_count", shipToolCount);
-
-                    lock (points)
-                    {
-                        points.Add(point);
-                    }
+                        .Field("ship_tool_count", shipToolCount)
+                        .Write();
                 });
-
-                _client.WritePoints(points.ToArray());
             }
         }
 

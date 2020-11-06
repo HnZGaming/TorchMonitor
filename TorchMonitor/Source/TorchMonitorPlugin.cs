@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using NLog;
 using Torch.API;
-using Torch.API.Managers;
-using Torch.Server.InfluxDb;
 using TorchMonitor.Business;
 using TorchMonitor.Business.Monitors;
 using TorchMonitor.Ipstack;
@@ -38,34 +36,22 @@ namespace TorchMonitor
 
                 TryFindConfigFile(ConfigFileName, out _config);
             }
-            
+
             _steamApiEndpoints = new SteamApiEndpoints(_config.SteamApiKey);
             _ipstackEndpoints = new IpstackEndpoints(_config.IpstackApiKey);
         }
 
         protected override void OnGameLoaded()
         {
-            var manager = Torch.Managers.GetManager<InfluxDbManager>();
-            if (manager == null)
-            {
-                throw new Exception($"{nameof(InfluxDbManager)} not found");
-            }
-
-            var client = manager.Client;
-            if (client == null)
-            {
-                throw new Exception("Manager found but client is not set");
-            }
-
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
-                new SyncMonitor(client),
-                new GridMonitor(client),
-                new FloatingObjectsMonitor(client),
-                new RamUsageMonitor(client),
-                new AsteroidMonitor(client),
-                new OnlinePlayersMonitor(client, _steamApiEndpoints, _ipstackEndpoints),
-                new FactionConcealmentMonitor(client, _config),
+                new SyncMonitor(),
+                new GridMonitor(),
+                new FloatingObjectsMonitor(),
+                new RamUsageMonitor(),
+                new AsteroidMonitor(),
+                new OnlinePlayersMonitor(_steamApiEndpoints, _ipstackEndpoints),
+                new FactionConcealmentMonitor(_config),
             });
 
             Task.Factory

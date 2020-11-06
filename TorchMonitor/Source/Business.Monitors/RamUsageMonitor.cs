@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
-using Torch.Server.InfluxDb;
+using TorchDatabaseIntegration.InfluxDB;
 
 namespace TorchMonitor.Business.Monitors
 {
     public class RamUsageMonitor : IIntervalListener
     {
-        readonly InfluxDbClient _client;
         readonly Process _process;
 
-        public RamUsageMonitor(InfluxDbClient client)
+        public RamUsageMonitor()
         {
-            _client = client;
             _process = Process.GetCurrentProcess();
         }
 
@@ -21,7 +19,7 @@ namespace TorchMonitor.Business.Monitors
             if (intervalsSinceStart % 10 != 0) return;
 
             const long GB = 1024 * 1024 * 1024;
-            
+
             _process.Refresh();
 
             // https://docs.microsoft.com/en-us/dotnet/api/system.gc.gettotalmemory
@@ -54,16 +52,16 @@ namespace TorchMonitor.Business.Monitors
             // [...] the current size of virtual memory used by the process.
             var virt = (float) _process.VirtualMemorySize64 / GB;
 
-            var point = _client.MakePointIn("resource")
+            InfluxDbPointFactory
+                .Measurement("resource")
                 .Field("heap", heap)
                 .Field("private", privat)
                 .Field("working_set", workingSet)
                 .Field("non_paged_sys", nonPagedSys)
                 .Field("paged_sys", pagedSys)
                 .Field("paged_virtual", pagedVirtual)
-                .Field("virtual", virt);
-
-            _client.WritePoints(point);
+                .Field("virtual", virt)
+                .Write();
         }
     }
 }

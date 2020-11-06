@@ -1,18 +1,12 @@
 ﻿using System.Linq;
 using Sandbox.Game.Entities;
-using Torch.Server.InfluxDb;
+using TorchDatabaseIntegration.InfluxDB;
 
 namespace TorchMonitor.Business.Monitors
 {
     public class AsteroidMonitor : IIntervalListener
     {
-        readonly InfluxDbClient _client;
         int? _lastAsteroidCount;
-
-        public AsteroidMonitor(InfluxDbClient client)
-        {
-            _client = client;
-        }
 
         public void OnInterval(int intervalsSinceStart)
         {
@@ -26,11 +20,11 @@ namespace TorchMonitor.Business.Monitors
             var asteroidCountDelta = asteroidCount - _lastAsteroidCount ?? 0;
             _lastAsteroidCount = asteroidCount;
 
-            var point = _client.MakePointIn("asteroids")
+            InfluxDbPointFactory
+                .Measurement("asteroids")
                 .Field("count", asteroidCount)
-                .Field("count_delta", asteroidCountDelta);
-
-            _client.WritePoints(point);
+                .Field("count_delta", asteroidCountDelta)
+                .Write();
         }
     }
 }

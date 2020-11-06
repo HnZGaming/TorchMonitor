@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using InfluxDB.Client.Writes;
 using NLog;
 using Sandbox.Game.World;
 using Torch;
-using Torch.Server.InfluxDb;
+using TorchDatabaseIntegration.InfluxDB;
 using TorchMonitor.Ipstack;
 using TorchMonitor.Steam;
 using TorchMonitor.Steam.Models;
@@ -20,15 +19,13 @@ namespace TorchMonitor.Business.Monitors
     public sealed partial class OnlinePlayersMonitor : IIntervalListener
     {
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly InfluxDbClient _dbClient;
         readonly SteamApiEndpoints _steamApiEndpoints;
         readonly IpstackEndpoints _ipstackEndpoints;
         readonly ConcurrentDictionary<ulong, SteamOwnedGame> _steamGameStates;
         readonly ConcurrentDictionary<ulong, IpstackLocation> _ipLocations;
 
-        public OnlinePlayersMonitor(InfluxDbClient dbClient, SteamApiEndpoints steamApiEndpoints, IpstackEndpoints ipstackEndpoints)
+        public OnlinePlayersMonitor(SteamApiEndpoints steamApiEndpoints, IpstackEndpoints ipstackEndpoints)
         {
-            _dbClient = dbClient;
             _steamApiEndpoints = steamApiEndpoints;
             _ipstackEndpoints = ipstackEndpoints;
             _steamGameStates = new ConcurrentDictionary<ulong, SteamOwnedGame>();
@@ -91,60 +88,49 @@ namespace TorchMonitor.Business.Monitors
 
             // write data
 
-            var points = new List<PointData>();
-
-            {
-                var point = _dbClient
-                    .MakePointIn("server")
-                    .Field("players", onlinePlayers.Count);
-
-                _dbClient.WritePoints(point);
-            }
+            InfluxDbPointFactory
+                .Measurement("server")
+                .Field("players", onlinePlayers.Count)
+                .Write();
 
             foreach (var onlinePlayer in onlinePlayers)
             {
-                var point = _dbClient
-                    .MakePointIn("players_players")
+                InfluxDbPointFactory
+                    .Measurement("players_players")
                     .Tag("steamId", $"{onlinePlayer.SteamId}")
                     .Tag("player_name", onlinePlayer.Name)
                     .Tag("faction_tag", onlinePlayer.FactionTag)
                     .Field("active_time", onlinePlayer.OnlineTime.TotalMinutes)
-                    .Field("total_active_time", onlinePlayer.TotalGamePlayTime.TotalHours);
-
-                points.Add(point);
+                    .Field("total_active_time", onlinePlayer.TotalGamePlayTime.TotalHours)
+                    .Write();
             }
 
             foreach (var (factionTag, onlineMemberCount) in factions)
             {
-                var point = _dbClient
-                    .MakePointIn("players_factions")
+                InfluxDbPointFactory
+                    .Measurement("players_factions")
                     .Tag("faction_tag", factionTag)
-                    .Field("online_member_count", onlineMemberCount);
-
-                points.Add(point);
+                    .Field("online_member_count", onlineMemberCount)
+                    .Write();
             }
 
             foreach (var (continentName, count) in continents)
             {
-                var point = _dbClient
-                    .MakePointIn("players_continents")
+                InfluxDbPointFactory
+                    .Measurement("players_continents")
                     .Tag("continent_name", continentName)
-                    .Field("online_player_count", count);
-
-                points.Add(point);
+                    .Field("online_player_count", count)
+                    .Write();
             }
 
             foreach (var (countryName, count) in countries)
             {
-                var point = _dbClient
-                    .MakePointIn("players_countries")
+                InfluxDbPointFactory
+                    .Measurement("players_countries")
                     .Tag("country_name", countryName)
-                    .Field("online_player_count", count);
-
-                points.Add(point);
+                    .Field("online_player_count", count)
+                    .Write();
             }
-
-            _dbClient.WritePoints(points.ToArray());
         }
 
         async Task LoadGameState(ulong steamId)

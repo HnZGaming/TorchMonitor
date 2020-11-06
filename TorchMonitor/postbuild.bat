@@ -26,7 +26,8 @@ TorchPluginPackager ^
     -m %MANIFEST_PATH% ^
     -b %BUILD_DIR% ^
     -r "%SOLUTION_DIR%TorchBinaries" "%SOLUTION_DIR%GameBinaries" ^
-    -o %PLUGINS_DIR%
+    -o %PLUGINS_DIR% ^
+    -e "TorchDatabaseIntegration.dll"
 
 REM Restarts the torch app. Comment out below if you don't want it.
 

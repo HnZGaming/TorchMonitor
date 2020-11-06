@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using InfluxDB.Client.Writes;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
-using Torch.Server.InfluxDb;
+using TorchDatabaseIntegration.InfluxDB;
 using TorchMonitor.Utils;
 
 namespace TorchMonitor.Business.Monitors
@@ -16,16 +15,12 @@ namespace TorchMonitor.Business.Monitors
             int WriteIntervalSecs { get; }
             string FactionTag { get; }
         }
-        
-        readonly InfluxDbClient _client;
+
         readonly List<MyCubeGrid> _collectedGrids;
         readonly IConfig _config;
 
-        public FactionConcealmentMonitor(
-            InfluxDbClient client,
-            IConfig config)
+        public FactionConcealmentMonitor(IConfig config)
         {
-            _client = client;
             _config = config;
             _collectedGrids = new List<MyCubeGrid>();
         }
@@ -63,35 +58,29 @@ namespace TorchMonitor.Business.Monitors
 
         void Write()
         {
-            var points = new List<PointData>();
-
             foreach (var grid in _collectedGrids)
             {
                 var activeBlockCount = grid.IsConcealed() ? 0 : grid.BlocksCount;
-                var point = _client
-                    .MakePointIn("faction_grids")
+
+                InfluxDbPointFactory
+                    .Measurement("faction_grids")
                     .Tag("faction_tag", _config.FactionTag)
                     .Tag("grid_name", grid.DisplayName)
-                    .Field("active_block_count", activeBlockCount);
-
-                points.Add(point);
+                    .Field("active_block_count", activeBlockCount)
+                    .Write();
             }
 
             {
                 var totalCount = _collectedGrids.Count;
                 var activeCount = _collectedGrids.Count(g => !g.IsConcealed());
 
-                var point = _client
-                    .MakePointIn("faction_grids_count")
+                InfluxDbPointFactory
+                    .Measurement("faction_grids_count")
                     .Tag("faction_tag", _config.FactionTag)
                     .Field("total_count", totalCount)
-                    .Field("active_count", activeCount);
-                
-
-                points.Add(point);
+                    .Field("active_count", activeCount)
+                    .Write();
             }
-
-            _client.WritePoints(points.ToArray());
         }
     }
 }
