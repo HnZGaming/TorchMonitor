@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TorchMonitor.Utils
+namespace TorchUtils
 {
-    public static class LinqUtils
+    internal static class CollectionUtils
     {
         public static bool TryGetFirst<T>(this IEnumerable<T> self, Func<T, bool> f, out T foundValue)
         {
@@ -45,15 +45,10 @@ namespace TorchMonitor.Utils
             return false;
         }
 
-        public static string ToStringSeq<T>(this IEnumerable<T> self)
-        {
-            return $"[{string.Join(", ", self)}]";
-        }
-
         public static void Increment<K>(this IDictionary<K, int> self, K key)
         {
-            self.TryGetValue(key, out var v);
-            self[key] = v + 1;
+            self.TryGetValue(key, out var value);
+            self[key] = value + 1;
         }
     }
 }

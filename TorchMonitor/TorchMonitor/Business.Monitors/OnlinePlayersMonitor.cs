@@ -11,7 +11,7 @@ using TorchDatabaseIntegration.InfluxDB;
 using TorchMonitor.Ipstack;
 using TorchMonitor.Steam;
 using TorchMonitor.Steam.Models;
-using TorchMonitor.Utils;
+using TorchUtils;
 using VRage.GameServices;
 
 namespace TorchMonitor.Business.Monitors

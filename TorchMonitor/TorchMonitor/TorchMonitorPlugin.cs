@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using NLog;
+using Torch;
 using Torch.API;
 using TorchMonitor.Business;
 using TorchMonitor.Business.Monitors;
 using TorchMonitor.Ipstack;
 using TorchMonitor.Steam;
-using TorchMonitor.Utils;
+using TorchUtils;
 
 namespace TorchMonitor
 {
-    public class TorchMonitorPlugin : TorchPluginBaseEx
+    public class TorchMonitorPlugin : TorchPluginBase
     {
         const string ConfigFileName = "TorchMonitorConfig.config";
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
@@ -28,20 +29,22 @@ namespace TorchMonitor
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
+            this.ListenOnGameLoaded(() => OnGameLoaded());
+            this.ListenOnGameUnloading(() => OnGameUnloading());
 
-            if (!TryFindConfigFile(ConfigFileName, out _config))
+            if (!this.TryFindConfigFile(ConfigFileName, out _config))
             {
                 Log.Info("Creating a new TorchMonitorConfig file with default content");
-                CreateConfigFile(ConfigFileName, new TorchMonitorConfig());
+                this.CreateConfigFile(ConfigFileName, new TorchMonitorConfig());
 
-                TryFindConfigFile(ConfigFileName, out _config);
+                this.TryFindConfigFile(ConfigFileName, out _config);
             }
 
             _steamApiEndpoints = new SteamApiEndpoints(_config.SteamApiKey);
             _ipstackEndpoints = new IpstackEndpoints(_config.IpstackApiKey);
         }
 
-        protected override void OnGameLoaded()
+        void OnGameLoaded()
         {
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
@@ -59,7 +62,7 @@ namespace TorchMonitor
                 .Forget(Log);
         }
 
-        protected override void OnGameUnloading()
+        void OnGameUnloading()
         {
             _intervalRunner.Dispose();
             _steamApiEndpoints?.Dispose();

@@ -2,9 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace TorchMonitor.Utils
+namespace TorchUtils
 {
-    public sealed class ThreadPoolTask : INotifyCompletion
+    internal sealed class ThreadPoolTask : INotifyCompletion
     {
         public ThreadPoolTask()
         {

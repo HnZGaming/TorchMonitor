@@ -7,7 +7,6 @@
         <ProjectGuid>{BA908745-A43A-47A5-ADB6-E086639EDAF2}</ProjectGuid>
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
-        <RootNamespace>TorchMonitor</RootNamespace>
         <AssemblyName>TorchMonitor</AssemblyName>
         <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
@@ -148,33 +147,37 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Source\Business.Monitors\AsteroidMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\FactionConcealmentMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\FloatingObjectsMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\GridMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\OnlinePlayersMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\OnlinePlayersMonitor.Structs.cs" />
-        <Compile Include="Source\Business.Monitors\RamUsageMonitor.cs" />
-        <Compile Include="Source\Business.Monitors\SyncMonitor.cs" />
-        <Compile Include="Source\Business\IntervalRunner.cs" />
-        <Compile Include="Source\Business\IIntervalListener.cs" />
-        <Compile Include="Source\Ipstack\IpstackEndpoints.cs" />
-        <Compile Include="Source\Ipstack\IpstackLocation.cs" />
-        <Compile Include="Source\Steam\Models\SteamCommunityVisibility.cs" />
-        <Compile Include="Source\Steam\Models\SteamOwnedGame.cs" />
-        <Compile Include="Source\Steam\Models\SteamOwnedGames.cs" />
-        <Compile Include="Source\Steam\Models\SteamPlayerSummaries.cs" />
-        <Compile Include="Source\Steam\Models\SteamPlayerSummary.cs" />
-        <Compile Include="Source\Steam\SteamApiEndpoints.cs" />
-        <Compile Include="Source\TorchMonitorConfig.cs" />
-        <Compile Include="Source\TorchMonitorPlugin.cs" />
-        <Compile Include="Source\Utils\ActionDisposable.cs" />
-        <Compile Include="Source\Utils\LinqUtils.cs" />
-        <Compile Include="Source\Utils\TaskUtils.cs" />
-        <Compile Include="Source\Utils\ThreadPoolTask.cs" />
-        <Compile Include="Source\Utils\TorchPluginBaseEx.cs" />
-        <Compile Include="Source\Utils\Utils.cs" />
-        <Compile Include="Source\Utils\VRageUtils.cs" />
+        <Compile Include="TorchMonitor\Business.Monitors\AsteroidMonitor.cs" />
+        <Compile Include="TorchMonitor\Business.Monitors\FactionConcealmentMonitor.cs" />
+        <Compile Include="TorchMonitor\Business.Monitors\FloatingObjectsMonitor.cs" />
+        <Compile Include="TorchMonitor\Business.Monitors\GridMonitor.cs" />
+        <Compile Include="TorchMonitor\Business.Monitors\OnlinePlayersMonitor.cs" />
+        <Compile Include="TorchMonitor\Business.Monitors\OnlinePlayersMonitor.Structs.cs" />
+        <Compile Include="TorchMonitor\Business.Monitors\RamUsageMonitor.cs" />
+        <Compile Include="TorchMonitor\Business.Monitors\SyncMonitor.cs" />
+        <Compile Include="TorchMonitor\Business\IntervalRunner.cs" />
+        <Compile Include="TorchMonitor\Business\IIntervalListener.cs" />
+        <Compile Include="TorchMonitor\Ipstack\IpstackEndpoints.cs" />
+        <Compile Include="TorchMonitor\Ipstack\IpstackLocation.cs" />
+        <Compile Include="TorchMonitor\Steam\Models\SteamCommunityVisibility.cs" />
+        <Compile Include="TorchMonitor\Steam\Models\SteamOwnedGame.cs" />
+        <Compile Include="TorchMonitor\Steam\Models\SteamOwnedGames.cs" />
+        <Compile Include="TorchMonitor\Steam\Models\SteamPlayerSummaries.cs" />
+        <Compile Include="TorchMonitor\Steam\Models\SteamPlayerSummary.cs" />
+        <Compile Include="TorchMonitor\Steam\SteamApiEndpoints.cs" />
+        <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />
+        <Compile Include="TorchMonitor\TorchMonitorPlugin.cs" />
+        <Compile Include="TorchUtils\ActionDisposable.cs" />
+        <Compile Include="TorchUtils\CollectionUtils.cs" />
+        <Compile Include="TorchUtils\DebugUtils.cs" />
+        <Compile Include="TorchUtils\DisposableCollection.cs" />
+        <Compile Include="TorchUtils\DisposableUtils.cs" />
+        <Compile Include="TorchUtils\TaskUtils.cs" />
+        <Compile Include="TorchUtils\ThreadPoolTask.cs" />
+        <Compile Include="TorchUtils\ThreadSafeThrottle.cs" />
+        <Compile Include="TorchUtils\TorchPluginUtils.cs" />
+        <Compile Include="TorchUtils\TorchUtils.cs" />
+        <Compile Include="TorchUtils\VRageUtils.cs" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="JsonSubTypes" Version="1.6.0" />

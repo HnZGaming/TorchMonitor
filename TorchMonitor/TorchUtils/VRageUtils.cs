@@ -3,10 +3,11 @@ using System.Linq;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using VRage.Game.ModAPI;
+using VRage.ModAPI;
 
-namespace TorchMonitor.Utils
+namespace TorchUtils
 {
-    public static class VRageUtils
+    internal static class VRageUtils
     {
         public static IEnumerable<long> Owners(this IMyCubeGrid self)
         {
@@ -42,6 +43,29 @@ namespace TorchMonitor.Utils
         public static ISet<long> BigOwnersSet(this IEnumerable<MyCubeGrid> group)
         {
             return new HashSet<long>(group.SelectMany(g => g.BigOwners));
+        }
+
+        public static bool IsConcealed(this IMyEntity entity)
+        {
+            // Concealment plugin uses `4` as a flag to prevent game from updating grids
+            return (long) (entity.Flags & (EntityFlags) 4) != 0;
+        }
+
+        public static MyCubeGrid GetBiggestGrid(this IEnumerable<MyCubeGrid> grids)
+        {
+            var myCubeGrid = (MyCubeGrid) null;
+            var num = 0.0;
+            foreach (var grid in grids)
+            {
+                var volume = grid.PositionComp.WorldAABB.Size.Volume;
+                if (volume > num)
+                {
+                    num = volume;
+                    myCubeGrid = grid;
+                }
+            }
+
+            return myCubeGrid;
         }
     }
 }

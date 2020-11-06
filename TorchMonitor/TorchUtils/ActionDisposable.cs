@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace TorchMonitor.Utils
+namespace TorchUtils
 {
-    public sealed class ActionDisposable : IDisposable
+    internal sealed class ActionDisposable : IDisposable
     {
         readonly Action _action;
 
