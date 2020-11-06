@@ -136,7 +136,7 @@ namespace TorchMonitor.Business.Monitors
         async Task LoadGameState(ulong steamId)
         {
             var states = await _steamApiEndpoints.GetOwnedGames(steamId);
-            var state = states.First(s => s.AppId == 244850);
+            var state = states?.First(s => s.AppId == 244850) ?? new SteamOwnedGame();
             _steamGameStates[steamId] = state;
         }
 
@@ -147,7 +147,7 @@ namespace TorchMonitor.Business.Monitors
             var ip = BitConverter.GetBytes(state.RemoteIP).Reverse().ToArray();
             var ipAddress = new IPAddress(ip).ToString();
             var location = await _ipstackEndpoints.Query(ipAddress);
-            _ipLocations[steamId] = location;
+            _ipLocations[steamId] = location ?? new IpstackLocation();
         }
 
         static bool TryGetOnlineTime(MyIdentity player, out TimeSpan activeTime)
