@@ -9,8 +9,6 @@ using Sandbox.Game.World;
 using Torch;
 using TorchDatabaseIntegration.InfluxDB;
 using TorchMonitor.Ipstack;
-using TorchMonitor.Steam;
-using TorchMonitor.Steam.Models;
 using TorchUtils;
 using VRage.GameServices;
 
@@ -19,16 +17,12 @@ namespace TorchMonitor.Business.Monitors
     public sealed partial class OnlinePlayersMonitor : IIntervalListener
     {
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly SteamApiEndpoints _steamApiEndpoints;
         readonly IpstackEndpoints _ipstackEndpoints;
-        readonly ConcurrentDictionary<ulong, SteamOwnedGame> _steamGameStates;
         readonly ConcurrentDictionary<ulong, IpstackLocation> _ipLocations;
 
-        public OnlinePlayersMonitor(SteamApiEndpoints steamApiEndpoints, IpstackEndpoints ipstackEndpoints)
+        public OnlinePlayersMonitor(IpstackEndpoints ipstackEndpoints)
         {
-            _steamApiEndpoints = steamApiEndpoints;
             _ipstackEndpoints = ipstackEndpoints;
-            _steamGameStates = new ConcurrentDictionary<ulong, SteamOwnedGame>();
             _ipLocations = new ConcurrentDictionary<ulong, IpstackLocation>();
         }
 
@@ -39,7 +33,7 @@ namespace TorchMonitor.Business.Monitors
             // collect data
 
             var factionList = MySession.Static.Factions.Factions.Values;
-            var onlinePlayers = new List<PlayerInfo>();
+            var playerInfos = new List<PlayerInfo>();
             var factions = new Dictionary<string, int>();
             var continents = new Dictionary<string, int>();
             var countries = new Dictionary<string, int>();
@@ -61,17 +55,6 @@ namespace TorchMonitor.Business.Monitors
                     OnlineTime = activeTime,
                 };
 
-                if (_steamGameStates.TryGetValue(steamId, out var steamGameState))
-                {
-                    var totalPlayTimeMinutes = (double) steamGameState.TotalPlaytimeMinutes;
-                    totalPlayTimeMinutes += activeTime.TotalMinutes;
-                    playerInfo.TotalGamePlayTime = TimeSpan.FromMinutes(totalPlayTimeMinutes);
-                }
-                else
-                {
-                    LoadGameState(steamId).Forget(Log);
-                }
-
                 if (_ipLocations.TryGetValue(steamId, out var ipLocation))
                 {
                     // null when localhost
@@ -83,25 +66,24 @@ namespace TorchMonitor.Business.Monitors
                     LoadIpLocation(steamId).Forget(Log);
                 }
 
-                onlinePlayers.Add(playerInfo);
+                playerInfos.Add(playerInfo);
             }
 
             // write data
 
             InfluxDbPointFactory
                 .Measurement("server")
-                .Field("players", onlinePlayers.Count)
+                .Field("players", playerInfos.Count)
                 .Write();
 
-            foreach (var onlinePlayer in onlinePlayers)
+            foreach (var playerInfo in playerInfos)
             {
                 InfluxDbPointFactory
                     .Measurement("players_players")
-                    .Tag("steamId", $"{onlinePlayer.SteamId}")
-                    .Tag("player_name", onlinePlayer.Name)
-                    .Tag("faction_tag", onlinePlayer.FactionTag)
-                    .Field("active_time", onlinePlayer.OnlineTime.TotalMinutes)
-                    .Field("total_active_time", onlinePlayer.TotalGamePlayTime.TotalHours)
+                    .Tag("steam_id", $"{playerInfo.SteamId}")
+                    .Tag("player_name", playerInfo.Name)
+                    .Tag("faction_tag", playerInfo.FactionTag)
+                    .Field("active_time", playerInfo.OnlineTime.TotalMinutes)
                     .Write();
             }
 
@@ -131,13 +113,6 @@ namespace TorchMonitor.Business.Monitors
                     .Field("online_player_count", count)
                     .Write();
             }
-        }
-
-        async Task LoadGameState(ulong steamId)
-        {
-            var states = await _steamApiEndpoints.GetOwnedGames(steamId);
-            var state = states?.First(s => s.AppId == 244850) ?? new SteamOwnedGame();
-            _steamGameStates[steamId] = state;
         }
 
         async Task LoadIpLocation(ulong steamId)

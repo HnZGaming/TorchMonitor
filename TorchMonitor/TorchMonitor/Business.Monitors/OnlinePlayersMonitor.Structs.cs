@@ -10,7 +10,6 @@ namespace TorchMonitor.Business.Monitors
             public string Name { get; set; }
             public string FactionTag { get; set; }
             public TimeSpan OnlineTime { get; set; }
-            public TimeSpan TotalGamePlayTime { get; set; }
         }
     }
 }

@@ -159,12 +159,6 @@
         <Compile Include="TorchMonitor\Business\IIntervalListener.cs" />
         <Compile Include="TorchMonitor\Ipstack\IpstackEndpoints.cs" />
         <Compile Include="TorchMonitor\Ipstack\IpstackLocation.cs" />
-        <Compile Include="TorchMonitor\Steam\Models\SteamCommunityVisibility.cs" />
-        <Compile Include="TorchMonitor\Steam\Models\SteamOwnedGame.cs" />
-        <Compile Include="TorchMonitor\Steam\Models\SteamOwnedGames.cs" />
-        <Compile Include="TorchMonitor\Steam\Models\SteamPlayerSummaries.cs" />
-        <Compile Include="TorchMonitor\Steam\Models\SteamPlayerSummary.cs" />
-        <Compile Include="TorchMonitor\Steam\SteamApiEndpoints.cs" />
         <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorPlugin.cs" />
         <Compile Include="TorchUtils\ActionDisposable.cs" />

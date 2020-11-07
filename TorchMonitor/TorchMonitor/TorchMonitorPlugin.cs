@@ -6,7 +6,6 @@ using Torch.API;
 using TorchMonitor.Business;
 using TorchMonitor.Business.Monitors;
 using TorchMonitor.Ipstack;
-using TorchMonitor.Steam;
 using TorchUtils;
 
 namespace TorchMonitor
@@ -18,7 +17,6 @@ namespace TorchMonitor
 
         readonly IntervalRunner _intervalRunner;
         TorchMonitorConfig _config;
-        SteamApiEndpoints _steamApiEndpoints;
         IpstackEndpoints _ipstackEndpoints;
 
         public TorchMonitorPlugin()
@@ -40,7 +38,6 @@ namespace TorchMonitor
                 this.TryFindConfigFile(ConfigFileName, out _config);
             }
 
-            _steamApiEndpoints = new SteamApiEndpoints(_config.SteamApiKey);
             _ipstackEndpoints = new IpstackEndpoints(_config.IpstackApiKey);
         }
 
@@ -53,7 +50,7 @@ namespace TorchMonitor
                 new FloatingObjectsMonitor(),
                 new RamUsageMonitor(),
                 new AsteroidMonitor(),
-                new OnlinePlayersMonitor(_steamApiEndpoints, _ipstackEndpoints),
+                new OnlinePlayersMonitor(_ipstackEndpoints),
                 new FactionConcealmentMonitor(_config),
             });
 
@@ -65,7 +62,6 @@ namespace TorchMonitor
         void OnGameUnloading()
         {
             _intervalRunner.Dispose();
-            _steamApiEndpoints?.Dispose();
         }
 
         public IDisposable RunListener(IIntervalListener listener)
