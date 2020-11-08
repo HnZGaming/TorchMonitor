@@ -9,8 +9,6 @@ using Sandbox.Game.World;
 using Torch;
 using TorchDatabaseIntegration.InfluxDB;
 using TorchMonitor.Ipstack;
-using TorchMonitor.Steam;
-using TorchMonitor.Steam.Models;
 using TorchUtils;
 using VRage.GameServices;
 
@@ -19,16 +17,12 @@ namespace TorchMonitor.Business.Monitors
     public sealed partial class OnlinePlayersMonitor : IIntervalListener
     {
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly SteamApiEndpoints _steamApiEndpoints;
         readonly IpstackEndpoints _ipstackEndpoints;
-        readonly ConcurrentDictionary<ulong, SteamOwnedGame> _steamGameStates;
         readonly ConcurrentDictionary<ulong, IpstackLocation> _ipLocations;
 
-        public OnlinePlayersMonitor(SteamApiEndpoints steamApiEndpoints, IpstackEndpoints ipstackEndpoints)
+        public OnlinePlayersMonitor(IpstackEndpoints ipstackEndpoints)
         {
-            _steamApiEndpoints = steamApiEndpoints;
             _ipstackEndpoints = ipstackEndpoints;
-            _steamGameStates = new ConcurrentDictionary<ulong, SteamOwnedGame>();
             _ipLocations = new ConcurrentDictionary<ulong, IpstackLocation>();
         }
 
@@ -36,22 +30,26 @@ namespace TorchMonitor.Business.Monitors
         {
             if (intervalsSinceStart % 10 != 0) return;
 
-            // collect data
+            Log.Trace("collecting data");
 
             var factionList = MySession.Static.Factions.Factions.Values;
-            var onlinePlayers = new List<PlayerInfo>();
+            var playerInfos = new List<PlayerInfo>();
             var factions = new Dictionary<string, int>();
             var continents = new Dictionary<string, int>();
             var countries = new Dictionary<string, int>();
             foreach (var anyPlayer in MySession.Static.Players.GetAllIdentities())
             {
+                if (anyPlayer == null) continue;
                 if (!TryGetOnlineTime(anyPlayer, out var activeTime)) continue;
+
+                if (anyPlayer.Character == null) continue;
+                var steamId = anyPlayer.Character.ControlSteamId;
+
+                Log.Trace($"collecting online player: '{anyPlayer.DisplayName}' ({steamId})");
 
                 var playerFaction = factionList.FirstOrDefault(f => f.Members.ContainsKey(anyPlayer.IdentityId));
                 var playerFactionTag = playerFaction?.Tag ?? "<single>";
                 factions.Increment(playerFactionTag);
-
-                var steamId = anyPlayer.Character.ControlSteamId;
 
                 var playerInfo = new PlayerInfo
                 {
@@ -61,17 +59,6 @@ namespace TorchMonitor.Business.Monitors
                     OnlineTime = activeTime,
                 };
 
-                if (_steamGameStates.TryGetValue(steamId, out var steamGameState))
-                {
-                    var totalPlayTimeMinutes = (double) steamGameState.TotalPlaytimeMinutes;
-                    totalPlayTimeMinutes += activeTime.TotalMinutes;
-                    playerInfo.TotalGamePlayTime = TimeSpan.FromMinutes(totalPlayTimeMinutes);
-                }
-                else
-                {
-                    LoadGameState(steamId).Forget(Log);
-                }
-
                 if (_ipLocations.TryGetValue(steamId, out var ipLocation))
                 {
                     // null when localhost
@@ -80,33 +67,37 @@ namespace TorchMonitor.Business.Monitors
                 }
                 else
                 {
+                    // update `_ipLocations` (for next interval)
                     LoadIpLocation(steamId).Forget(Log);
                 }
 
-                onlinePlayers.Add(playerInfo);
+                playerInfos.Add(playerInfo);
             }
 
-            // write data
+            Log.Trace("writing data");
 
             InfluxDbPointFactory
                 .Measurement("server")
-                .Field("players", onlinePlayers.Count)
+                .Field("players", playerInfos.Count)
                 .Write();
 
-            foreach (var onlinePlayer in onlinePlayers)
+            foreach (var playerInfo in playerInfos)
             {
+                Log.Trace($"writing player data: '{playerInfo.Name}' ({playerInfo.SteamId})");
+
                 InfluxDbPointFactory
                     .Measurement("players_players")
-                    .Tag("steamId", $"{onlinePlayer.SteamId}")
-                    .Tag("player_name", onlinePlayer.Name)
-                    .Tag("faction_tag", onlinePlayer.FactionTag)
-                    .Field("active_time", onlinePlayer.OnlineTime.TotalMinutes)
-                    .Field("total_active_time", onlinePlayer.TotalGamePlayTime.TotalHours)
+                    .Tag("steam_id", $"{playerInfo.SteamId}")
+                    .Tag("player_name", playerInfo.Name)
+                    .Tag("faction_tag", playerInfo.FactionTag)
+                    .Field("active_time", playerInfo.OnlineTime.TotalMinutes)
                     .Write();
             }
 
             foreach (var (factionTag, onlineMemberCount) in factions)
             {
+                Log.Trace($"writing faction data: '{factionTag}'");
+
                 InfluxDbPointFactory
                     .Measurement("players_factions")
                     .Tag("faction_tag", factionTag)
@@ -116,6 +107,8 @@ namespace TorchMonitor.Business.Monitors
 
             foreach (var (continentName, count) in continents)
             {
+                Log.Trace($"writing continent data: '{continentName}'");
+
                 InfluxDbPointFactory
                     .Measurement("players_continents")
                     .Tag("continent_name", continentName)
@@ -125,19 +118,16 @@ namespace TorchMonitor.Business.Monitors
 
             foreach (var (countryName, count) in countries)
             {
+                Log.Trace($"writing country data: '{countryName}'");
+
                 InfluxDbPointFactory
                     .Measurement("players_countries")
                     .Tag("country_name", countryName)
                     .Field("online_player_count", count)
                     .Write();
             }
-        }
-
-        async Task LoadGameState(ulong steamId)
-        {
-            var states = await _steamApiEndpoints.GetOwnedGames(steamId);
-            var state = states.First(s => s.AppId == 244850);
-            _steamGameStates[steamId] = state;
+            
+            Log.Trace("interval done");
         }
 
         async Task LoadIpLocation(ulong steamId)
@@ -147,7 +137,7 @@ namespace TorchMonitor.Business.Monitors
             var ip = BitConverter.GetBytes(state.RemoteIP).Reverse().ToArray();
             var ipAddress = new IPAddress(ip).ToString();
             var location = await _ipstackEndpoints.Query(ipAddress);
-            _ipLocations[steamId] = location;
+            _ipLocations[steamId] = location ?? new IpstackLocation();
         }
 
         static bool TryGetOnlineTime(MyIdentity player, out TimeSpan activeTime)
