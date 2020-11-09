@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Sandbox.Game.Entities;
-using TorchDatabaseIntegration.InfluxDB;
+using InfluxDb;
 
 namespace TorchMonitor.Business.Monitors
 {

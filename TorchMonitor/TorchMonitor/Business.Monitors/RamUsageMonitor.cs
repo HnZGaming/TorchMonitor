@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using TorchDatabaseIntegration.InfluxDB;
+using InfluxDb;
 
 namespace TorchMonitor.Business.Monitors
 {

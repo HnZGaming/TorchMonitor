@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using NLog;
 using Sandbox.Game.World;
 using Torch;
-using TorchDatabaseIntegration.InfluxDB;
+using InfluxDb;
 using TorchMonitor.Ipstack;
 using TorchUtils;
 using VRage.GameServices;
