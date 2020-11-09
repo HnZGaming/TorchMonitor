@@ -8,7 +8,7 @@ using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.GameSystems.Conveyors;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
-using TorchDatabaseIntegration.InfluxDB;
+using InfluxDb;
 using TorchUtils;
 using VRage.Game.Entity;
 

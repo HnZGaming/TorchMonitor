@@ -2,7 +2,7 @@
 using System.Linq;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
-using TorchDatabaseIntegration.InfluxDB;
+using InfluxDb;
 using TorchUtils;
 
 namespace TorchMonitor.Business.Monitors

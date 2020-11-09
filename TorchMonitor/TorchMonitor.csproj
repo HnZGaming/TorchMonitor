@@ -31,8 +31,8 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="TorchDatabaseIntegration">
-            <HintPath>$(SolutionDir)\..\TorchDatabaseIntegration\TorchDatabaseIntegration\bin\Release\TorchDatabaseIntegration.dll</HintPath>
+        <Reference Include="TorchInfluxDb">
+            <HintPath>$(SolutionDir)\..\TorchInfluxDb\TorchInfluxDb\bin\Release\TorchInfluxDb.dll</HintPath>
         </Reference>
         <Reference Include="NLog">
             <HintPath>$(SolutionDir)\TorchBinaries\NLog.dll</HintPath>
