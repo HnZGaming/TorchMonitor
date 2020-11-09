@@ -23,7 +23,7 @@ namespace TorchUtils
         {
             if (string.IsNullOrEmpty(self))
             {
-                throw new NullReferenceException(msg);
+                throw new ArgumentException($"null or empty: {msg}");
             }
         }
 
@@ -31,7 +31,7 @@ namespace TorchUtils
         {
             if (self == null || !self.Any())
             {
-                throw new NullReferenceException(msg);
+                throw new ArgumentException($"null or empty: {msg}");
             }
         }
 

@@ -137,7 +137,7 @@ namespace TorchMonitor.Monitors
             MySteamServiceWrapper.Static.Peer2Peer.GetSessionState(steamId, ref state);
             var ip = BitConverter.GetBytes(state.RemoteIP).Reverse().ToArray();
             var ipAddress = new IPAddress(ip).ToString();
-            var location = await _ipstackEndpoints.Query(ipAddress);
+            var location = await _ipstackEndpoints.GetLocationOrNullAsync(ipAddress);
             _ipLocations[steamId] = location ?? new IpstackLocation();
         }
 

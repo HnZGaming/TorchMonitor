@@ -1,22 +1,22 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Windows.Controls;
 using Intervals;
 using Ipstack;
-using NLog;
 using Torch;
 using Torch.API;
+using Torch.API.Plugins;
 using TorchMonitor.Monitors;
 using TorchUtils;
 
 namespace TorchMonitor
 {
-    public class TorchMonitorPlugin : TorchPluginBase
+    public class TorchMonitorPlugin : TorchPluginBase, IWpfPlugin
     {
-        const string ConfigFileName = "TorchMonitorConfig.config";
-        static readonly Logger Log = LogManager.GetCurrentClassLogger();
-
         readonly IntervalRunner _intervalRunner;
-        TorchMonitorConfig _config;
+
+        Persistent<TorchMonitorConfig> _config;
+        UserControl _userControl;
+
         IpstackEndpoints _ipstackEndpoints;
 
         public TorchMonitorPlugin()
@@ -30,15 +30,15 @@ namespace TorchMonitor
             this.ListenOnGameLoaded(() => OnGameLoaded());
             this.ListenOnGameUnloading(() => OnGameUnloading());
 
-            if (!this.TryFindConfigFile(ConfigFileName, out _config))
-            {
-                Log.Info("Creating a new TorchMonitorConfig file with default content");
-                this.CreateConfigFile(ConfigFileName, new TorchMonitorConfig());
+            var configFilePath = this.MakeConfigFilePath();
+            _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
 
-                this.TryFindConfigFile(ConfigFileName, out _config);
-            }
+            _ipstackEndpoints = new IpstackEndpoints(_config.Data);
+        }
 
-            _ipstackEndpoints = new IpstackEndpoints(_config.IpstackApiKey);
+        public UserControl GetControl()
+        {
+            return _config.GetOrCreateUserControl(ref _userControl);
         }
 
         void OnGameLoaded()
@@ -51,12 +51,13 @@ namespace TorchMonitor
                 new RamUsageMonitor(),
                 new AsteroidMonitor(),
                 new OnlinePlayersMonitor(_ipstackEndpoints),
-                new FactionGridMonitor(_config),
+                new FactionGridMonitor(_config.Data),
             });
 
-            Task.Factory
-                .StartNew(_intervalRunner.RunIntervals)
-                .Forget(Log);
+            ThreadPool.QueueUserWorkItem(_ =>
+            {
+                _intervalRunner.RunIntervals();
+            });
         }
 
         void OnGameUnloading()

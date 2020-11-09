@@ -2,38 +2,35 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using NLog;
+using TorchUtils;
 
 namespace Ipstack
 {
     // https://ipstack.com/quickstart
     public sealed class IpstackEndpoints : IDisposable
     {
-        public const string ApiKeyPlaceholder = "APIKEY";
         const string Base = "http://api.ipstack.com";
-        readonly string _apiKey;
+        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
+        readonly IIpstackConfig _config;
         readonly HttpClient _httpClient;
 
-        public IpstackEndpoints(string apiKey)
+        public IpstackEndpoints(IIpstackConfig config)
         {
-            if (string.IsNullOrEmpty(apiKey) || apiKey == ApiKeyPlaceholder)
-            {
-                throw new Exception("Ipstack API Key null, empty or placeholder");
-            }
-
-            _apiKey = apiKey;
+            _config = config;
             _httpClient = new HttpClient();
         }
 
         public void Dispose() => _httpClient.Dispose();
 
-        public async Task<IpstackLocation> Query(string ipAddress)
+        public async Task<IpstackLocation> GetLocationOrNullAsync(string ipAddress)
         {
-            if (string.IsNullOrEmpty(ipAddress))
-            {
-                throw new Exception("IP address null or empty");
-            }
+            ipAddress.ThrowIfNullOrEmpty(nameof(ipAddress));
 
-            var url = $"{Base}/{ipAddress}?access_key={_apiKey}";
+            var apiKey = _config.ApiKey;
+            if (string.IsNullOrEmpty(apiKey)) return null; // not enabled
+
+            var url = $"{Base}/{ipAddress}?access_key={apiKey}";
             using (var res = await _httpClient.GetAsync(url).ConfigureAwait(false))
             {
                 if (!res.IsSuccessStatusCode)
