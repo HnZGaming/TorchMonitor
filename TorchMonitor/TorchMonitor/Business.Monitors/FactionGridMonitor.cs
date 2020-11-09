@@ -7,7 +7,7 @@ using TorchUtils;
 
 namespace TorchMonitor.Business.Monitors
 {
-    public sealed class FactionConcealmentMonitor : IIntervalListener
+    public sealed class FactionGridMonitor : IIntervalListener
     {
         public interface IConfig
         {
@@ -19,7 +19,7 @@ namespace TorchMonitor.Business.Monitors
         readonly List<MyCubeGrid> _collectedGrids;
         readonly IConfig _config;
 
-        public FactionConcealmentMonitor(IConfig config)
+        public FactionGridMonitor(IConfig config)
         {
             _config = config;
             _collectedGrids = new List<MyCubeGrid>();

@@ -51,7 +51,7 @@ namespace TorchMonitor
                 new RamUsageMonitor(),
                 new AsteroidMonitor(),
                 new OnlinePlayersMonitor(_ipstackEndpoints),
-                new FactionConcealmentMonitor(_config),
+                new FactionGridMonitor(_config),
             });
 
             Task.Factory

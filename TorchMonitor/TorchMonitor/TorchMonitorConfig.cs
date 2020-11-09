@@ -4,15 +4,15 @@ using TorchMonitor.Ipstack;
 
 namespace TorchMonitor
 {
-    public sealed class TorchMonitorConfig : FactionConcealmentMonitor.IConfig
+    public sealed class TorchMonitorConfig : FactionGridMonitor.IConfig
     {
-        [XmlElement("FactionConcealmentMonitor.CollectIntervalSecs")]
+        [XmlElement("FactionGridMonitor.CollectIntervalSecs")]
         public int CollectIntervalSecs { get; set; } = 20;
 
-        [XmlElement("FactionConcealmentMonitor.WriteIntervalSecs")]
+        [XmlElement("FactionGridMonitor.WriteIntervalSecs")]
         public int WriteIntervalSecs { get; set; } = 10;
 
-        [XmlElement("FactionConcealmentMonitor.FactionTag")]
+        [XmlElement("FactionGridMonitor.FactionTag")]
         public string FactionTag { get; set; } = "MME";
 
         [XmlElement("IpstackApiKey")]
