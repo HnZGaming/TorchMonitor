@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 
-namespace TorchMonitor.Business
+namespace Intervals
 {
     public sealed class IntervalRunner : IDisposable
     {

@@ -2,17 +2,18 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using InfluxDb;
+using Intervals;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
 using Sandbox.Game.GameSystems.Conveyors;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
-using InfluxDb;
 using TorchUtils;
 using VRage.Game.Entity;
 
-namespace TorchMonitor.Business.Monitors
+namespace TorchMonitor.Monitors
 {
     public class GridMonitor : IIntervalListener
     {

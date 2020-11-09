@@ -1,8 +1,9 @@
 ﻿using System.Linq;
-using Sandbox.Game.Entities;
 using InfluxDb;
+using Intervals;
+using Sandbox.Game.Entities;
 
-namespace TorchMonitor.Business.Monitors
+namespace TorchMonitor.Monitors
 {
     public class FloatingObjectsMonitor : IIntervalListener
     {

@@ -4,15 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using InfluxDb;
+using Intervals;
+using Ipstack;
 using NLog;
 using Sandbox.Game.World;
 using Torch;
-using InfluxDb;
-using TorchMonitor.Ipstack;
 using TorchUtils;
 using VRage.GameServices;
 
-namespace TorchMonitor.Business.Monitors
+namespace TorchMonitor.Monitors
 {
     public sealed partial class OnlinePlayersMonitor : IIntervalListener
     {

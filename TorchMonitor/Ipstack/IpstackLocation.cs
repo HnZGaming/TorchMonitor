@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace TorchMonitor.Ipstack
+namespace Ipstack
 {
     // https://ipstack.com/quickstart
     public sealed class IpstackLocation

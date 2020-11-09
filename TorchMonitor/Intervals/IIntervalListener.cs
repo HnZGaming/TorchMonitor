@@ -1,4 +1,4 @@
-﻿namespace TorchMonitor.Business
+﻿namespace Intervals
 {
     public interface IIntervalListener
     {

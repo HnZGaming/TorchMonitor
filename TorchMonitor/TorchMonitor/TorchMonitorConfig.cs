@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
-using TorchMonitor.Business.Monitors;
-using TorchMonitor.Ipstack;
+using Ipstack;
+using TorchMonitor.Monitors;
 
 namespace TorchMonitor
 {

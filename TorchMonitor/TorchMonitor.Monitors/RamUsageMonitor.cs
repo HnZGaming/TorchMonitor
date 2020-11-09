@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using InfluxDb;
+using Intervals;
 
-namespace TorchMonitor.Business.Monitors
+namespace TorchMonitor.Monitors
 {
     public class RamUsageMonitor : IIntervalListener
     {

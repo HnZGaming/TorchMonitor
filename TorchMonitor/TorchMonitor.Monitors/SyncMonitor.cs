@@ -1,8 +1,9 @@
 ﻿using System.Linq;
-using Sandbox.Game.Multiplayer;
 using InfluxDb;
+using Intervals;
+using Sandbox.Game.Multiplayer;
 
-namespace TorchMonitor.Business.Monitors
+namespace TorchMonitor.Monitors
 {
     public class SyncMonitor : IIntervalListener
     {

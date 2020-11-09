@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Intervals;
+using Ipstack;
 using NLog;
 using Torch;
 using Torch.API;
-using TorchMonitor.Business;
-using TorchMonitor.Business.Monitors;
-using TorchMonitor.Ipstack;
+using TorchMonitor.Monitors;
 using TorchUtils;
 
 namespace TorchMonitor
@@ -62,12 +62,6 @@ namespace TorchMonitor
         void OnGameUnloading()
         {
             _intervalRunner.Dispose();
-        }
-
-        public IDisposable RunListener(IIntervalListener listener)
-        {
-            _intervalRunner.AddListener(listener);
-            return new ActionDisposable(() => _intervalRunner.RemoveListener(listener));
         }
     }
 }

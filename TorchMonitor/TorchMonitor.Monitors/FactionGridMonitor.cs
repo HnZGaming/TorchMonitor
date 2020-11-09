@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using InfluxDb;
+using Intervals;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
-using InfluxDb;
 using TorchUtils;
 
-namespace TorchMonitor.Business.Monitors
+namespace TorchMonitor.Monitors
 {
     public sealed class FactionGridMonitor : IIntervalListener
     {

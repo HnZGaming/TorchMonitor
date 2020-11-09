@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TorchMonitor.Business.Monitors
+namespace TorchMonitor.Monitors
 {
     public sealed partial class OnlinePlayersMonitor
     {
