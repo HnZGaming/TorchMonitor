@@ -1,39 +1,12 @@
-﻿TorchMonitor
+TorchMonitor
 ===
 
-A Torch plugin to collect and send game data to an InfluxDB database. 
+Example use of [TorchInfluxDb plugin](https://github.com/HnZGaming/TorchInfluxDb).
 
-Example dashboard (if still alive): http://play.se.hnz.asia:3000/d/9UUUl7pGk/hnz-gaalsien
-
-Note that this plugin won't set up the database/dashboard. It just sends data to a specified endpoint URL of an InfluxDB instance.
-The example above uses a self-hosted Grafana instance that fetches data from the InfluxDB instance.
-
-Note that this plugin is in a preview state. It may take some effort to set it up.
-
-Prerequisites
----
-
-You need following things in order to run this plugin.
-
-- Our fork of Torch (embeds InfluxDB). https://github.com/HnZGaming/Torch
-- Our post-build packaging program (unless you have your own). https://github.com/HnZGaming/TorchPluginPackager
-
-How to Use
----
-
-1. Run Torch once and you'll see a config file generated in the root folder.
-2. Set your InfluxDB instance's IP/port and whatever blank in the config.
-3. Create tables in InfluxDB according to the plugin code.
-3. Restart Torch.
-4. See game data flowing into the database.
-
-"Premade" Monitors
----
-
-Following monitors come with the plugin.
+Following monitors come with this plugin.
 
 - `AsteroidMonitor`. Counts the number of voxel bodies.
-- `FactionConcealmentMonitor`. Counts the number of total/active blocks/grids per faction.
+- `FactionGridMonitor`. Counts the number of total/active blocks/grids per faction.
 - `FloatingObjectsMonitor`. Counts the number of "floating objects" in the game's term.
 - `GridMonitor`. Measures a lot of things around each grid and faction. Probably the most useful of all.
 - `PlayerCountMonitor`. Counts the number of online players.
@@ -41,39 +14,59 @@ Following monitors come with the plugin.
 - `RamUsageMonitor`. Measures the RAM usage of the program.
 - `SyncMonitor`. Measures the simspeed.
 
-Note that you need to create tables in your InfluxDB according to the code in these classes.
+Follow [the official instruction](https://grafana.com/docs/grafana/latest/datasources/influxdb) to map these monitors to a [Grafana dashboard](https://grafana.com).
 
-Extension
+Making New Monitors
 ---
 
-The plugin goes through a list of "listeners" every second:
+Feel free to fork this repo and make your own monitors in the existing architecture.
 
-    public interface IIntervalListener
+Implement `Intervals.IIntervalListener`:
+
+```C#
+public interface IIntervalListener
+{
+    void OnInterval(int intervalsSinceStart);
+}
+```
+
+Implement the monitor's logic in `OnInterval()`:
+
+```C#
+public void OnInterval(int intervalsSinceStart)
+{
+    // Do work every 20 seconds
+    if (intervalsSinceStart % 20 != 0) return;
+
+    ...
+    
+    // Write to the database
+    InfluxDbPointFactory
+        .Measurement("my_measurement")
+        .Tag("my_tag", myTagValue)
+        .Field("my_field", myFieldValue)
+        .Write();
+}
+```
+
+Register to `TorchMonitorPlugin`:
+
+```C#
+void OnGameLoaded()
+{
+    _intervalRunner.AddListeners(new IIntervalListener[]
     {
-        void OnInterval(int intervalsSinceStart);
-    }
-
-Monitors should implement this interface and override the interval with their own frequency:
-
-    public void OnInterval(int intervalsSinceStart)
-    {
-        if (intervalsSinceStart % 20 != 0) return;
-        
-        // work every 20 seconds
         ...
-    }
+        new YourMonitor(),
+        ...
+    });
+    
+    ...
+```
 
-The interval time is mostly reliable as each implementation is run in parallel. 
-The plugin will print a warning if any implementation spends more than 1 second during an interval.
-
-Frame of reference: iterating over every block in 1000 grids often takes 200 to 300 milliseconds.
+See bundled monitors for a coding example.
 
 Contribution
 ---
 
-Please fork the repo and make your own monitors. There's a lot unexplored in the game. Please share your monitors with the community by PR.
-
-License
----
-
-MIT but please follow InfluxDB's license first.
+PR with your monitors is always welcome.
