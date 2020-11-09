@@ -14,6 +14,8 @@ Following monitors come with this plugin.
 - `RamUsageMonitor`. Measures the RAM usage of the program.
 - `SyncMonitor`. Measures the simspeed.
 
+[Example dashboard](http://play.se.hnz.asia:3000/d/9UUUl7pGk/hnz-gaalsien?orgId=1&refresh=30s) (if still alive).
+
 Follow [the official instruction](https://grafana.com/docs/grafana/latest/datasources/influxdb) to map these monitors to a [Grafana dashboard](https://grafana.com).
 
 Making New Monitors
