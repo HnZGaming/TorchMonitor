@@ -49,7 +49,7 @@ namespace TorchMonitor
                 new GridMonitor(),
                 new FloatingObjectsMonitor(),
                 new RamUsageMonitor(),
-                new AsteroidMonitor(),
+                new VoxelMonitor(),
                 new OnlinePlayersMonitor(_ipstackEndpoints),
                 new FactionGridMonitor(_config.Data),
             });
