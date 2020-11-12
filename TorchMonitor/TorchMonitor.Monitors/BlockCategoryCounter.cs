@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using TorchUtils;
 
 namespace TorchMonitor.Monitors
 {
-    public sealed partial class GridMonitor
+    public sealed class BlockCategoryCounter
     {
         static readonly Type[] _functionalBlockCategory =
         {
@@ -44,24 +46,36 @@ namespace TorchMonitor.Monitors
             typeof(IMyShipToolBase),
         };
 
-        static void CountCategories(object block, IDictionary<string, int> counts)
+        readonly Dictionary<string, int> _counts;
+
+        public BlockCategoryCounter()
         {
-            IncrementIfOfAny(block, counts, _functionalBlockCategory, "functional");
-            IncrementIfOfAny(block, counts, _conveyorCategory, "conveyor");
-            IncrementIfOfAny(block, counts, _sorterCategory, "conveyor_sorter");
-            IncrementIfOfAny(block, counts, _subpartCategory, "subpart");
-            IncrementIfOfAny(block, counts, _pbCategory, "pb");
-            IncrementIfOfAny(block, counts, _productionBlockCategory, "production");
-            IncrementIfOfAny(block, counts, _shipToolCategory, "ship_tool");
+            _counts = new Dictionary<string, int>();
         }
 
-        static void IncrementIfOfAny(object block, IDictionary<string, int> counts, IEnumerable<Type> category, string name)
+        public bool Any() => _counts.Any();
+
+        public IEnumerable<KeyValuePair<string, int>> Counts => _counts;
+
+        // ReSharper disable once SuggestBaseTypeForParameter
+        public void Count(MyCubeBlock block)
+        {
+            Count(block, _functionalBlockCategory, "functional");
+            Count(block, _conveyorCategory, "conveyor");
+            Count(block, _sorterCategory, "conveyor_sorter");
+            Count(block, _subpartCategory, "subpart");
+            Count(block, _pbCategory, "pb");
+            Count(block, _productionBlockCategory, "production");
+            Count(block, _shipToolCategory, "ship_tool");
+        }
+
+        void Count(object block, IEnumerable<Type> category, string name)
         {
             foreach (var type in category)
             {
                 if (type.IsInstanceOfType(block))
                 {
-                    counts.Increment(name);
+                    _counts.Increment(name);
                     return;
                 }
             }

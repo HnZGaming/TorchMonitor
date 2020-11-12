@@ -50,7 +50,8 @@ namespace TorchMonitor
                 new FloatingObjectsMonitor(),
                 new RamUsageMonitor(),
                 new VoxelMonitor(),
-                new OnlinePlayersMonitor(_ipstackEndpoints),
+                new OnlinePlayersMonitor(),
+                new GeoLocationMonitor(_ipstackEndpoints, _config.Data), 
                 new FactionGridMonitor(_config.Data),
             });
 
@@ -63,6 +64,7 @@ namespace TorchMonitor
         void OnGameUnloading()
         {
             _intervalRunner.Dispose();
+            _ipstackEndpoints.Dispose();
         }
     }
 }

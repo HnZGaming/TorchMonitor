@@ -6,7 +6,11 @@ using TorchMonitor.Monitors;
 
 namespace TorchMonitor
 {
-    public sealed class TorchMonitorConfig : ViewModel, FactionGridMonitor.IConfig, IIpstackConfig
+    public sealed class TorchMonitorConfig :
+        ViewModel,
+        FactionGridMonitor.IConfig,
+        IpstackEndpoints.IConfig,
+        GeoLocationMonitor.IConfig
     {
         int _collectIntervalSecs = 20;
         int _writeIntervalSecs = 10;
@@ -51,5 +55,7 @@ namespace TorchMonitor
             property = value;
             OnPropertyChanged();
         }
+
+        bool GeoLocationMonitor.IConfig.Enabled => !string.IsNullOrEmpty(ApiKey);
     }
 }

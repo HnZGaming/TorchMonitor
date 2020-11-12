@@ -10,12 +10,17 @@ namespace Ipstack
     // https://ipstack.com/quickstart
     public sealed class IpstackEndpoints : IDisposable
     {
+        public interface IConfig
+        {
+            string ApiKey { get; }
+        }
+        
         const string Base = "http://api.ipstack.com";
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IIpstackConfig _config;
+        readonly IConfig _config;
         readonly HttpClient _httpClient;
 
-        public IpstackEndpoints(IIpstackConfig config)
+        public IpstackEndpoints(IConfig config)
         {
             _config = config;
             _httpClient = new HttpClient();

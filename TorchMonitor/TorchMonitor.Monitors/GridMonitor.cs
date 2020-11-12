@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using InfluxDb;
 using Intervals;
-using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
@@ -12,10 +11,8 @@ using TorchUtils;
 
 namespace TorchMonitor.Monitors
 {
-    public sealed partial class GridMonitor : IIntervalListener
+    public sealed class GridMonitor : IIntervalListener
     {
-        static readonly Logger Log = LogManager.GetCurrentClassLogger();
-
         int? _lastGroupCount;
         int? _lastBlockCount;
 
@@ -42,6 +39,8 @@ namespace TorchMonitor.Monitors
                 var blockCountDelta = (blockCount - _lastBlockCount) ?? 0;
                 _lastBlockCount = blockCount;
 
+                var activeBlockCount = activeGroups.SelectMany(g => g).Sum(g => g.BlocksCount);
+
                 var totalPcu = allGroups.SelectMany(g => g).Sum(g => g.BlocksPCU);
                 var activePcu = activeGroups.SelectMany(g => g).Sum(g => g.BlocksPCU);
 
@@ -49,6 +48,7 @@ namespace TorchMonitor.Monitors
                     .Measurement("construction_all")
                     .Field("total_grid_count", groupCount)
                     .Field("total_block_count", blockCount)
+                    .Field("active_block_count", activeBlockCount)
                     .Field("total_pcu", totalPcu)
                     .Field("active_grid_count", activeGroups.Length)
                     .Field("active_pcu", activePcu)
@@ -73,7 +73,7 @@ namespace TorchMonitor.Monitors
                 factionMemberCounts.Increment(factionTag);
             }
 
-            var allBlockCategoryCounts = new Dictionary<string, int>();
+            var allBlockCategoryCounts = new BlockCategoryCounter();
 
             // active grids
             Parallel.ForEach(activeGroups, activeGroup =>
@@ -99,7 +99,7 @@ namespace TorchMonitor.Monitors
                     .Field("block_count", activeGroup.Sum(g => g.BlocksCount))
                     .Write();
 
-                var blockCategoryCounts = new Dictionary<string, int>();
+                var blockCategoryCounts = new BlockCategoryCounter();
                 foreach (var grid in activeGroup)
                 foreach (var slimBlock in grid.CubeBlocks)
                 {
@@ -113,8 +113,8 @@ namespace TorchMonitor.Monitors
                         if (!functionalBlock.Enabled) continue;
                     }
 
-                    CountCategories(block, blockCategoryCounts);
-                    CountCategories(block, allBlockCategoryCounts);
+                    allBlockCategoryCounts.Count(block);
+                    blockCategoryCounts.Count(block);
                 }
 
                 if (blockCategoryCounts.Any())
@@ -125,7 +125,7 @@ namespace TorchMonitor.Monitors
                         .Tag("faction_tag", factionTag)
                         .Field("faction_member_count", factionMemberCount);
 
-                    foreach (var (categoryName, count) in blockCategoryCounts)
+                    foreach (var (categoryName, count) in blockCategoryCounts.Counts)
                     {
                         blockCategoryCountsPoint.Field(categoryName, count);
                     }
@@ -139,7 +139,7 @@ namespace TorchMonitor.Monitors
                 var allBlockCategoryCountPoint = InfluxDbPointFactory
                     .Measurement("block_category_count_all_active_grids");
 
-                foreach (var (categoryName, count) in allBlockCategoryCounts)
+                foreach (var (categoryName, count) in allBlockCategoryCounts.Counts)
                 {
                     allBlockCategoryCountPoint.Field(categoryName, count);
                 }
