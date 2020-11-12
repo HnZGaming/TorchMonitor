@@ -157,7 +157,6 @@
         <Compile Include="TorchMonitor.Monitors\GeoLocationMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\BlockCategoryCounter.cs" />
         <Compile Include="TorchMonitor.Monitors\VoxelMonitor.cs" />
-        <Compile Include="TorchMonitor.Monitors\FactionGridMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\FloatingObjectsMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\GridMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\OnlinePlayersMonitor.cs" />

@@ -51,8 +51,7 @@ namespace TorchMonitor
                 new RamUsageMonitor(),
                 new VoxelMonitor(),
                 new OnlinePlayersMonitor(),
-                new GeoLocationMonitor(_ipstackEndpoints, _config.Data), 
-                new FactionGridMonitor(_config.Data),
+                new GeoLocationMonitor(_ipstackEndpoints, _config.Data),
             });
 
             ThreadPool.QueueUserWorkItem(_ =>
