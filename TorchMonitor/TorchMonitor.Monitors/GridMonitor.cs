@@ -13,8 +13,15 @@ namespace TorchMonitor.Monitors
 {
     public sealed class GridMonitor : IIntervalListener
     {
+        readonly NameConflictSolver _nameConflictSolver;
+
         int? _lastGroupCount;
         int? _lastBlockCount;
+
+        public GridMonitor()
+        {
+            _nameConflictSolver = new NameConflictSolver();
+        }
 
         public void OnInterval(int intervalsSinceStart)
         {
@@ -81,7 +88,7 @@ namespace TorchMonitor.Monitors
                 var biggestGrid = activeGroup.GetBiggestGrid();
                 if (biggestGrid?.Closed ?? true) return;
 
-                var groupName = biggestGrid.DisplayName;
+                var groupName = _nameConflictSolver.GetSafeName(biggestGrid.DisplayName, biggestGrid.EntityId);
 
                 var factionTag = biggestGrid.BigOwners
                     .Select(o => MySession.Static.Factions.TryGetPlayerFaction(o))

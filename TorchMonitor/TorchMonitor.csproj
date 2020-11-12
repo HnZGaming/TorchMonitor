@@ -156,6 +156,7 @@
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="TorchMonitor.Monitors\GeoLocationMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\BlockCategoryCounter.cs" />
+        <Compile Include="TorchMonitor.Monitors\NameConflictSolver.cs" />
         <Compile Include="TorchMonitor.Monitors\VoxelMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\FloatingObjectsMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\GridMonitor.cs" />

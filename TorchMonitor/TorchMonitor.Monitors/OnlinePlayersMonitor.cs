@@ -9,6 +9,13 @@ namespace TorchMonitor.Monitors
 {
     public sealed class OnlinePlayersMonitor : IIntervalListener
     {
+        readonly NameConflictSolver _nameConflictSolver;
+
+        public OnlinePlayersMonitor()
+        {
+            _nameConflictSolver = new NameConflictSolver();
+        }
+        
         public void OnInterval(int intervalsSinceStart)
         {
             if (intervalsSinceStart % 10 != 0) return;
