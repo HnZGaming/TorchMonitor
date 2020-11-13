@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using TorchUtils;
 
 namespace TorchMonitor.Monitors
 {
@@ -11,15 +13,18 @@ namespace TorchMonitor.Monitors
             _self = new Dictionary<string, HashSet<long>>();
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public string GetSafeName(string name, long id)
         {
-            var ids = GetIdSetOfName(name);
+            name.ThrowIfNullOrEmpty(nameof(name));
+            var ids = GetIdsByName(name);
             ids.Add(id);
 
             return ids.Count == 1 ? name : $"{name} ({id})";
         }
 
-        ISet<long> GetIdSetOfName(string name)
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        ISet<long> GetIdsByName(string name)
         {
             if (!_self.TryGetValue(name, out var ids))
             {
