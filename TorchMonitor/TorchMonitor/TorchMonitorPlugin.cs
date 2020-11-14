@@ -14,17 +14,13 @@ namespace TorchMonitor
     public class TorchMonitorPlugin : TorchPluginBase, IWpfPlugin
     {
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IntervalRunner _intervalRunner;
 
         Persistent<TorchMonitorConfig> _config;
         UserControl _userControl;
 
+        IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
-
-        public TorchMonitorPlugin()
-        {
-            _intervalRunner = new IntervalRunner(1);
-        }
+        bool _started;
 
         public override void Init(ITorchBase torch)
         {
@@ -36,7 +32,7 @@ namespace TorchMonitor
             _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
 
             _ipstackEndpoints = new IpstackEndpoints(_config.Data);
-            
+
             Log.Info("Initialized plugin");
         }
 
@@ -47,12 +43,26 @@ namespace TorchMonitor
 
         void OnGameLoaded()
         {
+            Start();
+        }
+
+        public bool Start()
+        {
+            if (_started)
+            {
+                Log.Warn("Aborted starting a process; already started");
+                return false;
+            }
+
+            _started = true;
+
+            _intervalRunner = new IntervalRunner(_config.Data, 1);
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
-                new SyncMonitor(),
-                new GridMonitor(),
-                new FloatingObjectsMonitor(),
-                new RamUsageMonitor(),
+                new SyncMonitor(_config.Data),
+                new GridMonitor(_config.Data),
+                new FloatingObjectsMonitor(_config.Data),
+                new RamUsageMonitor(_config.Data),
                 new VoxelMonitor(),
                 new OnlinePlayersMonitor(),
                 new GeoLocationMonitor(_ipstackEndpoints, _config.Data),
@@ -61,13 +71,28 @@ namespace TorchMonitor
             Task.Factory
                 .StartNew(_intervalRunner.RunIntervals)
                 .Forget(Log);
-            
+
             Log.Info("Started interval");
+            return true;
+        }
+
+        public bool Stop()
+        {
+            if (_intervalRunner == null)
+            {
+                Log.Warn("Aborted stopping a process; not running");
+                return false;
+            }
+
+            _intervalRunner?.Dispose();
+            _intervalRunner = null;
+            _started = false;
+            return true;
         }
 
         void OnGameUnloading()
         {
-            _intervalRunner.Dispose();
+            Stop();
             _ipstackEndpoints.Dispose();
         }
     }

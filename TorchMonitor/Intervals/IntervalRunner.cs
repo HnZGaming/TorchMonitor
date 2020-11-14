@@ -8,13 +8,20 @@ namespace Intervals
 {
     public sealed class IntervalRunner : IDisposable
     {
+        public interface IConfig
+        {
+            bool EnableLog { get; }
+        }
+
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
+        readonly IConfig _config;
         readonly int _intervalSeconds;
         readonly List<IIntervalListener> _listeners;
         readonly CancellationTokenSource _canceller;
 
-        public IntervalRunner(int intervalSeconds)
+        public IntervalRunner(IConfig config, int intervalSeconds)
         {
+            _config = config;
             _intervalSeconds = intervalSeconds;
             _listeners = new List<IIntervalListener>();
             _canceller = new CancellationTokenSource();
@@ -26,27 +33,11 @@ namespace Intervals
             _canceller.Dispose();
         }
 
-        public void AddListener(IIntervalListener listener)
-        {
-            lock (_listeners)
-            {
-                _listeners.Add(listener);
-            }
-        }
-
         public void AddListeners(IEnumerable<IIntervalListener> listeners)
         {
             lock (_listeners)
             {
                 _listeners.AddRange(listeners);
-            }
-        }
-
-        public void RemoveListener(IIntervalListener listener)
-        {
-            lock (_listeners)
-            {
-                _listeners.Remove(listener);
             }
         }
 
@@ -61,11 +52,14 @@ namespace Intervals
                 var intervalsSinceStartCopy = intervalSinceStart; // closure
                 lock (_listeners)
                 {
-                    Parallel.ForEach(_listeners, monitor =>
+                    Parallel.ForEach(_listeners, listener =>
                     {
                         try
                         {
-                            monitor.OnInterval(intervalsSinceStartCopy);
+                            listener.OnInterval(intervalsSinceStartCopy);
+
+                            var time = (DateTime.UtcNow - startTime).TotalMilliseconds;
+                            LogInfo($"listener finished interval: \"{listener.GetType().Name}\", {time:0.000}ms");
                         }
                         catch (Exception e)
                         {
@@ -85,6 +79,16 @@ namespace Intervals
 
                 var waitTime = _intervalSeconds - spentTime;
                 _canceller.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(waitTime));
+
+                LogInfo($"interval: {intervalSinceStart}s");
+            }
+        }
+
+        void LogInfo(string msg)
+        {
+            if (_config.EnableLog)
+            {
+                Log.Info(msg);
             }
         }
     }

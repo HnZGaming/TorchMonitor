@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using InfluxDb;
 using Intervals;
+using NLog;
 using Sandbox.Game.Multiplayer;
 
 namespace TorchMonitor.Monitors
@@ -9,10 +10,13 @@ namespace TorchMonitor.Monitors
     {
         const int IntervalsPerWrite = 5;
 
+        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly float[] _simSpeeds;
+        readonly IMonitorGeneralConfig _config;
 
-        public SyncMonitor()
+        public SyncMonitor(IMonitorGeneralConfig config)
         {
+            _config = config;
             _simSpeeds = new float[IntervalsPerWrite];
         }
 
@@ -21,7 +25,7 @@ namespace TorchMonitor.Monitors
             var simSpeed = Sync.ServerSimulationRatio;
             _simSpeeds[intervalsSinceStart % _simSpeeds.Length] = simSpeed;
 
-            if (intervalsSinceStart < 120) return; // the first some minutes are noisy
+            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % IntervalsPerWrite != 0) return;
 
             var maxSimSpeed = _simSpeeds.Max();

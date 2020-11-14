@@ -13,19 +13,21 @@ namespace TorchMonitor.Monitors
 {
     public sealed class GridMonitor : IIntervalListener
     {
+        readonly IMonitorGeneralConfig _config;
         readonly NameConflictSolver _nameConflictSolver;
 
         int? _lastGroupCount;
         int? _lastBlockCount;
 
-        public GridMonitor()
+        public GridMonitor(IMonitorGeneralConfig config)
         {
+            _config = config;
             _nameConflictSolver = new NameConflictSolver();
         }
 
         public void OnInterval(int intervalsSinceStart)
         {
-            if (intervalsSinceStart < 120) return;
+            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % 60 != 0) return;
 
             var allGroups = MyCubeGridGroups.Static.Logical.Groups
