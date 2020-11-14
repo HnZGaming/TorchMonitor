@@ -46,12 +46,12 @@ namespace TorchMonitor
             Start();
         }
 
-        public void Start()
+        public bool Start()
         {
             if (_started)
             {
                 Log.Warn("Aborted starting a process; already started");
-                return;
+                return false;
             }
 
             _started = true;
@@ -73,13 +73,21 @@ namespace TorchMonitor
                 .Forget(Log);
 
             Log.Info("Started interval");
+            return true;
         }
 
-        public void Stop()
+        public bool Stop()
         {
+            if (_intervalRunner == null)
+            {
+                Log.Warn("Aborted stopping a process; not running");
+                return false;
+            }
+
             _intervalRunner?.Dispose();
             _intervalRunner = null;
             _started = false;
+            return true;
         }
 
         void OnGameUnloading()

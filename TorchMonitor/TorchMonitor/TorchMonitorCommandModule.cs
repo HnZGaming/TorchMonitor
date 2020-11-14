@@ -1,4 +1,5 @@
 ﻿using Torch.Commands;
+using VRageMath;
 
 namespace TorchMonitor
 {
@@ -14,13 +15,27 @@ namespace TorchMonitor
         [Command(Cmd_Start, "Starts monitoring.")]
         public void StartMonitoring()
         {
-            Plugin.Start();
+            if (Plugin.Start())
+            {
+                Context.Respond("Started monitoring");
+            }
+            else
+            {
+                Context.Respond("Failed starting monitoring", Color.Yellow);
+            }
         }
 
         [Command(Cmd_Stop, "Stops monitoring.")]
         public void StopMonitoring()
         {
-            Plugin.Stop();
+            if (Plugin.Stop())
+            {
+                Context.Respond("Stopped monitoring");
+            }
+            else
+            {
+                Context.Respond("Failed stopping monitoring", Color.Yellow);
+            }
         }
     }
 }
