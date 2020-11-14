@@ -33,27 +33,11 @@ namespace Intervals
             _canceller.Dispose();
         }
 
-        public void AddListener(IIntervalListener listener)
-        {
-            lock (_listeners)
-            {
-                _listeners.Add(listener);
-            }
-        }
-
         public void AddListeners(IEnumerable<IIntervalListener> listeners)
         {
             lock (_listeners)
             {
                 _listeners.AddRange(listeners);
-            }
-        }
-
-        public void RemoveListener(IIntervalListener listener)
-        {
-            lock (_listeners)
-            {
-                _listeners.Remove(listener);
             }
         }
 
@@ -73,6 +57,9 @@ namespace Intervals
                         try
                         {
                             listener.OnInterval(intervalsSinceStartCopy);
+
+                            var time = (DateTime.UtcNow - startTime).TotalMilliseconds;
+                            LogInfo($"listener finished interval: \"{listener.GetType().Name}\", {time:0.000}ms");
                         }
                         catch (Exception e)
                         {
@@ -93,10 +80,15 @@ namespace Intervals
                 var waitTime = _intervalSeconds - spentTime;
                 _canceller.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(waitTime));
 
-                if (_config.EnableLog)
-                {
-                    Log.Info($"interval: {intervalSinceStart}s");
-                }
+                LogInfo($"interval: {intervalSinceStart}s");
+            }
+        }
+
+        void LogInfo(string msg)
+        {
+            if (_config.EnableLog)
+            {
+                Log.Info(msg);
             }
         }
     }

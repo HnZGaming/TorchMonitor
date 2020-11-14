@@ -38,8 +38,6 @@ namespace TorchMonitor.Monitors
                 .Field("sim_speed_min", minSimSpeed)
                 .Field("sim_speed_max", maxSimSpeed)
                 .Write();
-
-            Log.Info("server_sync wrote");
         }
     }
 }
