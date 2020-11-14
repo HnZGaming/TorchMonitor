@@ -1,7 +1,8 @@
-﻿using System.Threading;
+﻿using System.Threading.Tasks;
 using System.Windows.Controls;
 using Intervals;
 using Ipstack;
+using NLog;
 using Torch;
 using Torch.API;
 using Torch.API.Plugins;
@@ -12,6 +13,7 @@ namespace TorchMonitor
 {
     public class TorchMonitorPlugin : TorchPluginBase, IWpfPlugin
     {
+        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly IntervalRunner _intervalRunner;
 
         Persistent<TorchMonitorConfig> _config;
@@ -34,6 +36,8 @@ namespace TorchMonitor
             _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
 
             _ipstackEndpoints = new IpstackEndpoints(_config.Data);
+            
+            Log.Info("Initialized plugin");
         }
 
         public UserControl GetControl()
@@ -54,10 +58,11 @@ namespace TorchMonitor
                 new GeoLocationMonitor(_ipstackEndpoints, _config.Data),
             });
 
-            ThreadPool.QueueUserWorkItem(_ =>
-            {
-                _intervalRunner.RunIntervals();
-            });
+            Task.Factory
+                .StartNew(_intervalRunner.RunIntervals)
+                .Forget(Log);
+            
+            Log.Info("Started interval");
         }
 
         void OnGameUnloading()

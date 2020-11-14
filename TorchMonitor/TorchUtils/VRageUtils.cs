@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Sandbox;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
+using VRage.Game.Entity;
 using VRage.Game.ModAPI;
+using VRage.Game.ObjectBuilders.Components;
 using VRage.ModAPI;
 
 namespace TorchUtils
@@ -66,6 +69,30 @@ namespace TorchUtils
             }
 
             return myCubeGrid;
+        }
+
+        public static bool OwnsAll(this IMyPlayer player, IEnumerable<MyCubeGrid> grids)
+        {
+            // ownership check
+            foreach (var grid in grids)
+            {
+                if (!grid.BigOwners.Any()) continue;
+                if (!grid.BigOwners.Contains(player.IdentityId)) return false;
+            }
+
+            return true;
+        }
+
+        public static bool IsAllActionAllowed(this MyEntity self)
+        {
+            return MySessionComponentSafeZones.IsActionAllowed(self, MySafeZoneAction.All);
+        }
+
+        public static ulong GetAdminSteamId()
+        {
+            if (!MySandboxGame.ConfigDedicated.Administrators.TryGetFirst(out var adminSteamIdStr)) return 0L;
+            if (!ulong.TryParse(adminSteamIdStr, out var adminSteamId)) return 0L;
+            return adminSteamId;
         }
     }
 }

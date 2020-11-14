@@ -169,6 +169,7 @@
         <Compile Include="TorchUtils\ActionDisposable.cs" />
         <Compile Include="TorchUtils\CollectionUtils.cs" />
         <Compile Include="TorchUtils\CommandErrorResponseGenerator.cs" />
+        <Compile Include="TorchUtils\CommandOption.cs" />
         <Compile Include="TorchUtils\DebugUtils.cs" />
         <Compile Include="TorchUtils\DisposableCollection.cs" />
         <Compile Include="TorchUtils\DisposableUtils.cs" />
@@ -178,6 +179,7 @@
         <Compile Include="TorchUtils\ThreadSafeThrottle.cs" />
         <Compile Include="TorchUtils\TorchPluginUtils.cs" />
         <Compile Include="TorchUtils\TorchUtils.cs" />
+        <Compile Include="TorchUtils\ViewUtils.cs" />
         <Compile Include="TorchUtils\VRageUtils.cs" />
         <Compile Include="TorchUtils\XmlUtils.cs" />
     </ItemGroup>
