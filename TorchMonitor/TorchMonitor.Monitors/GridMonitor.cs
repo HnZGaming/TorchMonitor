@@ -113,7 +113,8 @@ namespace TorchMonitor.Monitors
                 foreach (var slimBlock in grid.CubeBlocks)
                 {
                     var block = slimBlock?.FatBlock;
-                    if (block?.Closed ?? true) continue;
+                    if (block == null) continue;
+                    if (block.Closed) continue;
 
                     // skip disabled (turned off) blocks
                     if (block is IMyFunctionalBlock functionalBlock)
