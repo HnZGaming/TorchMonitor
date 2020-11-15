@@ -94,5 +94,16 @@ namespace TorchUtils
             if (!ulong.TryParse(adminSteamIdStr, out var adminSteamId)) return 0L;
             return adminSteamId;
         }
+
+        public static bool IsAdminGrid(this IMyCubeGrid self)
+        {
+            foreach (var bigOwnerId in self.BigOwners)
+            {
+                var faction = MySession.Static.Factions.GetPlayerFaction(bigOwnerId);
+                if (faction?.Tag != "ADM") return false;
+            }
+
+            return true;
+        }
     }
 }

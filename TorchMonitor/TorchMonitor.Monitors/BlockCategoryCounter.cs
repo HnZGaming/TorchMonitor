@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Sandbox.Game.Entities;
@@ -46,11 +47,11 @@ namespace TorchMonitor.Monitors
             typeof(IMyShipToolBase),
         };
 
-        readonly Dictionary<string, int> _counts;
+        readonly ConcurrentDictionary<string, int> _counts;
 
         public BlockCategoryCounter()
         {
-            _counts = new Dictionary<string, int>();
+            _counts = new ConcurrentDictionary<string, int>();
         }
 
         public bool Any() => _counts.Any();
