@@ -9,7 +9,7 @@ using Intervals;
 using Ipstack;
 using NLog;
 using Sandbox.Game.World;
-using Torch;
+using TorchMonitor.Reflections;
 using TorchUtils;
 using VRage.GameServices;
 
@@ -85,10 +85,14 @@ namespace TorchMonitor.Monitors
 
         async Task LoadIpLocation(ulong steamId)
         {
+            // Get the public IP of the Steam player
             var state = new MyP2PSessionState();
-            MySteamServiceWrapper.Static.Peer2Peer.GetSessionState(steamId, ref state);
+            var networking = MySteamGameService_Networking.Value;
+            networking.Peer2Peer.GetSessionState(steamId, ref state);
             var ip = BitConverter.GetBytes(state.RemoteIP).Reverse().ToArray();
             var ipAddress = new IPAddress(ip).ToString();
+
+            // Get the location
             var location = await _ipstackEndpoints.GetLocationOrNullAsync(ipAddress);
             _ipLocations[steamId] = location ?? new IpstackLocation();
         }
