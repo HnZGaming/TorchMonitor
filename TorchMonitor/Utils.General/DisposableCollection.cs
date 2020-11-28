@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace TorchUtils
+namespace Utils.General
 {
     internal sealed class DisposableCollection : IDisposable, ICollection<IDisposable>
     {

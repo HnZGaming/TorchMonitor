@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using InfluxDb;
 using Intervals;
-using NLog;
 using Sandbox.Game.Multiplayer;
 
 namespace TorchMonitor.Monitors
@@ -10,7 +9,6 @@ namespace TorchMonitor.Monitors
     {
         const int IntervalsPerWrite = 5;
 
-        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly float[] _simSpeeds;
         readonly IMonitorGeneralConfig _config;
 

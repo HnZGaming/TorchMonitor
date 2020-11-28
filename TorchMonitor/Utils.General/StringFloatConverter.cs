@@ -1,4 +1,4 @@
-﻿namespace TorchUtils
+﻿namespace Utils.General
 {
     internal class StringFloatConverter : AbsJsonConverter<float>
     {

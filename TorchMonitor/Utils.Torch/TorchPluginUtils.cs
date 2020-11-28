@@ -2,12 +2,12 @@
 using System.IO;
 using System.Windows.Controls;
 using Torch;
-using Torch.Session;
 using Torch.API.Managers;
 using Torch.API.Session;
+using Torch.Session;
 using Torch.Views;
 
-namespace TorchUtils
+namespace Utils.Torch
 {
     internal static class TorchPluginUtils
     {

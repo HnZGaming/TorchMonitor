@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using NLog;
 
-namespace TorchUtils
+namespace Utils.General
 {
     internal static class TaskUtils
     {

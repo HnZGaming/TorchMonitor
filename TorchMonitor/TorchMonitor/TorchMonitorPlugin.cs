@@ -7,7 +7,9 @@ using Torch;
 using Torch.API;
 using Torch.API.Plugins;
 using TorchMonitor.Monitors;
-using TorchUtils;
+using TorchMonitor.Monitors.Profilers;
+using Utils.General;
+using Utils.Torch;
 
 namespace TorchMonitor
 {
@@ -66,6 +68,12 @@ namespace TorchMonitor
                 new VoxelMonitor(),
                 new OnlinePlayersMonitor(),
                 new GeoLocationMonitor(_ipstackEndpoints, _config.Data),
+                new BlockTypeProfilerMonitor(_config.Data),
+                new FactionProfilerMonitor(_config.Data),
+                new GameLoopProfilerMonitor(_config.Data),
+                new GridProfilerMonitor(_config.Data),
+                new MethodNameProfilerMonitor(_config.Data),
+                new SessionComponentsProfilerMonitor(_config.Data),
             });
 
             Task.Factory

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Windows;
 
-namespace TorchUtils
+namespace Utils.Torch
 {
     internal static class ViewUtils
     {
