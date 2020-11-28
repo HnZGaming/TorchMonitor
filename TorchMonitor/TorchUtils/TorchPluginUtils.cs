@@ -4,7 +4,6 @@ using System.Windows.Controls;
 using Torch;
 using Torch.Session;
 using Torch.API.Managers;
-using Torch.API.Plugins;
 using Torch.API.Session;
 using Torch.Views;
 

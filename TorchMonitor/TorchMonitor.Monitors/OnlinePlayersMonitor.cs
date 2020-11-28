@@ -15,7 +15,7 @@ namespace TorchMonitor.Monitors
         {
             _nameConflictSolver = new NameConflictSolver();
         }
-        
+
         public void OnInterval(int intervalsSinceStart)
         {
             if (intervalsSinceStart % 10 != 0) return;
@@ -40,10 +40,13 @@ namespace TorchMonitor.Monitors
                 var factionTag = faction?.Tag ?? "<single>";
                 factions.Increment(factionTag);
 
+                var playerName = onlinePlayer.DisplayName;
+                playerName = _nameConflictSolver.GetSafeName(playerName, onlinePlayer.PlayerId());
+
                 InfluxDbPointFactory
                     .Measurement("players_players")
                     .Tag("steam_id", $"{steamId}")
-                    .Tag("player_name", onlinePlayer.DisplayName)
+                    .Tag("player_name", playerName)
                     .Tag("faction_tag", factionTag)
                     .Field("is_online", 1)
                     .Write();

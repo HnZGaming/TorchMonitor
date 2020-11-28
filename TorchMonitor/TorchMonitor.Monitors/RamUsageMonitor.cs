@@ -7,16 +7,18 @@ namespace TorchMonitor.Monitors
 {
     public class RamUsageMonitor : IIntervalListener
     {
+        readonly IMonitorGeneralConfig _config;
         readonly Process _process;
 
-        public RamUsageMonitor()
+        public RamUsageMonitor(IMonitorGeneralConfig config)
         {
+            _config = config;
             _process = Process.GetCurrentProcess();
         }
 
         public void OnInterval(int intervalsSinceStart)
         {
-            if (intervalsSinceStart < 20) return;
+            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % 10 != 0) return;
 
             const long GB = 1024 * 1024 * 1024;
