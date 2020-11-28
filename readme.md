@@ -1,29 +1,43 @@
-TorchMonitor
-===
+#TorchMonitor
 
-Example use of [TorchInfluxDb plugin](https://github.com/HnZGaming/TorchInfluxDb).
+Sends game data over to an InfluxDB instance for server health monitoring.
+
+## Example Usage
+
+Combine with a graphical dashboard (such as [Grafana](https://grafana.com/)) to monitor your game.
+
+[See an example dashboard](http://play.se.hnz.asia:3000/d/9UUUl7pGk/hnz-gaalsien?orgId=1&refresh=30s) (if still alive).
+
+## Dependencies
+
+* [TorchInfluxDb plugin](https://github.com/HnZGaming/TorchInfluxDb) to write to the database.
+* [Profiler plugin](https://github.com/TorchAPI/Profiler) to collect some game data.
+
+## Installation
+
+Grab the latest release binary (and dependency above) and put it in your Torch.
+
+## Default Monitors
 
 Following monitors come with this plugin.
 
-- `AsteroidMonitor`. Counts the number of voxel bodies.
-- `FactionGridMonitor`. Counts the number of total/active blocks/grids per faction.
-- `FloatingObjectsMonitor`. Counts the number of "floating objects" in the game's term.
-- `GridMonitor`. Measures a lot of things around each grid and faction. Probably the most useful of all.
-- `PlayerCountMonitor`. Counts the number of online players.
-- `PlayersMonitor`. Measures the current online time of each player and faction.
-- `RamUsageMonitor`. Measures the RAM usage of the program.
-- `SyncMonitor`. Measures the simspeed.
+- `FloatingObjectsMonitor` counts the number of "floating objects".
+- `GeoLocationMonitor` monitors which countries your players are from.
+- `GridMonitor` monitors a lot of things about grids and factions.
+- `OnlinePlayersMonitor` counts the number of online players and their factions.
+- `RamUsageMonitor` monitors the total RAM usage of Torch and SE program.
+- `SyncMonitor` monitors the simulation speed.
+- `VoxelMonitor` counts the number of voxel bodies (planets and asteroids).
 
-[Example dashboard](http://play.se.hnz.asia:3000/d/9UUUl7pGk/hnz-gaalsien?orgId=1&refresh=30s) (if still alive).
+## Custom Monitors
 
-Follow [the official instruction](https://grafana.com/docs/grafana/latest/datasources/influxdb) to map these monitors to a [Grafana dashboard](https://grafana.com).
+Fork this repo and make your own monitors.
 
-Making New Monitors
----
+### Architecture
 
-Feel free to fork this repo and make your own monitors in the existing architecture.
+This plugin circulates every registered monitor every second in a loop.
 
-Implement `Intervals.IIntervalListener`:
+`Intervals.IIntervalListener` is the interface to work with the plugin's loop:
 
 ```C#
 public interface IIntervalListener
@@ -32,7 +46,28 @@ public interface IIntervalListener
 }
 ```
 
-Implement the monitor's logic in `OnInterval()`:
+`intervalsSinceStart` increments every loop.
+
+Once you've implemented the interface, register it to the plugin's loop by editing `TorchMonitorPlugin.cs`:
+
+```C#
+void OnGameLoaded()
+{
+    _intervalRunner.AddListeners(new IIntervalListener[]
+    {
+        ...
+        new YourMonitor(), // Add this line
+        ...
+    });
+    
+    ...
+```
+
+This will make the plugin invoke your monitor during the game.
+
+### Implementation
+
+Implement your main logic in `IIntervalListener.OnInterval()`:
 
 ```C#
 public void OnInterval(int intervalsSinceStart)
@@ -51,24 +86,8 @@ public void OnInterval(int intervalsSinceStart)
 }
 ```
 
-Register to `TorchMonitorPlugin`:
+See default monitors for code examples.
 
-```C#
-void OnGameLoaded()
-{
-    _intervalRunner.AddListeners(new IIntervalListener[]
-    {
-        ...
-        new YourMonitor(),
-        ...
-    });
-    
-    ...
-```
+## Contribution
 
-See bundled monitors for a coding example.
-
-Contribution
----
-
-PR with your monitors is always welcome.
+Feel free to send us your PR or participate in our discussion in Torch Discord.
