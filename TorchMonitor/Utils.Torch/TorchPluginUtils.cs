@@ -25,7 +25,12 @@ namespace Utils.Torch
 
         public static string MakeConfigFilePath(this TorchPluginBase self)
         {
-            return Path.Combine(self.StoragePath, $"{self.GetType().Name}.cfg");
+            return self.MakeFilePath($"{self.GetType().Name}.cfg");
+        }
+
+        public static string MakeFilePath(this TorchPluginBase self, string relativeFilePath)
+        {
+            return Path.Combine(self.StoragePath, relativeFilePath);
         }
 
         public static void ListenOnGameLoaded(this TorchPluginBase self, Action f)

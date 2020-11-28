@@ -22,18 +22,23 @@ namespace TorchMonitor
 
         IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
+        StupidJsonDb _localDb;
         bool _started;
 
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
-            this.ListenOnGameLoaded(() => OnGameLoaded());
-            this.ListenOnGameUnloading(() => OnGameUnloading());
+            this.ListenOnGameLoaded(OnGameLoaded);
+            this.ListenOnGameUnloading(OnGameUnloading);
 
             var configFilePath = this.MakeConfigFilePath();
             _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
 
             _ipstackEndpoints = new IpstackEndpoints(_config.Data);
+
+            var localDbFilePath = this.MakeFilePath($"{nameof(TorchMonitor)}.json");
+            _localDb = new StupidJsonDb(localDbFilePath);
+            _localDb.Initialize();
 
             Log.Info("Initialized plugin");
         }
@@ -62,11 +67,11 @@ namespace TorchMonitor
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
                 new SyncMonitor(_config.Data),
-                new GridMonitor(_config.Data),
+                new GridMonitor(_config.Data, new NameConflictSolver()),
                 new FloatingObjectsMonitor(_config.Data),
                 new RamUsageMonitor(_config.Data),
                 new VoxelMonitor(),
-                new OnlinePlayersMonitor(),
+                new OnlinePlayersMonitor(new NameConflictSolver(), _localDb),
                 new GeoLocationMonitor(_ipstackEndpoints, _config.Data),
                 new BlockTypeProfilerMonitor(_config.Data),
                 new FactionProfilerMonitor(_config.Data),
