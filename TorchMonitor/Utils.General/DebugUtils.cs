@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TorchUtils
+namespace Utils.General
 {
     internal static class DebugUtils
     {
@@ -17,6 +17,16 @@ namespace TorchUtils
             {
                 throw new NullReferenceException(msg);
             }
+        }
+
+        public static T OrThrow<T>(this T self, string msg)
+        {
+            if (self == null)
+            {
+                throw new NullReferenceException(msg);
+            }
+
+            return self;
         }
 
         public static void ThrowIfNullOrEmpty(this string self, string msg)

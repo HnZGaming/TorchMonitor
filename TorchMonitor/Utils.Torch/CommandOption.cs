@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace TorchUtils
+namespace Utils.Torch
 {
     internal class CommandOption
     {

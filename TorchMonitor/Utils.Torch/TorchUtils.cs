@@ -4,7 +4,7 @@ using Torch.API.Managers;
 using Torch.Commands;
 using VRage.Game.ModAPI;
 
-namespace TorchUtils
+namespace Utils.Torch
 {
     internal static class TorchUtils
     {

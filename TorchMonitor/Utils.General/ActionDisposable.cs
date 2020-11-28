@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TorchUtils
+namespace Utils.General
 {
     internal sealed class ActionDisposable : IDisposable
     {

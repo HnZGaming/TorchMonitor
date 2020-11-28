@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
 
-namespace TorchUtils
+namespace Utils.Torch
 {
     internal static class XmlUtils
     {

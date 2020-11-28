@@ -3,7 +3,8 @@ using System.Linq;
 using InfluxDb;
 using Intervals;
 using Sandbox.Game.World;
-using TorchUtils;
+using Utils.General;
+using Utils.Torch;
 
 namespace TorchMonitor.Monitors
 {

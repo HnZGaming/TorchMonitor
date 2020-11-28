@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
 
-namespace TorchUtils
+namespace Utils.General
 {
     internal static class CollectionUtils
     {
@@ -49,6 +52,37 @@ namespace TorchUtils
         {
             self.TryGetValue(key, out var value);
             self[key] = value + 1;
+        }
+
+        public static string ToStringTable(this DataTable self)
+        {
+            var builder = new StringBuilder();
+
+            foreach (DataColumn column in self.Columns)
+            {
+                builder.Append(column.ColumnName);
+                builder.Append("  ");
+            }
+
+            builder.AppendLine();
+
+            foreach (DataRow row in self.Rows)
+            {
+                foreach (var rowItem in row.ItemArray)
+                {
+                    builder.Append(rowItem);
+                    builder.Append("  ");
+                }
+
+                builder.AppendLine();
+            }
+
+            return builder.ToString();
+        }
+
+        public static T[] AsArray<T>(this IEnumerable<T> self)
+        {
+            return self is T[] selfArray ? selfArray : self.ToArray();
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NLog;
-using TorchUtils;
+using Utils.General;
 
 namespace Ipstack
 {
