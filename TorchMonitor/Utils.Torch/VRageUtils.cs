@@ -3,12 +3,13 @@ using System.Linq;
 using Sandbox;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
+using Utils.General;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Game.ObjectBuilders.Components;
 using VRage.ModAPI;
 
-namespace TorchUtils
+namespace Utils.Torch
 {
     internal static class VRageUtils
     {

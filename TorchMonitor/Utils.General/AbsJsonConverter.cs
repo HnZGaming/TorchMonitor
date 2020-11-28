@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace TorchUtils
+namespace Utils.General
 {
 	internal abstract class AbsJsonConverter<T> : JsonConverter
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TorchUtils
+namespace Utils.General
 {
     internal static class DisposableUtils
     {

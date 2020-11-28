@@ -7,7 +7,8 @@ using Torch;
 using Torch.API;
 using Torch.API.Plugins;
 using TorchMonitor.Monitors;
-using TorchUtils;
+using Utils.General;
+using Utils.Torch;
 
 namespace TorchMonitor
 {

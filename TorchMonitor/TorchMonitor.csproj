@@ -168,23 +168,23 @@
         <Compile Include="TorchMonitor\TorchMonitorCommandModule.cs" />
         <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorPlugin.cs" />
-        <Compile Include="TorchUtils\AbsJsonConverter.cs" />
-        <Compile Include="TorchUtils\ActionDisposable.cs" />
-        <Compile Include="TorchUtils\CollectionUtils.cs" />
-        <Compile Include="TorchUtils\CommandErrorResponseGenerator.cs" />
-        <Compile Include="TorchUtils\CommandOption.cs" />
-        <Compile Include="TorchUtils\DebugUtils.cs" />
-        <Compile Include="TorchUtils\DisposableCollection.cs" />
-        <Compile Include="TorchUtils\DisposableUtils.cs" />
-        <Compile Include="TorchUtils\StringFloatConverter.cs" />
-        <Compile Include="TorchUtils\TaskUtils.cs" />
-        <Compile Include="TorchUtils\ThreadPoolTask.cs" />
-        <Compile Include="TorchUtils\ThreadSafeThrottle.cs" />
-        <Compile Include="TorchUtils\TorchPluginUtils.cs" />
-        <Compile Include="TorchUtils\TorchUtils.cs" />
-        <Compile Include="TorchUtils\ViewUtils.cs" />
-        <Compile Include="TorchUtils\VRageUtils.cs" />
-        <Compile Include="TorchUtils\XmlUtils.cs" />
+        <Compile Include="Utils.General\AbsJsonConverter.cs" />
+        <Compile Include="Utils.General\ActionDisposable.cs" />
+        <Compile Include="Utils.General\CollectionUtils.cs" />
+        <Compile Include="Utils.General\DebugUtils.cs" />
+        <Compile Include="Utils.General\DisposableCollection.cs" />
+        <Compile Include="Utils.General\DisposableUtils.cs" />
+        <Compile Include="Utils.General\StringFloatConverter.cs" />
+        <Compile Include="Utils.General\TaskUtils.cs" />
+        <Compile Include="Utils.General\ThreadPoolTask.cs" />
+        <Compile Include="Utils.General\ThreadSafeThrottle.cs" />
+        <Compile Include="Utils.Torch\CommandErrorResponseGenerator.cs" />
+        <Compile Include="Utils.Torch\CommandOption.cs" />
+        <Compile Include="Utils.Torch\TorchPluginUtils.cs" />
+        <Compile Include="Utils.Torch\TorchUtils.cs" />
+        <Compile Include="Utils.Torch\ViewUtils.cs" />
+        <Compile Include="Utils.Torch\VRageUtils.cs" />
+        <Compile Include="Utils.Torch\XmlUtils.cs" />
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="JsonSubTypes" Version="1.6.0" />

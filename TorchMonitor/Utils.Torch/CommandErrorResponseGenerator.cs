@@ -4,7 +4,7 @@ using NLog;
 using Torch.Commands;
 using VRageMath;
 
-namespace TorchUtils
+namespace Utils.Torch
 {
     internal static class CommandErrorResponseGenerator
     {

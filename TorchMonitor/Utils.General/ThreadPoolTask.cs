@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace TorchUtils
+namespace Utils.General
 {
     internal sealed class ThreadPoolTask : INotifyCompletion
     {

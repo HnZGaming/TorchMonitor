@@ -10,7 +10,8 @@ using Ipstack;
 using NLog;
 using Sandbox.Game.World;
 using TorchMonitor.Reflections;
-using TorchUtils;
+using Utils.General;
+using Utils.Torch;
 using VRage.GameServices;
 
 namespace TorchMonitor.Monitors

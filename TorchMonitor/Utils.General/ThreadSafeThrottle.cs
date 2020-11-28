@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace TorchUtils
+namespace Utils.General
 {
     /// <summary>
     /// Holds onto queued elements until the next time interval.
