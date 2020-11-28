@@ -31,6 +31,9 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="Profiler">
+          <HintPath>..\..\Profiler\bin\x64\Release\Profiler.dll</HintPath>
+        </Reference>
         <Reference Include="TorchInfluxDb">
             <HintPath>$(SolutionDir)\..\TorchInfluxDb\TorchInfluxDb\bin\Release\TorchInfluxDb.dll</HintPath>
         </Reference>
@@ -168,12 +171,20 @@
         <Compile Include="TorchMonitor\TorchMonitorCommandModule.cs" />
         <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorPlugin.cs" />
+        <Compile Include="TorchMonitor.Monitors.Profilers\BlockTypeProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.Monitors.Profilers\FactionProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.Monitors.Profilers\GameLoopProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.Monitors.Profilers\GridProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.Monitors.Profilers\MethodNameProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.Monitors.Profilers\SessionComponentsProfilerMonitor.cs" />
         <Compile Include="Utils.General\AbsJsonConverter.cs" />
         <Compile Include="Utils.General\ActionDisposable.cs" />
         <Compile Include="Utils.General\CollectionUtils.cs" />
         <Compile Include="Utils.General\DebugUtils.cs" />
         <Compile Include="Utils.General\DisposableCollection.cs" />
         <Compile Include="Utils.General\DisposableUtils.cs" />
+        <Compile Include="Utils.General\ObjectPool.cs" />
+        <Compile Include="Utils.General\ReflectionUtils.cs" />
         <Compile Include="Utils.General\StringFloatConverter.cs" />
         <Compile Include="Utils.General\TaskUtils.cs" />
         <Compile Include="Utils.General\ThreadPoolTask.cs" />
