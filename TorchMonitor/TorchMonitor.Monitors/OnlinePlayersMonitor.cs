@@ -8,25 +8,27 @@ using Utils.Torch;
 
 namespace TorchMonitor.Monitors
 {
-    public sealed class OnlinePlayersMonitor : IIntervalListener
+    public sealed partial class OnlinePlayersMonitor : IIntervalListener
     {
+        const int IntervalSecs = 10;
         readonly NameConflictSolver _nameConflictSolver;
+        readonly StupidJsonDb _localDb;
 
-        public OnlinePlayersMonitor()
+        public OnlinePlayersMonitor(
+            NameConflictSolver nameConflictSolver,
+            StupidJsonDb localDb)
         {
-            _nameConflictSolver = new NameConflictSolver();
+            _nameConflictSolver = nameConflictSolver;
+            _localDb = localDb;
         }
 
         public void OnInterval(int intervalsSinceStart)
         {
-            if (intervalsSinceStart % 10 != 0) return;
+            if (intervalsSinceStart % IntervalSecs != 0) return;
 
             var onlinePlayers = MySession.Static.Players.GetOnlinePlayers().ToArray();
-
-            InfluxDbPointFactory
-                .Measurement("server")
-                .Field("players", onlinePlayers.Length)
-                .Write();
+            var steamIds = onlinePlayers.Select(p => p.SteamId());
+            var onlineTimes = GetOnlineTimeFromDb(steamIds);
 
             var factionList = MySession.Static.Factions.Factions.Values;
             var factions = new Dictionary<string, int>();
@@ -36,6 +38,10 @@ namespace TorchMonitor.Monitors
 
                 var steamId = onlinePlayer.SteamId();
                 var playerId = onlinePlayer.PlayerId();
+
+                onlineTimes.TryGetValue(steamId, out var onlineTime);
+                onlineTime += (double) IntervalSecs / 60;
+                onlineTimes[steamId] = onlineTime;
 
                 var faction = factionList.FirstOrDefault(f => f.Members.ContainsKey(playerId));
                 var factionTag = faction?.Tag ?? "<single>";
@@ -50,8 +56,11 @@ namespace TorchMonitor.Monitors
                     .Tag("player_name", playerName)
                     .Tag("faction_tag", factionTag)
                     .Field("is_online", 1)
+                    .Field("online_time", onlineTime)
                     .Write();
             }
+
+            SetOnlineTimeToDb(onlineTimes);
 
             foreach (var (factionTag, onlineMemberCount) in factions)
             {
@@ -61,6 +70,48 @@ namespace TorchMonitor.Monitors
                     .Field("online_member_count", onlineMemberCount)
                     .Write();
             }
+
+            var totalOnlineTime = onlineTimes.Select(t => t.Value).Sum();
+
+            InfluxDbPointFactory
+                .Measurement("server")
+                .Field("players", onlinePlayers.Length)
+                .Field("online_time", totalOnlineTime)
+                .Write();
+        }
+
+        IDictionary<ulong, double> GetOnlineTimeFromDb(IEnumerable<ulong> steamIds)
+        {
+            var dic = new Dictionary<ulong, double>();
+
+            var steamIdSet = new HashSet<ulong>(steamIds);
+            var rows = _localDb.Query<PlayerOnlineTime>("online_times");
+            foreach (var row in rows)
+            {
+                var steamId = ulong.Parse(row.SteamId);
+                if (steamIdSet.Contains(steamId))
+                {
+                    dic[steamId] = row.OnlineTime;
+                }
+            }
+
+            return dic;
+        }
+
+        void SetOnlineTimeToDb(IDictionary<ulong, double> onlineTimes)
+        {
+            var values = new List<PlayerOnlineTime>();
+            foreach (var (steamId, onlineTime) in onlineTimes)
+            {
+                values.Add(new PlayerOnlineTime
+                {
+                    SteamId = $"{steamId}",
+                    OnlineTime = onlineTime,
+                });
+            }
+
+            _localDb.Insert("online_times", values);
+            _localDb.Write();
         }
     }
 }
