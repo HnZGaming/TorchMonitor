@@ -21,23 +21,15 @@ namespace TorchMonitor
         bool _resetLocalDatabaseOnNextStart;
 
         [XmlElement("Enabled")]
-        [Display(Name = "Enabled")]
+        [Display(Order = 0, Name = "Enabled")]
         public bool Enabled
         {
             get => _enabled;
             set => SetProperty(ref _enabled, value);
         }
 
-        [XmlElement("Ipstack.ApiKey")]
-        [Display(Name = "Ipstack.ApiKey")]
-        public string ApiKey
-        {
-            get => _ipstackApiKey;
-            set => SetProperty(ref _ipstackApiKey, value);
-        }
-
         [XmlElement("IntervalRunner.EnableLog")]
-        [Display(Name = "Enable Interval Logging")]
+        [Display(Order = 1, Name = "Enable Interval Logging")]
         public bool EnableLog
         {
             get => _enableIntervalLog;
@@ -45,15 +37,23 @@ namespace TorchMonitor
         }
 
         [XmlElement("FirstIgnoredSeconds")]
-        [Display(Name = "First Ignored Seconds")]
+        [Display(Order = 2, Name = "First Ignored Seconds")]
         public int FirstIgnoredSeconds
         {
             get => _firstIgnoredSeconds;
             set => SetProperty(ref _firstIgnoredSeconds, value);
         }
 
+        [XmlElement("Ipstack.ApiKey")]
+        [Display(Order = 3, Name = "Ipstack.ApiKey")]
+        public string ApiKey
+        {
+            get => _ipstackApiKey;
+            set => SetProperty(ref _ipstackApiKey, value);
+        }
+
         [XmlElement("ResetLocalDatabaseOnNextStart")]
-        [Display(Name = "Reset Local Database On Next Start")]
+        [Display(Order = 4, Name = "Reset Local Database On Next Start")]
         public bool ResetLocalDatabaseOnNextStart
         {
             get => _resetLocalDatabaseOnNextStart;
