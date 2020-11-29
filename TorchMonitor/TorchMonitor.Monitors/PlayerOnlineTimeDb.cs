@@ -38,7 +38,7 @@ namespace TorchMonitor.Monitors
             _dbCopy = new Dictionary<ulong, double>();
         }
 
-        public void Fetch()
+        public void Read()
         {
             _dbCopy.Clear();
 
@@ -50,14 +50,14 @@ namespace TorchMonitor.Monitors
             }
         }
 
-        public void IncrementOnlineTime(ulong steamId, double addedOnlineTime)
+        public void IncrementPlayerOnlineTime(ulong steamId, double addedOnlineTime)
         {
             _dbCopy.TryGetValue(steamId, out var onlineTime);
             onlineTime += addedOnlineTime;
             _dbCopy[steamId] = onlineTime;
         }
 
-        public double GetOnlineTime(ulong steamId)
+        public double GetPlayerOnlineTime(ulong steamId)
         {
             _dbCopy.TryGetValue(steamId, out var onlineTime);
             return onlineTime;
@@ -68,7 +68,7 @@ namespace TorchMonitor.Monitors
             return _dbCopy.Sum(p => p.Value);
         }
 
-        public void Apply()
+        public void Write()
         {
             var docs = new List<Document>();
             foreach (var (steamId, onlineTime) in _dbCopy)

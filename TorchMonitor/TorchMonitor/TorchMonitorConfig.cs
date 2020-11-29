@@ -14,10 +14,19 @@ namespace TorchMonitor
         IntervalRunner.IConfig,
         IMonitorGeneralConfig
     {
+        bool _enabled = true;
         string _ipstackApiKey = "apikey";
         bool _enableIntervalLog;
         int _firstIgnoredSeconds = 120;
         bool _resetLocalDatabaseOnNextStart;
+
+        [XmlElement("Enabled")]
+        [Display(Name = "Enabled")]
+        public bool Enabled
+        {
+            get => _enabled;
+            set => SetProperty(ref _enabled, value);
+        }
 
         [XmlElement("Ipstack.ApiKey")]
         [Display(Name = "Ipstack.ApiKey")]

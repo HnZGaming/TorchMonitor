@@ -23,9 +23,13 @@ namespace TorchMonitor
         IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
         StupidDb _localDb;
-        bool _started;
 
         TorchMonitorConfig Config => _config.Data;
+
+        public bool Enabled
+        {
+            set => Config.Enabled = value;
+        }
 
         public override void Init(ITorchBase torch)
         {
@@ -51,31 +55,8 @@ namespace TorchMonitor
                 _localDb.Read();
             }
 
-            Log.Info("Initialized plugin");
-        }
-
-        public UserControl GetControl()
-        {
-            return _config.GetOrCreateUserControl(ref _userControl);
-        }
-
-        void OnGameLoaded()
-        {
-            Start();
-        }
-
-        public bool Start()
-        {
-            if (_started)
-            {
-                Log.Warn("Aborted starting a process; already started");
-                return false;
-            }
-
-            _started = true;
-
             var playerOnlineTimeDb = new PlayerOnlineTimeDb(_localDb);
-            playerOnlineTimeDb.Fetch();
+            playerOnlineTimeDb.Read();
 
             _intervalRunner = new IntervalRunner(Config, 1);
             _intervalRunner.AddListeners(new IIntervalListener[]
@@ -95,32 +76,29 @@ namespace TorchMonitor
                 new SessionComponentsProfilerMonitor(Config),
             });
 
+            Config.PropertyChanged += (sender, args) =>
+            {
+                _intervalRunner.Enabled = Config.Enabled;
+            };
+        }
+
+        public UserControl GetControl()
+        {
+            return _config.GetOrCreateUserControl(ref _userControl);
+        }
+
+        void OnGameLoaded()
+        {
             Task.Factory
                 .StartNew(_intervalRunner.RunIntervals)
                 .Forget(Log);
-
-            Log.Info("Started interval");
-            return true;
-        }
-
-        public bool Stop()
-        {
-            if (_intervalRunner == null)
-            {
-                Log.Warn("Aborted stopping a process; not running");
-                return false;
-            }
-
-            _intervalRunner?.Dispose();
-            _intervalRunner = null;
-            _started = false;
-            return true;
         }
 
         void OnGameUnloading()
         {
-            Stop();
-            _ipstackEndpoints.Dispose();
+            _config?.Dispose();
+            _intervalRunner?.Dispose();
+            _ipstackEndpoints?.Dispose();
         }
     }
 }

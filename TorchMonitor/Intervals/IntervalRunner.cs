@@ -27,6 +27,8 @@ namespace Intervals
             _canceller = new CancellationTokenSource();
         }
 
+        public bool Enabled { private get; set; }
+
         public void Dispose()
         {
             _canceller.Cancel();
@@ -47,6 +49,11 @@ namespace Intervals
 
             while (!_canceller.IsCancellationRequested)
             {
+                if (!Enabled)
+                {
+                    _canceller.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(1f));
+                }
+
                 var startTime = DateTime.UtcNow;
 
                 var intervalsSinceStartCopy = intervalSinceStart; // closure
