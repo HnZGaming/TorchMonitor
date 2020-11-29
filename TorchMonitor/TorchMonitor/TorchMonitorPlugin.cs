@@ -7,7 +7,7 @@ using Torch;
 using Torch.API;
 using Torch.API.Plugins;
 using TorchMonitor.Monitors;
-using TorchMonitor.Monitors.Profilers;
+using TorchMonitor.ProfilerMonitors;
 using Utils.General;
 using Utils.Torch;
 

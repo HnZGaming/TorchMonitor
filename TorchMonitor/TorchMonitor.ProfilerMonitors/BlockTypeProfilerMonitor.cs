@@ -5,9 +5,10 @@ using Intervals;
 using NLog;
 using Profiler.Basics;
 using Profiler.Core;
+using TorchMonitor.Monitors;
 using Utils.General;
 
-namespace TorchMonitor.Monitors.Profilers
+namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class BlockTypeProfilerMonitor : IIntervalListener
     {

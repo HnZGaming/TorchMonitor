@@ -5,10 +5,11 @@ using Intervals;
 using NLog;
 using Profiler.Basics;
 using Profiler.Core;
+using TorchMonitor.Monitors;
 using Utils.General;
 using VRage.Game.Components;
 
-namespace TorchMonitor.Monitors.Profilers
+namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class SessionComponentsProfilerMonitor : IIntervalListener
     {

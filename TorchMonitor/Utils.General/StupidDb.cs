@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 namespace Utils.General
 {
     /// <summary>
-    /// Stupid implementation of a single-file, JSON-document-based database.
+    /// Stupid implementation of a single-file, document-based database.
     /// A database file can contain multiple tables.
     /// A table can contain multiple rows of a single type.
     /// A row type can contain arbitrary data as long as supported by JSON format.
