@@ -52,6 +52,7 @@ namespace Intervals
                 if (!Enabled)
                 {
                     _canceller.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(1f));
+                    continue;
                 }
 
                 var startTime = DateTime.UtcNow;

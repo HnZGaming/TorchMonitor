@@ -80,6 +80,8 @@ namespace TorchMonitor
             {
                 _intervalRunner.Enabled = Config.Enabled;
             };
+
+            _intervalRunner.Enabled = Config.Enabled;
         }
 
         public UserControl GetControl()
