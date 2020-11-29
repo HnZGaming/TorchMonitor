@@ -22,8 +22,10 @@ namespace TorchMonitor
 
         IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
-        StupidJsonDb _localDb;
+        StupidDb _localDb;
         bool _started;
+
+        TorchMonitorConfig Config => _config.Data;
 
         public override void Init(ITorchBase torch)
         {
@@ -34,11 +36,20 @@ namespace TorchMonitor
             var configFilePath = this.MakeConfigFilePath();
             _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
 
-            _ipstackEndpoints = new IpstackEndpoints(_config.Data);
+            _ipstackEndpoints = new IpstackEndpoints(Config);
 
             var localDbFilePath = this.MakeFilePath($"{nameof(TorchMonitor)}.json");
-            _localDb = new StupidJsonDb(localDbFilePath);
-            _localDb.Initialize();
+            _localDb = new StupidDb(localDbFilePath);
+
+            if (Config.ResetLocalDatabaseOnNextStart)
+            {
+                _localDb.Reset();
+                Config.ResetLocalDatabaseOnNextStart = false;
+            }
+            else
+            {
+                _localDb.Read();
+            }
 
             Log.Info("Initialized plugin");
         }
@@ -63,22 +74,25 @@ namespace TorchMonitor
 
             _started = true;
 
-            _intervalRunner = new IntervalRunner(_config.Data, 1);
+            var playerOnlineTimeDb = new PlayerOnlineTimeDb(_localDb);
+            playerOnlineTimeDb.Fetch();
+
+            _intervalRunner = new IntervalRunner(Config, 1);
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
-                new SyncMonitor(_config.Data),
-                new GridMonitor(_config.Data, new NameConflictSolver()),
-                new FloatingObjectsMonitor(_config.Data),
-                new RamUsageMonitor(_config.Data),
+                new SyncMonitor(Config),
+                new GridMonitor(Config, new NameConflictSolver()),
+                new FloatingObjectsMonitor(Config),
+                new RamUsageMonitor(Config),
                 new VoxelMonitor(),
-                new OnlinePlayersMonitor(new NameConflictSolver(), _localDb),
-                new GeoLocationMonitor(_ipstackEndpoints, _config.Data),
-                new BlockTypeProfilerMonitor(_config.Data),
-                new FactionProfilerMonitor(_config.Data),
-                new GameLoopProfilerMonitor(_config.Data),
-                new GridProfilerMonitor(_config.Data),
-                new MethodNameProfilerMonitor(_config.Data),
-                new SessionComponentsProfilerMonitor(_config.Data),
+                new OnlinePlayersMonitor(new NameConflictSolver(), playerOnlineTimeDb),
+                new GeoLocationMonitor(_ipstackEndpoints, Config),
+                new BlockTypeProfilerMonitor(Config),
+                new FactionProfilerMonitor(Config),
+                new GameLoopProfilerMonitor(Config),
+                new GridProfilerMonitor(Config),
+                new MethodNameProfilerMonitor(Config),
+                new SessionComponentsProfilerMonitor(Config),
             });
 
             Task.Factory

@@ -161,7 +161,7 @@
         <Compile Include="TorchMonitor.Monitors\BlockCategoryCounter.cs" />
         <Compile Include="TorchMonitor.Monitors\IMonitorGeneralConfig.cs" />
         <Compile Include="TorchMonitor.Monitors\NameConflictSolver.cs" />
-        <Compile Include="TorchMonitor.Monitors\OnlinePlayersMonitor.Structs.cs" />
+        <Compile Include="TorchMonitor.Monitors\PlayerOnlineTimeDb.cs" />
         <Compile Include="TorchMonitor.Monitors\VoxelMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\FloatingObjectsMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\GridMonitor.cs" />
@@ -187,7 +187,7 @@
         <Compile Include="Utils.General\ObjectPool.cs" />
         <Compile Include="Utils.General\ReflectionUtils.cs" />
         <Compile Include="Utils.General\StringFloatConverter.cs" />
-        <Compile Include="Utils.General\StupidJsonDb.cs" />
+        <Compile Include="Utils.General\StupidDb.cs" />
         <Compile Include="Utils.General\TaskUtils.cs" />
         <Compile Include="Utils.General\ThreadPoolTask.cs" />
         <Compile Include="Utils.General\ThreadSafeThrottle.cs" />

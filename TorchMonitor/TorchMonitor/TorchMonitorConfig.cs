@@ -17,6 +17,7 @@ namespace TorchMonitor
         string _ipstackApiKey = "apikey";
         bool _enableIntervalLog;
         int _firstIgnoredSeconds = 120;
+        bool _resetLocalDatabaseOnNextStart;
 
         [XmlElement("Ipstack.ApiKey")]
         [Display(Name = "Ipstack.ApiKey")]
@@ -42,13 +43,23 @@ namespace TorchMonitor
             set => SetProperty(ref _firstIgnoredSeconds, value);
         }
 
+        [XmlElement("ResetLocalDatabaseOnNextStart")]
+        [Display(Name = "Reset Local Database On Next Start")]
+        public bool ResetLocalDatabaseOnNextStart
+        {
+            get => _resetLocalDatabaseOnNextStart;
+            set => SetProperty(ref _resetLocalDatabaseOnNextStart, value);
+        }
+
         bool GeoLocationMonitor.IConfig.Enabled => !string.IsNullOrEmpty(ApiKey);
 
-        // ReSharper disable once RedundantAssignment
         void SetProperty<T>(ref T property, T value)
         {
-            property = value;
-            OnPropertyChanged();
+            if (!property.Equals(value))
+            {
+                property = value;
+                OnPropertyChanged();
+            }
         }
     }
 }

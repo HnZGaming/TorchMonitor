@@ -84,5 +84,13 @@ namespace Utils.General
         {
             return self is T[] selfArray ? selfArray : self.ToArray();
         }
+
+        public static void AddRange<K, V>(this IDictionary<K, V> self, IReadOnlyDictionary<K, V> other)
+        {
+            foreach (var (k, v) in other)
+            {
+                self[k] = v;
+            }
+        }
     }
 }
