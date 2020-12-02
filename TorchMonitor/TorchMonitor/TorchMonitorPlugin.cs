@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
 using System.Windows.Controls;
 using Intervals;
 using Ipstack;
@@ -20,6 +20,7 @@ namespace TorchMonitor
         Persistent<TorchMonitorConfig> _config;
         UserControl _userControl;
 
+        CancellationTokenSource _canceller;
         IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
         StupidDb _localDb;
@@ -31,11 +32,18 @@ namespace TorchMonitor
             set => Config.Enabled = value;
         }
 
+        UserControl IWpfPlugin.GetControl()
+        {
+            return _config.GetOrCreateUserControl(ref _userControl);
+        }
+
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
             this.ListenOnGameLoaded(OnGameLoaded);
             this.ListenOnGameUnloading(OnGameUnloading);
+
+            _canceller = new CancellationTokenSource();
 
             var configFilePath = this.MakeConfigFilePath();
             _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
@@ -75,32 +83,21 @@ namespace TorchMonitor
                 new MethodNameProfilerMonitor(Config),
                 new SessionComponentsProfilerMonitor(Config),
             });
-
-            Config.PropertyChanged += (sender, args) =>
-            {
-                _intervalRunner.Enabled = Config.Enabled;
-            };
-
-            _intervalRunner.Enabled = Config.Enabled;
-        }
-
-        public UserControl GetControl()
-        {
-            return _config.GetOrCreateUserControl(ref _userControl);
         }
 
         void OnGameLoaded()
         {
-            Task.Factory
-                .StartNew(_intervalRunner.RunIntervals)
+            _canceller
+                .StartAsync(_intervalRunner.LoopIntervals)
                 .Forget(Log);
         }
 
         void OnGameUnloading()
         {
             _config?.Dispose();
-            _intervalRunner?.Dispose();
             _ipstackEndpoints?.Dispose();
+            _canceller?.Cancel();
+            _canceller?.Dispose();
         }
     }
 }
