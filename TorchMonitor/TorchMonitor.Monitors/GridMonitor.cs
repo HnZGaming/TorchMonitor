@@ -20,10 +20,12 @@ namespace TorchMonitor.Monitors
         int? _lastGroupCount;
         int? _lastBlockCount;
 
-        public GridMonitor(IMonitorGeneralConfig config)
+        public GridMonitor(
+            IMonitorGeneralConfig config,
+            NameConflictSolver nameConflictSolver)
         {
             _config = config;
-            _nameConflictSolver = new NameConflictSolver();
+            _nameConflictSolver = nameConflictSolver;
         }
 
         public void OnInterval(int intervalsSinceStart)

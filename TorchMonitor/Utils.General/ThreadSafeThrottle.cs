@@ -54,7 +54,7 @@ namespace Utils.General
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     Flush();
-                    cancellationToken.WaitHandle.WaitOne(_throttleInterval);
+                    cancellationToken.WaitHandle.WaitOneSafe(_throttleInterval);
                 }
             });
 

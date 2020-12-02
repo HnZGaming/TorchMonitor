@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using NLog;
 
 namespace Utils.General
@@ -16,9 +18,29 @@ namespace Utils.General
             });
         }
 
-        public static ThreadPoolTask MoveToThreadPool()
+        public static Task MoveToThreadPool()
         {
-            return new ThreadPoolTask();
+            var taskSource = new TaskCompletionSource<byte>();
+            ThreadPool.QueueUserWorkItem(_ => taskSource.SetResult(0));
+            return taskSource.Task;
+        }
+
+        public static Task StartAsync(this CancellationTokenSource self, Action<CancellationToken> f)
+        {
+            return Task.Factory.StartNew(() => f(self.Token));
+        }
+
+        public static bool WaitOneSafe(this WaitHandle self, TimeSpan timeSpan)
+        {
+            try
+            {
+                self.WaitOne(timeSpan);
+                return true;
+            }
+            catch (ObjectDisposedException)
+            {
+                return false;
+            }
         }
     }
 }

@@ -14,20 +14,22 @@ namespace TorchMonitor
         IntervalRunner.IConfig,
         IMonitorGeneralConfig
     {
+        bool _enabled = true;
         string _ipstackApiKey = "apikey";
         bool _enableIntervalLog;
         int _firstIgnoredSeconds = 120;
+        bool _resetLocalDatabaseOnNextStart;
 
-        [XmlElement("Ipstack.ApiKey")]
-        [Display(Name = "Ipstack.ApiKey")]
-        public string ApiKey
+        [XmlElement("Enabled")]
+        [Display(Order = 0, Name = "Enabled")]
+        public bool Enabled
         {
-            get => _ipstackApiKey;
-            set => SetProperty(ref _ipstackApiKey, value);
+            get => _enabled;
+            set => SetProperty(ref _enabled, value);
         }
 
         [XmlElement("IntervalRunner.EnableLog")]
-        [Display(Name = "Enable Interval Logging")]
+        [Display(Order = 1, Name = "Enable Interval Logging")]
         public bool EnableLog
         {
             get => _enableIntervalLog;
@@ -35,20 +37,38 @@ namespace TorchMonitor
         }
 
         [XmlElement("FirstIgnoredSeconds")]
-        [Display(Name = "First Ignored Seconds")]
+        [Display(Order = 2, Name = "First Ignored Seconds")]
         public int FirstIgnoredSeconds
         {
             get => _firstIgnoredSeconds;
             set => SetProperty(ref _firstIgnoredSeconds, value);
         }
 
+        [XmlElement("Ipstack.ApiKey")]
+        [Display(Order = 3, Name = "Ipstack.ApiKey")]
+        public string ApiKey
+        {
+            get => _ipstackApiKey;
+            set => SetProperty(ref _ipstackApiKey, value);
+        }
+
+        [XmlElement("ResetLocalDatabaseOnNextStart")]
+        [Display(Order = 4, Name = "Reset Local Database On Next Start")]
+        public bool ResetLocalDatabaseOnNextStart
+        {
+            get => _resetLocalDatabaseOnNextStart;
+            set => SetProperty(ref _resetLocalDatabaseOnNextStart, value);
+        }
+
         bool GeoLocationMonitor.IConfig.Enabled => !string.IsNullOrEmpty(ApiKey);
 
-        // ReSharper disable once RedundantAssignment
         void SetProperty<T>(ref T property, T value)
         {
-            property = value;
-            OnPropertyChanged();
+            if (!property.Equals(value))
+            {
+                property = value;
+                OnPropertyChanged();
+            }
         }
     }
 }

@@ -32,11 +32,13 @@
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Profiler">
-          <HintPath>..\..\Profiler\bin\x64\Release\Profiler.dll</HintPath>
+            <HintPath>$(SolutionDir)\extern\Profiler.dll</HintPath>
         </Reference>
         <Reference Include="TorchInfluxDb">
-            <HintPath>$(SolutionDir)\..\TorchInfluxDb\TorchInfluxDb\bin\Release\TorchInfluxDb.dll</HintPath>
+            <HintPath>$(SolutionDir)\extern\TorchInfluxDb.dll</HintPath>
         </Reference>
+    </ItemGroup>
+    <ItemGroup>
         <Reference Include="NLog">
             <HintPath>$(SolutionDir)\TorchBinaries\NLog.dll</HintPath>
         </Reference>
@@ -139,6 +141,8 @@
         <Reference Include="SpaceEngineers.ObjectBuilders.XmlSerializers">
             <HintPath>$(SolutionDir)\GameBinaries\SpaceEngineers.ObjectBuilders.XmlSerializers.dll</HintPath>
         </Reference>
+    </ItemGroup>
+    <ItemGroup>
         <Reference Include="WindowsBase" />
         <Reference Include="System.Core" />
         <Reference Include="System.Data" />
@@ -161,6 +165,7 @@
         <Compile Include="TorchMonitor.Monitors\BlockCategoryCounter.cs" />
         <Compile Include="TorchMonitor.Monitors\IMonitorGeneralConfig.cs" />
         <Compile Include="TorchMonitor.Monitors\NameConflictSolver.cs" />
+        <Compile Include="TorchMonitor.Monitors\PlayerOnlineTimeDb.cs" />
         <Compile Include="TorchMonitor.Monitors\VoxelMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\FloatingObjectsMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\GridMonitor.cs" />
@@ -171,26 +176,32 @@
         <Compile Include="TorchMonitor\TorchMonitorCommandModule.cs" />
         <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorPlugin.cs" />
-        <Compile Include="TorchMonitor.Monitors.Profilers\BlockTypeProfilerMonitor.cs" />
-        <Compile Include="TorchMonitor.Monitors.Profilers\FactionProfilerMonitor.cs" />
-        <Compile Include="TorchMonitor.Monitors.Profilers\GameLoopProfilerMonitor.cs" />
-        <Compile Include="TorchMonitor.Monitors.Profilers\GridProfilerMonitor.cs" />
-        <Compile Include="TorchMonitor.Monitors.Profilers\MethodNameProfilerMonitor.cs" />
-        <Compile Include="TorchMonitor.Monitors.Profilers\SessionComponentsProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\BlockTypeProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\FactionProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\GameLoopProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\GridProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\MethodNameProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\SessionComponentsProfilerMonitor.cs" />
         <Compile Include="Utils.General\AbsJsonConverter.cs" />
         <Compile Include="Utils.General\ActionDisposable.cs" />
+        <Compile Include="Utils.General\ActionQueue.cs" />
         <Compile Include="Utils.General\CollectionUtils.cs" />
         <Compile Include="Utils.General\DebugUtils.cs" />
+        <Compile Include="Utils.General\DeprecationObserver.cs" />
         <Compile Include="Utils.General\DisposableCollection.cs" />
         <Compile Include="Utils.General\DisposableUtils.cs" />
+        <Compile Include="Utils.General\LangUtils.cs" />
         <Compile Include="Utils.General\ObjectPool.cs" />
+        <Compile Include="Utils.General\PersistencyObserver.cs" />
         <Compile Include="Utils.General\ReflectionUtils.cs" />
         <Compile Include="Utils.General\StringFloatConverter.cs" />
+        <Compile Include="Utils.General\StupidDb.cs" />
         <Compile Include="Utils.General\TaskUtils.cs" />
         <Compile Include="Utils.General\ThreadPoolTask.cs" />
         <Compile Include="Utils.General\ThreadSafeThrottle.cs" />
         <Compile Include="Utils.Torch\CommandErrorResponseGenerator.cs" />
         <Compile Include="Utils.Torch\CommandOption.cs" />
+        <Compile Include="Utils.Torch\GameLoopObserver.cs" />
         <Compile Include="Utils.Torch\TorchPluginUtils.cs" />
         <Compile Include="Utils.Torch\TorchUtils.cs" />
         <Compile Include="Utils.Torch\ViewUtils.cs" />
@@ -198,15 +209,15 @@
         <Compile Include="Utils.Torch\XmlUtils.cs" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="JsonSubTypes" Version="1.6.0" />
-      <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-      <PackageReference Include="System.Buffers" Version="4.5.1" />
-      <PackageReference Include="System.IO" Version="4.3.0" />
-      <PackageReference Include="System.Runtime" Version="4.3.0" />
+        <PackageReference Include="JsonSubTypes" Version="1.6.0" />
+        <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+        <PackageReference Include="System.Buffers" Version="4.5.1" />
+        <PackageReference Include="System.IO" Version="4.3.0" />
+        <PackageReference Include="System.Runtime" Version="4.3.0" />
     </ItemGroup>
     <ItemGroup>
-      <Content Include="manifest.xml" />
-      <Content Include="postbuild.bat" />
+        <Content Include="manifest.xml" />
+        <Content Include="postbuild.bat" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -218,7 +229,7 @@
     -->
     <PropertyGroup>
         <PostBuildEvent>
-          [ -z "$NoDeploy" ] || $(ProjectDir)postbuild.bat $(ProjectName) $(SolutionDir)
+            [ -z "$NoDeploy" ] || $(ProjectDir)postbuild.bat $(ProjectName) $(SolutionDir)
         </PostBuildEvent>
     </PropertyGroup>
 

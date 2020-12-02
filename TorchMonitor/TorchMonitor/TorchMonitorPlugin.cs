@@ -7,7 +7,7 @@ using Torch;
 using Torch.API;
 using Torch.API.Plugins;
 using TorchMonitor.Monitors;
-using TorchMonitor.Monitors.Profilers;
+using TorchMonitor.ProfilerMonitors;
 using Utils.General;
 using Utils.Torch;
 
@@ -22,20 +22,66 @@ namespace TorchMonitor
 
         IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
-        bool _started;
+        StupidDb _localDb;
+
+        TorchMonitorConfig Config => _config.Data;
+
+        public bool Enabled
+        {
+            set => Config.Enabled = value;
+        }
 
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
-            this.ListenOnGameLoaded(() => OnGameLoaded());
-            this.ListenOnGameUnloading(() => OnGameUnloading());
+            this.ListenOnGameLoaded(OnGameLoaded);
+            this.ListenOnGameUnloading(OnGameUnloading);
 
             var configFilePath = this.MakeConfigFilePath();
             _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
 
-            _ipstackEndpoints = new IpstackEndpoints(_config.Data);
+            _ipstackEndpoints = new IpstackEndpoints(Config);
 
-            Log.Info("Initialized plugin");
+            var localDbFilePath = this.MakeFilePath($"{nameof(TorchMonitor)}.json");
+            _localDb = new StupidDb(localDbFilePath);
+
+            if (Config.ResetLocalDatabaseOnNextStart)
+            {
+                _localDb.Reset();
+                Config.ResetLocalDatabaseOnNextStart = false;
+            }
+            else
+            {
+                _localDb.Read();
+            }
+
+            var playerOnlineTimeDb = new PlayerOnlineTimeDb(_localDb);
+            playerOnlineTimeDb.Read();
+
+            _intervalRunner = new IntervalRunner(Config, 1);
+            _intervalRunner.AddListeners(new IIntervalListener[]
+            {
+                new SyncMonitor(Config),
+                new GridMonitor(Config, new NameConflictSolver()),
+                new FloatingObjectsMonitor(Config),
+                new RamUsageMonitor(Config),
+                new VoxelMonitor(),
+                new OnlinePlayersMonitor(new NameConflictSolver(), playerOnlineTimeDb),
+                new GeoLocationMonitor(_ipstackEndpoints, Config),
+                new BlockTypeProfilerMonitor(Config),
+                new FactionProfilerMonitor(Config),
+                new GameLoopProfilerMonitor(Config),
+                new GridProfilerMonitor(Config),
+                new MethodNameProfilerMonitor(Config),
+                new SessionComponentsProfilerMonitor(Config),
+            });
+
+            Config.PropertyChanged += (sender, args) =>
+            {
+                _intervalRunner.Enabled = Config.Enabled;
+            };
+
+            _intervalRunner.Enabled = Config.Enabled;
         }
 
         public UserControl GetControl()
@@ -45,63 +91,16 @@ namespace TorchMonitor
 
         void OnGameLoaded()
         {
-            Start();
-        }
-
-        public bool Start()
-        {
-            if (_started)
-            {
-                Log.Warn("Aborted starting a process; already started");
-                return false;
-            }
-
-            _started = true;
-
-            _intervalRunner = new IntervalRunner(_config.Data, 1);
-            _intervalRunner.AddListeners(new IIntervalListener[]
-            {
-                new SyncMonitor(_config.Data),
-                new GridMonitor(_config.Data),
-                new FloatingObjectsMonitor(_config.Data),
-                new RamUsageMonitor(_config.Data),
-                new VoxelMonitor(),
-                new OnlinePlayersMonitor(),
-                new GeoLocationMonitor(_ipstackEndpoints, _config.Data),
-                new BlockTypeProfilerMonitor(_config.Data),
-                new FactionProfilerMonitor(_config.Data),
-                new GameLoopProfilerMonitor(_config.Data),
-                new GridProfilerMonitor(_config.Data),
-                new MethodNameProfilerMonitor(_config.Data),
-                new SessionComponentsProfilerMonitor(_config.Data),
-            });
-
             Task.Factory
                 .StartNew(_intervalRunner.RunIntervals)
                 .Forget(Log);
-
-            Log.Info("Started interval");
-            return true;
-        }
-
-        public bool Stop()
-        {
-            if (_intervalRunner == null)
-            {
-                Log.Warn("Aborted stopping a process; not running");
-                return false;
-            }
-
-            _intervalRunner?.Dispose();
-            _intervalRunner = null;
-            _started = false;
-            return true;
         }
 
         void OnGameUnloading()
         {
-            Stop();
-            _ipstackEndpoints.Dispose();
+            _config?.Dispose();
+            _intervalRunner?.Dispose();
+            _ipstackEndpoints?.Dispose();
         }
     }
 }

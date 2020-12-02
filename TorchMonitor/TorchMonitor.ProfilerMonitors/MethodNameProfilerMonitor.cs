@@ -5,19 +5,18 @@ using Intervals;
 using NLog;
 using Profiler.Basics;
 using Profiler.Core;
-using Sandbox.Game.Entities;
+using TorchMonitor.Monitors;
 using Utils.General;
 
-namespace TorchMonitor.Monitors.Profilers
+namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class GridProfilerMonitor : IIntervalListener
+    public sealed class MethodNameProfilerMonitor : IIntervalListener
     {
         const int SamplingSeconds = 10;
-        const int MaxDisplayCount = 4;
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly IMonitorGeneralConfig _config;
 
-        public GridProfilerMonitor(IMonitorGeneralConfig config)
+        public MethodNameProfilerMonitor(IMonitorGeneralConfig config)
         {
             _config = config;
         }
@@ -32,8 +31,7 @@ namespace TorchMonitor.Monitors.Profilers
 
         async Task Profile()
         {
-            var gameEntityMask = new GameEntityMask(null, null, null);
-            using (var profiler = new GridProfiler(gameEntityMask))
+            using (var profiler = new MethodNameProfiler())
             using (ProfilerResultQueue.Profile(profiler))
             {
                 profiler.MarkStart();
@@ -44,14 +42,14 @@ namespace TorchMonitor.Monitors.Profilers
             }
         }
 
-        void OnProfilingFinished(BaseProfilerResult<MyCubeGrid> result)
+        void OnProfilingFinished(BaseProfilerResult<string> result)
         {
-            foreach (var (grid, entity) in result.GetTopEntities(MaxDisplayCount))
+            foreach (var (name, entity) in result.GetTopEntities())
             {
                 InfluxDbPointFactory
-                    .Measurement("profiler")
-                    .Tag("grid_name", grid.DisplayName)
-                    .Field("main_ms", (float) entity.MainThreadTime / result.TotalFrameCount)
+                    .Measurement("profiler_method_names")
+                    .Tag("method_name", name)
+                    .Field("ms", (float) entity.MainThreadTime / result.TotalFrameCount)
                     .Write();
             }
         }

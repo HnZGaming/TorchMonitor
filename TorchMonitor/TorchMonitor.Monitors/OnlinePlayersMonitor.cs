@@ -10,32 +10,36 @@ namespace TorchMonitor.Monitors
 {
     public sealed class OnlinePlayersMonitor : IIntervalListener
     {
+        const int IntervalSecs = 10;
         readonly NameConflictSolver _nameConflictSolver;
+        readonly PlayerOnlineTimeDb _playerOnlineTimeDb;
 
-        public OnlinePlayersMonitor()
+        public OnlinePlayersMonitor(
+            NameConflictSolver nameConflictSolver,
+            PlayerOnlineTimeDb playerOnlineTimeDb)
         {
-            _nameConflictSolver = new NameConflictSolver();
+            _nameConflictSolver = nameConflictSolver;
+            _playerOnlineTimeDb = playerOnlineTimeDb;
         }
 
         public void OnInterval(int intervalsSinceStart)
         {
-            if (intervalsSinceStart % 10 != 0) return;
+            if (intervalsSinceStart % IntervalSecs != 0) return;
 
             var onlinePlayers = MySession.Static.Players.GetOnlinePlayers().ToArray();
 
-            InfluxDbPointFactory
-                .Measurement("server")
-                .Field("players", onlinePlayers.Length)
-                .Write();
-
             var factionList = MySession.Static.Factions.Factions.Values;
             var factions = new Dictionary<string, int>();
+
             foreach (var onlinePlayer in onlinePlayers)
             {
                 if (onlinePlayer == null) continue;
 
                 var steamId = onlinePlayer.SteamId();
                 var playerId = onlinePlayer.PlayerId();
+
+                _playerOnlineTimeDb.IncrementPlayerOnlineTime(steamId, (double) IntervalSecs / 3600);
+                var onlineTime = _playerOnlineTimeDb.GetPlayerOnlineTime(steamId);
 
                 var faction = factionList.FirstOrDefault(f => f.Members.ContainsKey(playerId));
                 var factionTag = faction?.Tag ?? "<single>";
@@ -50,6 +54,7 @@ namespace TorchMonitor.Monitors
                     .Tag("player_name", playerName)
                     .Tag("faction_tag", factionTag)
                     .Field("is_online", 1)
+                    .Field("online_time", onlineTime)
                     .Write();
             }
 
@@ -61,6 +66,16 @@ namespace TorchMonitor.Monitors
                     .Field("online_member_count", onlineMemberCount)
                     .Write();
             }
+
+            var totalOnlineTime = _playerOnlineTimeDb.GetTotalOnlineTime();
+
+            InfluxDbPointFactory
+                .Measurement("server")
+                .Field("players", onlinePlayers.Length)
+                .Field("online_time", totalOnlineTime)
+                .Write();
+
+            _playerOnlineTimeDb.Write();
         }
     }
 }
