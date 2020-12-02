@@ -13,7 +13,6 @@ namespace Intervals
         public interface IConfig
         {
             bool Enabled { get; }
-            bool EnableLog { get; }
         }
 
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
@@ -61,7 +60,7 @@ namespace Intervals
                 var waitTime = _intervalSeconds - spentTime;
                 _canceller.WaitHandle.WaitOneSafe(waitTime.Seconds());
 
-                LogInfo($"interval: {intervalSinceStart}s");
+                Log.Debug($"interval: {intervalSinceStart}s");
             }
         }
 
@@ -77,21 +76,13 @@ namespace Intervals
                     listener.OnInterval(currentInterval);
 
                     var time = (DateTime.UtcNow - startTime).TotalMilliseconds;
-                    LogInfo($"listener finished interval: \"{listener.GetType().Name}\", {time:0.000}ms");
+                    Log.Debug($"listener finished interval: \"{listener.GetType().Name}\", {time:0.000}ms");
                 }
                 catch (Exception e)
                 {
                     Log.Error(e);
                 }
             });
-        }
-
-        void LogInfo(string msg)
-        {
-            if (_config.EnableLog)
-            {
-                Log.Info(msg);
-            }
         }
     }
 }

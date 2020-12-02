@@ -16,7 +16,6 @@ namespace TorchMonitor
     {
         bool _enabled = true;
         string _ipstackApiKey = "apikey";
-        bool _enableIntervalLog;
         int _firstIgnoredSeconds = 120;
         bool _resetLocalDatabaseOnNextStart;
 
@@ -26,14 +25,6 @@ namespace TorchMonitor
         {
             get => _enabled;
             set => SetProperty(ref _enabled, value);
-        }
-
-        [XmlElement("IntervalRunner.EnableLog")]
-        [Display(Order = 1, Name = "Enable Interval Logging")]
-        public bool EnableLog
-        {
-            get => _enableIntervalLog;
-            set => SetProperty(ref _enableIntervalLog, value);
         }
 
         [XmlElement("FirstIgnoredSeconds")]

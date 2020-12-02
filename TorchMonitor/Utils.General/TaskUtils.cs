@@ -27,7 +27,7 @@ namespace Utils.General
 
         public static Task StartAsync(this CancellationTokenSource self, Action<CancellationToken> f)
         {
-            return Task.Factory.StartNew(() => f(self.Token));
+            return Task.Factory.StartNew(() => f(self.Token), self.Token);
         }
 
         public static bool WaitOneSafe(this WaitHandle self, TimeSpan timeSpan)
