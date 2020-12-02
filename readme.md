@@ -1,10 +1,12 @@
-#TorchMonitor
+# TorchMonitor
 
-Sends game data over to an InfluxDB instance for server health monitoring.
+Collects and sends various game data to a database. 
 
-## Example Usage
+## Usage
 
-Combine with a graphical dashboard (such as [Grafana](https://grafana.com/)) to monitor your game.
+Intended for server health monitoring and analysis. 
+
+To view the data, hook up a graphical dashboard like [Grafana](https://grafana.com/).
 
 [See an example dashboard](http://play.se.hnz.asia:3000/d/9UUUl7pGk/hnz-gaalsien?orgId=1&refresh=30s) (if still alive).
 
@@ -13,10 +15,6 @@ Combine with a graphical dashboard (such as [Grafana](https://grafana.com/)) to 
 * [TorchInfluxDb plugin](https://github.com/HnZGaming/TorchInfluxDb) to write to the database.
 * [Profiler plugin](https://github.com/TorchAPI/Profiler) to collect some game data.
 
-## Installation
-
-Grab the latest release binary (and dependency above) and put it in your Torch.
-
 ## Default Monitors
 
 Following monitors come with this plugin.
@@ -24,7 +22,7 @@ Following monitors come with this plugin.
 - `FloatingObjectsMonitor` counts the number of "floating objects".
 - `GeoLocationMonitor` monitors which countries your players are from.
 - `GridMonitor` monitors a lot of things about grids and factions.
-- `OnlinePlayersMonitor` counts the number of online players and their factions.
+- `OnlinePlayersMonitor` counts the number of online players and more.
 - `RamUsageMonitor` monitors the total RAM usage of Torch and SE program.
 - `SyncMonitor` monitors the simulation speed.
 - `VoxelMonitor` counts the number of voxel bodies (planets and asteroids).
@@ -33,22 +31,17 @@ Following monitors come with this plugin.
 
 Fork this repo and make your own monitors.
 
-### Architecture
-
-This plugin circulates every registered monitor every second in a loop.
-
-`Intervals.IIntervalListener` is the interface to work with the plugin's loop:
+Implement `Intervals.IIntervalListener` and register into the plugin.
 
 ```C#
-public interface IIntervalListener
+public class YourMonitor : IIntervalListener
 {
-    void OnInterval(int intervalsSinceStart);
+    public void OnInterval(int intervalsSinceStart)
+    {
+        // your monitor's implementation
+    }
 }
 ```
-
-`intervalsSinceStart` increments every loop.
-
-Once you've implemented the interface, register it to the plugin's loop by editing `TorchMonitorPlugin.cs`:
 
 ```C#
 void OnGameLoaded()
@@ -65,9 +58,7 @@ void OnGameLoaded()
 
 This will make the plugin invoke your monitor during the game.
 
-### Implementation
-
-Implement your main logic in `IIntervalListener.OnInterval()`:
+### Example Implementation
 
 ```C#
 public void OnInterval(int intervalsSinceStart)
@@ -77,7 +68,7 @@ public void OnInterval(int intervalsSinceStart)
 
     ...
     
-    // Write to the database
+    // Write to an InfluxDB database
     InfluxDbPointFactory
         .Measurement("my_measurement")
         .Tag("my_tag", myTagValue)
@@ -86,7 +77,7 @@ public void OnInterval(int intervalsSinceStart)
 }
 ```
 
-See default monitors for code examples.
+See default monitors in the plugin for code examples.
 
 ## Contribution
 

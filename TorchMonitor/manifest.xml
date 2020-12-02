@@ -2,12 +2,12 @@
 
 <PluginManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-  <Name>TorchMonitor</Name>
+  <Name>Torch Monitor</Name>
 
   <Guid>5ffdf796-4fca-446b-bc2e-2dee3d971532</Guid>
 
   <Repository>None</Repository>
 
-  <Version>v1.0.2</Version>
+  <Version>v1.0.3</Version>
 
 </PluginManifest>
