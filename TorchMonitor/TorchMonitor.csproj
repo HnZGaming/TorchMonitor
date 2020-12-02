@@ -197,7 +197,6 @@
         <Compile Include="Utils.General\StringFloatConverter.cs" />
         <Compile Include="Utils.General\StupidDb.cs" />
         <Compile Include="Utils.General\TaskUtils.cs" />
-        <Compile Include="Utils.General\ThreadPoolTask.cs" />
         <Compile Include="Utils.General\ThreadSafeThrottle.cs" />
         <Compile Include="Utils.Torch\CommandErrorResponseGenerator.cs" />
         <Compile Include="Utils.Torch\CommandOption.cs" />
