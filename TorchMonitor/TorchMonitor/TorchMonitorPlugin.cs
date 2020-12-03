@@ -52,16 +52,7 @@ namespace TorchMonitor
 
             var localDbFilePath = this.MakeFilePath($"{nameof(TorchMonitor)}.json");
             _localDb = new StupidDb(localDbFilePath);
-
-            if (Config.ResetLocalDatabaseOnNextStart)
-            {
-                _localDb.Reset();
-                Config.ResetLocalDatabaseOnNextStart = false;
-            }
-            else
-            {
-                _localDb.Read();
-            }
+            _localDb.Read();
 
             var playerOnlineTimeDb = new PlayerOnlineTimeDb(_localDb);
             playerOnlineTimeDb.Read();

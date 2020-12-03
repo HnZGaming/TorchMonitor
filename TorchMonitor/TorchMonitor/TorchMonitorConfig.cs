@@ -17,7 +17,6 @@ namespace TorchMonitor
         bool _enabled = true;
         string _ipstackApiKey = "apikey";
         int _firstIgnoredSeconds = 120;
-        bool _resetLocalDatabaseOnNextStart;
 
         [XmlElement("Enabled")]
         [Display(Order = 0, Name = "Enabled")]
@@ -41,14 +40,6 @@ namespace TorchMonitor
         {
             get => _ipstackApiKey;
             set => SetProperty(ref _ipstackApiKey, value);
-        }
-
-        [XmlElement("ResetLocalDatabaseOnNextStart")]
-        [Display(Order = 4, Name = "Reset Local Database On Next Start")]
-        public bool ResetLocalDatabaseOnNextStart
-        {
-            get => _resetLocalDatabaseOnNextStart;
-            set => SetProperty(ref _resetLocalDatabaseOnNextStart, value);
         }
 
         bool GeoLocationMonitor.IConfig.Enabled => !string.IsNullOrEmpty(ApiKey);
