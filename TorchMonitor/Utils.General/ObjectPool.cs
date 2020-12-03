@@ -8,7 +8,7 @@ namespace Utils.General
     /// O(1) for pooling and unpooling.
     /// </summary>
     /// <typeparam name="T">Type of objects to be stored in this pool.</typeparam>
-    public abstract class ObjectPool<T>
+    internal abstract class ObjectPool<T>
     {
         readonly ConcurrentBag<T> _pooledObjects;
 

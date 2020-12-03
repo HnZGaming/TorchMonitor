@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Utils.General
 {
-    public static class ReflectionUtils
+    internal static class ReflectionUtils
     {
         public const BindingFlags InstanceFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
