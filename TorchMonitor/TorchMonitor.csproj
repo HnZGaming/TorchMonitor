@@ -210,9 +210,7 @@
         <Compile Include="Utils.Torch\XmlUtils.cs" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="JsonSubTypes" Version="1.6.0" />
         <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-        <PackageReference Include="System.Buffers" Version="4.5.1" />
         <PackageReference Include="System.IO" Version="4.3.0" />
         <PackageReference Include="System.Runtime" Version="4.3.0" />
     </ItemGroup>
