@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using InfluxDb;
+using InfluxDb.Torch;
 using Intervals;
 using NLog;
 using Profiler.Basics;
@@ -48,7 +48,7 @@ namespace TorchMonitor.ProfilerMonitors
         {
             foreach (var (type, entry) in result.GetTopEntities(MaxDisplayCount))
             {
-                InfluxDbPointFactory
+                TorchInfluxDbWriter
                     .Measurement("profiler_block_types")
                     .Tag("block_type", type.Name)
                     .Field("main_ms", (float) entry.MainThreadTime / result.TotalFrameCount)

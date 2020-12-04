@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using InfluxDb;
+using InfluxDb.Torch;
 using Intervals;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
@@ -56,7 +56,7 @@ namespace TorchMonitor.Monitors
                 var totalPcu = allGroups.SelectMany(g => g).Sum(g => g.BlocksPCU);
                 var activePcu = activeGroups.SelectMany(g => g).Sum(g => g.BlocksPCU);
 
-                InfluxDbPointFactory
+                TorchInfluxDbWriter
                     .Measurement("construction_all")
                     .Field("total_grid_count", groupCount)
                     .Field("total_block_count", blockCount)
@@ -66,7 +66,7 @@ namespace TorchMonitor.Monitors
                     .Field("active_pcu", activePcu)
                     .Write();
 
-                InfluxDbPointFactory
+                TorchInfluxDbWriter
                     .Measurement("construction_delta")
                     .Field("grid_count_delta", groupCountDelta)
                     .Field("block_count_delta", blockCountDelta)
@@ -102,7 +102,7 @@ namespace TorchMonitor.Monitors
 
                 var factionMemberCount = factionMemberCounts.TryGetValue(factionTag, out var c) ? c : 0;
 
-                InfluxDbPointFactory
+                TorchInfluxDbWriter
                     .Measurement("active_grids")
                     .Tag("grid_name", groupName)
                     .Tag("faction_tag", factionTag)
@@ -132,11 +132,12 @@ namespace TorchMonitor.Monitors
 
                 if (blockCategoryCounts.Any())
                 {
-                    var blockCategoryCountsPoint = InfluxDbPointFactory
-                        .Measurement("block_category_count_per_active_grid")
-                        .Tag("grid_name", groupName)
-                        .Tag("faction_tag", factionTag)
-                        .Field("faction_member_count", factionMemberCount);
+                    var blockCategoryCountsPoint =
+                        TorchInfluxDbWriter
+                            .Measurement("block_category_count_per_active_grid")
+                            .Tag("grid_name", groupName)
+                            .Tag("faction_tag", factionTag)
+                            .Field("faction_member_count", factionMemberCount);
 
                     foreach (var (categoryName, count) in blockCategoryCounts.Counts)
                     {
@@ -149,7 +150,7 @@ namespace TorchMonitor.Monitors
 
             if (allBlockCategoryCounts.Any())
             {
-                var allBlockCategoryCountPoint = InfluxDbPointFactory
+                var allBlockCategoryCountPoint = TorchInfluxDbWriter
                     .Measurement("block_category_count_all_active_grids");
 
                 foreach (var (categoryName, count) in allBlockCategoryCounts.Counts)

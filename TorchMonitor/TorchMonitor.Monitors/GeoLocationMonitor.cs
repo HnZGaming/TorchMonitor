@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using InfluxDb;
+using InfluxDb.Torch;
 using Intervals;
 using Ipstack;
 using NLog;
@@ -65,7 +65,7 @@ namespace TorchMonitor.Monitors
             {
                 Log.Trace($"writing continent data: '{continentName}'");
 
-                InfluxDbPointFactory
+                TorchInfluxDbWriter
                     .Measurement("players_continents")
                     .Tag("continent_name", continentName)
                     .Field("online_player_count", count)
@@ -76,7 +76,7 @@ namespace TorchMonitor.Monitors
             {
                 Log.Trace($"writing country data: '{countryName}'");
 
-                InfluxDbPointFactory
+                TorchInfluxDbWriter
                     .Measurement("players_countries")
                     .Tag("country_name", countryName)
                     .Field("online_player_count", count)
