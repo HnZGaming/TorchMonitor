@@ -1,47 +1,64 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Utils.General
 {
     internal sealed class PersistencyObserver<T>
     {
-        readonly LinkedList<HashSet<T>> _timeline;
+        readonly LinkedList<(DateTime Timestamp, HashSet<T> Elements)> _timeline;
 
         public PersistencyObserver()
         {
-            _timeline = new LinkedList<HashSet<T>>();
+            _timeline = new LinkedList<(DateTime Timestamp, HashSet<T> Elements)>();
         }
 
-        public void Clear()
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void AddInterval(IEnumerable<T> items)
         {
-            _timeline.Clear();
+            _timeline.AddFirst((DateTime.UtcNow, new HashSet<T>(items)));
         }
 
-        public void CapBufferSize(int bufferSize)
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void CapBufferSize(TimeSpan bufferTimeSpan)
         {
-            while (_timeline.Count > bufferSize)
+            if (!_timeline.Any()) return;
+
+            while (true)
             {
-                _timeline.RemoveLast();
+                var (timestamp, _) = _timeline.Last.Value;
+                var pastTime = DateTime.UtcNow - timestamp;
+                if (pastTime > bufferTimeSpan)
+                {
+                    _timeline.RemoveLast();
+                }
+                else
+                {
+                    return;
+                }
             }
         }
 
-        public void AddInterval(IEnumerable<T> items)
-        {
-            _timeline.AddFirst(new HashSet<T>(items));
-        }
-
-        public IEnumerable<T> GetElementsPresentInAllIntervals()
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public IEnumerable<T> GetPersistentIntervals()
         {
             if (!_timeline.Any()) return new T[0];
 
-            var firstItems = _timeline.First.Value;
+            var firstItems = _timeline.First.Value.Elements;
             var persistentItems = new HashSet<T>(firstItems);
             foreach (var frame in _timeline)
             {
-                persistentItems.IntersectWith(frame);
+                persistentItems.IntersectWith(frame.Elements);
             }
 
             return persistentItems;
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void Clear()
+        {
+            _timeline.Clear();
         }
     }
 }

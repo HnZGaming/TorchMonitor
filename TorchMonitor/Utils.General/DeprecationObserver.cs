@@ -14,6 +14,8 @@ namespace Utils.General
             _items = new ConcurrentDictionary<T, DateTime>();
         }
 
+        public IEnumerable<T> Items => _items.Keys;
+
         public void Add(T item)
         {
             _items[item] = DateTime.UtcNow;
@@ -28,7 +30,7 @@ namespace Utils.General
             {
                 var item = ti.Key;
                 var timestamp = ti.Value;
-                
+
                 if (timestamp < endTime)
                 {
                     removedItems.Add(item);

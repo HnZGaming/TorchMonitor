@@ -191,6 +191,7 @@
         <Compile Include="Utils.General\DisposableCollection.cs" />
         <Compile Include="Utils.General\DisposableUtils.cs" />
         <Compile Include="Utils.General\LangUtils.cs" />
+        <Compile Include="Utils.General\MathUtils.cs" />
         <Compile Include="Utils.General\ObjectPool.cs" />
         <Compile Include="Utils.General\PersistencyObserver.cs" />
         <Compile Include="Utils.General\ReflectionUtils.cs" />
@@ -201,6 +202,7 @@
         <Compile Include="Utils.Torch\CommandErrorResponseGenerator.cs" />
         <Compile Include="Utils.Torch\CommandOption.cs" />
         <Compile Include="Utils.Torch\GameLoopObserver.cs" />
+        <Compile Include="Utils.Torch\GameLoopObserverManager.cs" />
         <Compile Include="Utils.Torch\TorchPluginUtils.cs" />
         <Compile Include="Utils.Torch\TorchUtils.cs" />
         <Compile Include="Utils.Torch\ViewUtils.cs" />

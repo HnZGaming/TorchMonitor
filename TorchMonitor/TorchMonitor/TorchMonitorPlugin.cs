@@ -78,9 +78,7 @@ namespace TorchMonitor
 
         void OnGameLoaded()
         {
-            _canceller
-                .StartAsync(_intervalRunner.LoopIntervals)
-                .Forget(Log);
+            _canceller.Token.RunUntilCancelledAsync(_intervalRunner.LoopIntervals).Forget(Log);
         }
 
         void OnGameUnloading()

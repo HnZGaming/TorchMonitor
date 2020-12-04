@@ -69,5 +69,20 @@ namespace Utils.General
 
             return derivedTypes.ToArray();
         }
+
+        public static bool TryGetAttribute<A>(this MemberInfo info, out A attribute) where A : Attribute
+        {
+            foreach (var customAttribute in info.GetCustomAttributes())
+            {
+                if (customAttribute.GetType() == typeof(A))
+                {
+                    attribute = (A) customAttribute;
+                    return true;
+                }
+            }
+
+            attribute = default;
+            return false;
+        }
     }
 }

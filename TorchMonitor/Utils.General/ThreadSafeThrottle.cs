@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using NLog;
 
 namespace Utils.General
 {
@@ -10,6 +12,7 @@ namespace Utils.General
     /// <typeparam name="T">Type of elements.</typeparam>
     internal sealed class ThreadSafeThrottle<T>
     {
+        readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly List<T> _queuedElements;
         readonly TimeSpan _throttleInterval;
         readonly Action<IEnumerable<T>> _onFlush;
@@ -36,7 +39,7 @@ namespace Utils.General
         public bool Start()
         {
             // make a cancellation token source (to "stop" later)
-            CancellationToken cancellationToken;
+            CancellationToken canceller;
             lock (this)
             {
                 // already running
@@ -46,19 +49,21 @@ namespace Utils.General
                 }
 
                 _cancellationTokenSource = new CancellationTokenSource();
-                cancellationToken = _cancellationTokenSource.Token;
+                canceller = _cancellationTokenSource.Token;
             }
 
-            ThreadPool.QueueUserWorkItem(_ =>
-            {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                    Flush();
-                    cancellationToken.WaitHandle.WaitOneSafe(_throttleInterval);
-                }
-            });
+            canceller.RunUntilCancelledAsync(LoopFlush).Forget(Log);
 
             return true;
+        }
+
+        async Task LoopFlush(CancellationToken canceller)
+        {
+            while (!canceller.IsCancellationRequested)
+            {
+                Flush();
+                await Task.Delay(_throttleInterval, canceller);
+            }
         }
 
         public void Flush()

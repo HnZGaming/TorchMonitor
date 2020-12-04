@@ -33,15 +33,15 @@ namespace Intervals
             _listeners.AddRange(listeners);
         }
 
-        public void LoopIntervals(CancellationToken _canceller)
+        public async Task LoopIntervals(CancellationToken canceller)
         {
             var intervalSinceStart = 0;
 
-            while (!_canceller.IsCancellationRequested)
+            while (!canceller.IsCancellationRequested)
             {
                 if (!_config.Enabled)
                 {
-                    if (!_canceller.WaitHandle.WaitOneSafe(1.Seconds())) return;
+                    await Task.Delay(1.Seconds(), canceller);
                     continue;
                 }
 
@@ -58,7 +58,7 @@ namespace Intervals
                 }
 
                 var waitTime = _intervalSeconds - spentTime;
-                _canceller.WaitHandle.WaitOneSafe(waitTime.Seconds());
+                await Task.Delay(waitTime.Seconds(), canceller);
 
                 Log.Debug($"interval: {intervalSinceStart}s");
             }

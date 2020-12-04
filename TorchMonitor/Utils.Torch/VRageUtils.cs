@@ -49,6 +49,13 @@ namespace Utils.Torch
             return new HashSet<long>(group.SelectMany(g => g.BigOwners));
         }
 
+        public static bool TryGetPlayerById(long id, out MyPlayer player)
+        {
+            player = null;
+            return MySession.Static.Players.TryGetPlayerId(id, out var playerId) &&
+                   MySession.Static.Players.TryGetPlayerById(playerId, out player);
+        }
+
         public static bool IsConcealed(this IMyEntity entity)
         {
             // Concealment plugin uses `4` as a flag to prevent game from updating grids
