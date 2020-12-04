@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using InfluxDb;
+using InfluxDb.Torch;
 using Intervals;
 using Sandbox.Game.World;
 using Utils.General;
@@ -48,7 +48,7 @@ namespace TorchMonitor.Monitors
                 var playerName = onlinePlayer.DisplayName;
                 playerName = _nameConflictSolver.GetSafeName(playerName, onlinePlayer.PlayerId());
 
-                InfluxDbPointFactory
+                TorchInfluxDbWriter
                     .Measurement("players_players")
                     .Tag("steam_id", $"{steamId}")
                     .Tag("player_name", playerName)
@@ -60,7 +60,7 @@ namespace TorchMonitor.Monitors
 
             foreach (var (factionTag, onlineMemberCount) in factions)
             {
-                InfluxDbPointFactory
+                TorchInfluxDbWriter
                     .Measurement("players_factions")
                     .Tag("faction_tag", factionTag)
                     .Field("online_member_count", onlineMemberCount)
@@ -69,7 +69,7 @@ namespace TorchMonitor.Monitors
 
             var totalOnlineTime = _playerOnlineTimeDb.GetTotalOnlineTime();
 
-            InfluxDbPointFactory
+            TorchInfluxDbWriter
                 .Measurement("server")
                 .Field("players", onlinePlayers.Length)
                 .Field("online_time", totalOnlineTime)

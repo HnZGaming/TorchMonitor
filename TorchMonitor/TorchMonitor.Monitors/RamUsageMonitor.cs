@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using InfluxDb;
+using InfluxDb.Torch;
 using Intervals;
 
 namespace TorchMonitor.Monitors
@@ -55,7 +55,7 @@ namespace TorchMonitor.Monitors
             // [...] the current size of virtual memory used by the process.
             var virt = (float) _process.VirtualMemorySize64 / GB;
 
-            InfluxDbPointFactory
+            TorchInfluxDbWriter
                 .Measurement("resource")
                 .Field("heap", heap)
                 .Field("private", privat)

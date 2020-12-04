@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using InfluxDb;
+using InfluxDb.Torch;
 using Intervals;
 using NLog;
 using Profiler.Basics;
@@ -67,7 +67,7 @@ namespace TorchMonitor.ProfilerMonitors
                 var mainMs = entity.MainThreadTime / result.TotalFrameCount;
                 var mainMsPerMember = mainMs / onlinePlayerCount;
 
-                InfluxDbPointFactory
+                TorchInfluxDbWriter
                     .Measurement("profiler_factions")
                     .Tag("faction_tag", faction.Tag)
                     .Field("main_ms", mainMs)

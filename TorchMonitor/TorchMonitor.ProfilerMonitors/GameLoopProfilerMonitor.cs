@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using InfluxDb;
+using InfluxDb.Torch;
 using Intervals;
 using NLog;
 using Profiler.Basics;
@@ -55,7 +55,7 @@ namespace TorchMonitor.ProfilerMonitors
             var updateParallelWaitMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateParallelWait, 0);
             var updateOtherMs = updateMs - updateNetworkMs - updateReplMs - updateSessionCompsAllMs - updateGpsMs - updateParallelWaitMs;
 
-            InfluxDbPointFactory
+            TorchInfluxDbWriter
                 .Measurement("profiler_game_loop")
                 .Field("tick", result.TotalFrameCount)
                 .Field("frame", result.TotalTime / result.TotalFrameCount)
