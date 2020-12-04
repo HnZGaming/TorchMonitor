@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using Sandbox.Game.World;
@@ -48,10 +49,18 @@ namespace Utils.Torch
             _actionQueue.Add(action);
         }
 
-        public static Task WaitUntilGameLoop()
+        public static Task MoveToGameLoop(CancellationToken canceller = default)
         {
+            canceller.ThrowIfCancellationRequested();
+
             var taskSource = new TaskCompletionSource<byte>();
-            OnNextUpdate(() => taskSource.TrySetResult(0));
+
+            OnNextUpdate(() =>
+            {
+                canceller.ThrowIfCancellationRequested();
+                taskSource.TrySetResult(0);
+            });
+
             return taskSource.Task;
         }
     }

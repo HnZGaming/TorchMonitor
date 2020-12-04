@@ -32,7 +32,7 @@ namespace TorchMonitor.Monitors
         readonly StupidDb _localDb;
         readonly Dictionary<ulong, double> _dbCopy;
 
-        public PlayerOnlineTimeDb(StupidDb localDb)
+        internal PlayerOnlineTimeDb(StupidDb localDb)
         {
             _localDb = localDb;
             _dbCopy = new Dictionary<ulong, double>();

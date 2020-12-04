@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using InfluxDb;
+using InfluxDb.Torch;
 using Intervals;
 using Sandbox.Game.Entities;
 
@@ -21,12 +21,12 @@ namespace TorchMonitor.Monitors
             var planets = voxels.OfType<MyPlanet>().ToArray();
             var asteroidCount = voxels.Length - planets.Length;
 
-            InfluxDbPointFactory
+            TorchInfluxDbWriter
                 .Measurement("voxels_asteroids_total")
                 .Field("count", asteroidCount)
                 .Write();
 
-            InfluxDbPointFactory
+            TorchInfluxDbWriter
                 .Measurement("voxels_planets_total")
                 .Field("count", planets.Length)
                 .Write();

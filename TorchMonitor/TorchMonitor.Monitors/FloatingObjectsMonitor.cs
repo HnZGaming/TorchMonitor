@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using InfluxDb;
+using InfluxDb.Torch;
 using Intervals;
 using Sandbox.Game.Entities;
 
@@ -21,7 +21,7 @@ namespace TorchMonitor.Monitors
 
             var count = MyEntities.GetEntities().Count(e => e is MyFloatingObject);
 
-            InfluxDbPointFactory
+            TorchInfluxDbWriter
                 .Measurement("floating_objects")
                 .Field("count", count)
                 .Write();

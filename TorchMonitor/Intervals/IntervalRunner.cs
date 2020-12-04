@@ -1,81 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using NLog;
+using Utils.General;
 
 namespace Intervals
 {
-    public sealed class IntervalRunner : IDisposable
+    public sealed class IntervalRunner
     {
         public interface IConfig
         {
-            bool EnableLog { get; }
+            bool Enabled { get; }
         }
 
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
         readonly IConfig _config;
         readonly int _intervalSeconds;
         readonly List<IIntervalListener> _listeners;
-        readonly CancellationTokenSource _canceller;
 
         public IntervalRunner(IConfig config, int intervalSeconds)
         {
             _config = config;
             _intervalSeconds = intervalSeconds;
             _listeners = new List<IIntervalListener>();
-            _canceller = new CancellationTokenSource();
         }
 
-        public bool Enabled { private get; set; }
-
-        public void Dispose()
-        {
-            _canceller.Cancel();
-            _canceller.Dispose();
-        }
-
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void AddListeners(IEnumerable<IIntervalListener> listeners)
         {
-            lock (_listeners)
-            {
-                _listeners.AddRange(listeners);
-            }
+            _listeners.AddRange(listeners);
         }
 
-        public void RunIntervals()
+        public async Task LoopIntervals(CancellationToken canceller)
         {
             var intervalSinceStart = 0;
 
-            while (!_canceller.IsCancellationRequested)
+            while (!canceller.IsCancellationRequested)
             {
-                if (!Enabled)
+                if (!_config.Enabled)
                 {
-                    _canceller.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(1f));
+                    await Task.Delay(1.Seconds(), canceller);
                     continue;
                 }
 
                 var startTime = DateTime.UtcNow;
 
-                var intervalsSinceStartCopy = intervalSinceStart; // closure
-                lock (_listeners)
-                {
-                    Parallel.ForEach(_listeners, listener =>
-                    {
-                        try
-                        {
-                            listener.OnInterval(intervalsSinceStartCopy);
-
-                            var time = (DateTime.UtcNow - startTime).TotalMilliseconds;
-                            LogInfo($"listener finished interval: \"{listener.GetType().Name}\", {time:0.000}ms");
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(e);
-                        }
-                    });
-                }
-
+                RunIntervalOnce(intervalSinceStart);
                 intervalSinceStart += 1;
 
                 var spentTime = (DateTime.UtcNow - startTime).TotalSeconds;
@@ -86,18 +58,31 @@ namespace Intervals
                 }
 
                 var waitTime = _intervalSeconds - spentTime;
-                _canceller.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(waitTime));
+                await Task.Delay(waitTime.Seconds(), canceller);
 
-                LogInfo($"interval: {intervalSinceStart}s");
+                Log.Debug($"interval: {intervalSinceStart}s");
             }
         }
 
-        void LogInfo(string msg)
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        void RunIntervalOnce(int currentInterval)
         {
-            if (_config.EnableLog)
+            Parallel.ForEach(_listeners, listener =>
             {
-                Log.Info(msg);
-            }
+                try
+                {
+                    var startTime = DateTime.UtcNow;
+
+                    listener.OnInterval(currentInterval);
+
+                    var time = (DateTime.UtcNow - startTime).TotalMilliseconds;
+                    Log.Debug($"listener finished interval: \"{listener.GetType().Name}\", {time:0.000}ms");
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e);
+                }
+            });
         }
     }
 }

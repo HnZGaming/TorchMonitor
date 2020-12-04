@@ -2,6 +2,8 @@
 using System.Linq;
 using Sandbox;
 using Sandbox.Game.Entities;
+using Sandbox.Game.Multiplayer;
+using Sandbox.Game.Screens.Helpers;
 using Sandbox.Game.World;
 using Utils.General;
 using VRage.Game.Entity;
@@ -49,6 +51,13 @@ namespace Utils.Torch
             return new HashSet<long>(group.SelectMany(g => g.BigOwners));
         }
 
+        public static bool TryGetPlayerById(long id, out MyPlayer player)
+        {
+            player = null;
+            return MySession.Static.Players.TryGetPlayerId(id, out var playerId) &&
+                   MySession.Static.Players.TryGetPlayerById(playerId, out player);
+        }
+
         public static bool IsConcealed(this IMyEntity entity)
         {
             // Concealment plugin uses `4` as a flag to prevent game from updating grids
@@ -89,6 +98,11 @@ namespace Utils.Torch
             return MySessionComponentSafeZones.IsActionAllowed(self, MySafeZoneAction.All);
         }
 
+        public static bool IsNormalPlayer(this IMyPlayer onlinePlayer)
+        {
+            return onlinePlayer.PromoteLevel == MyPromoteLevel.None;
+        }
+
         public static ulong GetAdminSteamId()
         {
             if (!MySandboxGame.ConfigDedicated.Administrators.TryGetFirst(out var adminSteamIdStr)) return 0L;
@@ -125,5 +139,10 @@ namespace Utils.Torch
         }
 
         public static ulong CurrentGameFrameCount => MySandboxGame.Static.SimulationFrameCounter;
+
+        public static void SendAddGps(this MyGpsCollection self, long identityId, MyGps gps, bool playSound)
+        {
+            self.SendAddGps(identityId, ref gps, gps.EntityId, playSound);
+        }
     }
 }

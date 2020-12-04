@@ -14,6 +14,8 @@ namespace Utils.General
             _items = new ConcurrentDictionary<T, DateTime>();
         }
 
+        public IEnumerable<T> Items => _items.Keys;
+
         public void Add(T item)
         {
             _items[item] = DateTime.UtcNow;
@@ -24,8 +26,11 @@ namespace Utils.General
             var endTime = DateTime.UtcNow - lifespan;
 
             var removedItems = new List<T>();
-            foreach (var (item, timestamp) in _items)
+            foreach (var ti in _items)
             {
+                var item = ti.Key;
+                var timestamp = ti.Value;
+
                 if (timestamp < endTime)
                 {
                     removedItems.Add(item);
@@ -34,7 +39,7 @@ namespace Utils.General
 
             foreach (var removedItem in removedItems)
             {
-                _items.Remove(removedItem);
+                _items.TryRemove(removedItem, out _);
             }
 
             return removedItems;

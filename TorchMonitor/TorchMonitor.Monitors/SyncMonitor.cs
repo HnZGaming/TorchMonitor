@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using InfluxDb;
+using InfluxDb.Torch;
 using Intervals;
 using Sandbox.Game.Multiplayer;
 
@@ -30,7 +30,7 @@ namespace TorchMonitor.Monitors
             var minSimSpeed = _simSpeeds.Min();
             var avgSimSpeed = _simSpeeds.Average();
 
-            InfluxDbPointFactory
+            TorchInfluxDbWriter
                 .Measurement("server_sync")
                 .Field("sim_speed", avgSimSpeed)
                 .Field("sim_speed_min", minSimSpeed)
