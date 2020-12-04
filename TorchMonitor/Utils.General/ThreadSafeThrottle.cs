@@ -52,7 +52,7 @@ namespace Utils.General
                 canceller = _cancellationTokenSource.Token;
             }
 
-            canceller.RunUntilCancelledAsync(LoopFlush).Forget(Log);
+            TaskUtils.RunUntilCancelledAsync(LoopFlush, canceller).Forget(Log);
 
             return true;
         }

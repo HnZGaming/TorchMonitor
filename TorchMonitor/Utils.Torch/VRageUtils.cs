@@ -2,6 +2,8 @@
 using System.Linq;
 using Sandbox;
 using Sandbox.Game.Entities;
+using Sandbox.Game.Multiplayer;
+using Sandbox.Game.Screens.Helpers;
 using Sandbox.Game.World;
 using Utils.General;
 using VRage.Game.Entity;
@@ -96,6 +98,11 @@ namespace Utils.Torch
             return MySessionComponentSafeZones.IsActionAllowed(self, MySafeZoneAction.All);
         }
 
+        public static bool IsNormalPlayer(this IMyPlayer onlinePlayer)
+        {
+            return onlinePlayer.PromoteLevel == MyPromoteLevel.None;
+        }
+
         public static ulong GetAdminSteamId()
         {
             if (!MySandboxGame.ConfigDedicated.Administrators.TryGetFirst(out var adminSteamIdStr)) return 0L;
@@ -132,5 +139,10 @@ namespace Utils.Torch
         }
 
         public static ulong CurrentGameFrameCount => MySandboxGame.Static.SimulationFrameCounter;
+
+        public static void SendAddGps(this MyGpsCollection self, long identityId, MyGps gps, bool playSound)
+        {
+            self.SendAddGps(identityId, ref gps, gps.EntityId, playSound);
+        }
     }
 }

@@ -33,19 +33,19 @@ namespace Utils.General
             return taskSource.Task;
         }
 
-        public static Task RunUntilCancelledAsync(this CancellationToken self, Func<CancellationToken, Task> f)
+        public static Task RunUntilCancelledAsync(Func<CancellationToken, Task> f, CancellationToken canceller)
         {
             return Task.Factory.StartNew(async () =>
             {
                 try
                 {
-                    await f(self);
+                    await f(canceller);
                 }
                 catch (OperationCanceledException)
                 {
                     // ignored
                 }
-            }, self);
+            }, canceller);
         }
     }
 }
