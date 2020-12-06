@@ -23,7 +23,7 @@ namespace TorchMonitor
         public bool Enabled
         {
             get => _enabled;
-            set => SetProperty(ref _enabled, value);
+            set => SetValue(ref _enabled, value);
         }
 
         [XmlElement("FirstIgnoredSeconds")]
@@ -31,7 +31,7 @@ namespace TorchMonitor
         public int FirstIgnoredSeconds
         {
             get => _firstIgnoredSeconds;
-            set => SetProperty(ref _firstIgnoredSeconds, value);
+            set => SetValue(ref _firstIgnoredSeconds, value);
         }
 
         [XmlElement("Ipstack.ApiKey")]
@@ -39,18 +39,9 @@ namespace TorchMonitor
         public string ApiKey
         {
             get => _ipstackApiKey;
-            set => SetProperty(ref _ipstackApiKey, value);
+            set => SetValue(ref _ipstackApiKey, value);
         }
 
         bool GeoLocationMonitor.IConfig.Enabled => !string.IsNullOrEmpty(ApiKey);
-
-        void SetProperty<T>(ref T property, T value)
-        {
-            if (!property.Equals(value))
-            {
-                property = value;
-                OnPropertyChanged();
-            }
-        }
     }
 }
