@@ -61,17 +61,17 @@ namespace TorchMonitor
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
                 new SyncMonitor(Config),
-                new GridMonitor(Config, new NameConflictSolver()),
-                new FloatingObjectsMonitor(Config),
+                //new GridMonitor(Config, new NameConflictSolver()),
+                //new FloatingObjectsMonitor(Config),
                 new RamUsageMonitor(Config),
-                new VoxelMonitor(),
+                //new VoxelMonitor(),
                 new OnlinePlayersMonitor(new NameConflictSolver(), playerOnlineTimeDb),
                 new GeoLocationMonitor(_ipstackEndpoints, Config),
-                new BlockTypeProfilerMonitor(Config),
+                //new BlockTypeProfilerMonitor(Config),
                 new FactionProfilerMonitor(Config),
                 new GameLoopProfilerMonitor(Config),
                 new GridProfilerMonitor(Config),
-                new MethodNameProfilerMonitor(Config),
+                //new MethodNameProfilerMonitor(Config),
                 new SessionComponentsProfilerMonitor(Config),
             });
         }
