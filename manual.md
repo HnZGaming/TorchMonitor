@@ -13,17 +13,19 @@ You will shortly receive following things:
 
 Save these plugin zips in your Plugins folder:
 
-Profiler: v3.1.0.17-6-g47b0d09
-https://torchapi.net/plugins/item/da82de0f-9d2f-4571-af1c-88c7921bc063 
+Profiler v3.1.0.17-6-g47b0d09
+https://torchapi.net/plugins/item/da82de0f-9d2f-4571-af1c-88c7921bc063
+`<guid>da82de0f-9d2f-4571-af1c-88c7921bc063</guid> <!--Profiler-->`
 
-TorchInfluxDB: v2.1.0
+TorchInfluxDB v2.1.0
 https://github.com/HnZGaming/TorchInfluxDb/releases
+`<guid>5af3a335-0e25-4ddd-9fc7-6084d7e42e79</guid> <!--TorchInfluxDB-->`
 
-TorchMonitor: v2.1.1
+TorchMonitor v2.1.1
 https://github.com/HnZGaming/TorchMonitor/releases 
+`<guid>5ffdf796-4fca-446b-bc2e-2dee3d971532</guid> <!--TorchMonitor-->`
 
-Make sure their GUIDs are registered to your Torch.cfg as well.
-Unzip and open `manifest.xml` to view their GUIDs.
+Make sure GUIDs are registered to your Torch.cfg as well.
 
 ## Configure TorchInfluxDB Plugin
 
@@ -35,7 +37,7 @@ enter following credentials that you've received from the cloud admin:
 - `Bucket`
 - `Authentication Token`
 
-You do NOT have to restart Torch for these configs to apply.
+You do NOT need to restart Torch to change these configs.
 
 Or, fill the following XML & save as `TorchInfluxDbPlugin.cfg` in your Instance folder:
 
