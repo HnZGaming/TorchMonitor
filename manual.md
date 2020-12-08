@@ -13,16 +13,16 @@ You will shortly receive following things:
 
 Save these plugin zips in your Plugins folder:
 
-Profiler v3.1.0.17-6-g47b0d09
-https://torchapi.net/plugins/item/da82de0f-9d2f-4571-af1c-88c7921bc063
+Profiler v3.1.0.17-6-g47b0d09<br/>
+https://torchapi.net/plugins/item/da82de0f-9d2f-4571-af1c-88c7921bc063<br/>
 `<guid>da82de0f-9d2f-4571-af1c-88c7921bc063</guid> <!--Profiler-->`
 
-TorchInfluxDB v2.1.0
-https://github.com/HnZGaming/TorchInfluxDb/releases
+TorchInfluxDB v2.1.0<br/>
+https://github.com/HnZGaming/TorchInfluxDb/releases<br/>
 `<guid>5af3a335-0e25-4ddd-9fc7-6084d7e42e79</guid> <!--TorchInfluxDB-->`
 
-TorchMonitor v2.1.1
-https://github.com/HnZGaming/TorchMonitor/releases 
+TorchMonitor v2.1.1<br/>
+https://github.com/HnZGaming/TorchMonitor/releases <br/>
 `<guid>5ffdf796-4fca-446b-bc2e-2dee3d971532</guid> <!--TorchMonitor-->`
 
 Make sure GUIDs are registered to your Torch.cfg as well.
