@@ -67,7 +67,7 @@ namespace TorchMonitor
                 //new VoxelMonitor(),
                 new OnlinePlayersMonitor(new NameConflictSolver(), playerOnlineTimeDb),
                 new GeoLocationMonitor(_ipstackEndpoints, Config),
-                //new BlockTypeProfilerMonitor(Config),
+                new BlockTypeProfilerMonitor(Config),
                 new FactionProfilerMonitor(Config),
                 new GameLoopProfilerMonitor(Config),
                 new GridProfilerMonitor(Config),
