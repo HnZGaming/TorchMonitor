@@ -58,17 +58,25 @@ Other plugins don't need initial configuration.
 
 Make sure both TorchInfluxDB and TorchMonitor plugins are enabled by their plugin configs.
 
-## Common Issues & Errors
+## Common Issues & Diagnosis
+
+### Dashboard has red markers with a descriptive error message
+
+Talk to the cloud admin.
 
 ### Can't see data in the dashboard
 
 Dashboard will not immediately fill in because your data needs to accumulate first.
-There are also common points of failure during the setup.
-Follow steps below to diagnose the issue.
 
 1. From the top right corner of the page, change "Last 24 hours" to "Last 5 minutes". Wait for data to flow in.
 1. Make sure your server's OS time zone is in sync with the machine's clock.
-1. Find the log file (`Torch.log`) or the console in Torch UI and see if any errors are yielded by `InfluxDb.*` or `TorchMonitor.*`.
+1. Wait for 5 minutes and see if the dashboard starts filling.
+
+### Still can't see it
+
+Look into the plugin's logs.
+
+1. Find the log file (`Torch.log`) or the console, and see if any errors are yielded by `InfluxDb.*` or `TorchMonitor.*`.
 1. Set new NLog rule for `InfluxDb.*` and `TorchMonitor.*` with `minlevel` set to `Trace`. See `NLog.config` in Torch directory. Note a restart is needed for this to take effect.
 
 ### `System.IO.FileNotFoundException` in Torch log
