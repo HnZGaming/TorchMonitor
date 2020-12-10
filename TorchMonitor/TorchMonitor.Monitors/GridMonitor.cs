@@ -7,6 +7,7 @@ using Intervals;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
+using TorchMonitor.Utils;
 using Utils.General;
 using Utils.Torch;
 

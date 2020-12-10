@@ -8,6 +8,7 @@ using Torch.API;
 using Torch.API.Plugins;
 using TorchMonitor.Monitors;
 using TorchMonitor.ProfilerMonitors;
+using TorchMonitor.Utils;
 using Utils.General;
 using Utils.Torch;
 
@@ -73,6 +74,7 @@ namespace TorchMonitor
                 new GridProfilerMonitor(Config),
                 //new MethodNameProfilerMonitor(Config),
                 new SessionComponentsProfilerMonitor(Config),
+                new PlayerProfilerMonitor(Config, new NameConflictSolver()),
             });
         }
 

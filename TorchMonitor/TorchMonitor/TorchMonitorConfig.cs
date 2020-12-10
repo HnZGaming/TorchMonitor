@@ -4,6 +4,7 @@ using Ipstack;
 using Torch;
 using Torch.Views;
 using TorchMonitor.Monitors;
+using TorchMonitor.Utils;
 
 namespace TorchMonitor
 {

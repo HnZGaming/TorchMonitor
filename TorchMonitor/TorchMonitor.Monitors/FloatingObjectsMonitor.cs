@@ -2,6 +2,7 @@
 using InfluxDb.Torch;
 using Intervals;
 using Sandbox.Game.Entities;
+using TorchMonitor.Utils;
 
 namespace TorchMonitor.Monitors
 {

@@ -5,22 +5,25 @@ using Intervals;
 using NLog;
 using Profiler.Basics;
 using Profiler.Core;
-using TorchMonitor.Monitors;
+using Sandbox.Game.World;
 using TorchMonitor.Utils;
 using Utils.General;
 
 namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class BlockTypeProfilerMonitor : IIntervalListener
+    public sealed class PlayerProfilerMonitor : IIntervalListener
     {
         const int SamplingSeconds = 10;
-        const int MaxDisplayCount = 10;
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly IMonitorGeneralConfig _config;
+        readonly NameConflictSolver _nameConflictSolver;
 
-        public BlockTypeProfilerMonitor(IMonitorGeneralConfig config)
+        public PlayerProfilerMonitor(
+            IMonitorGeneralConfig config,
+            NameConflictSolver nameConflictSolver)
         {
             _config = config;
+            _nameConflictSolver = nameConflictSolver;
         }
 
         public void OnInterval(int intervalsSinceStart)
@@ -34,7 +37,7 @@ namespace TorchMonitor.ProfilerMonitors
         async Task Profile()
         {
             var gameEntityMask = new GameEntityMask(null, null, null);
-            using (var profiler = new BlockTypeProfiler(gameEntityMask))
+            using (var profiler = new PlayerProfiler(gameEntityMask))
             using (ProfilerResultQueue.Profile(profiler))
             {
                 profiler.MarkStart();
@@ -45,14 +48,19 @@ namespace TorchMonitor.ProfilerMonitors
             }
         }
 
-        void OnProfilingFinished(BaseProfilerResult<Type> result)
+        void OnProfilingFinished(BaseProfilerResult<MyIdentity> result)
         {
-            foreach (var (type, entry) in result.GetTopEntities(MaxDisplayCount))
+            foreach (var (player, entity) in result.GetTopEntities())
             {
+                var playerName = player.DisplayName;
+                playerName = _nameConflictSolver.GetSafeName(playerName, player.IdentityId);
+
+                var mainMs = entity.MainThreadTime / result.TotalFrameCount;
+
                 TorchInfluxDbWriter
-                    .Measurement("profiler_block_types")
-                    .Tag("block_type", type.Name)
-                    .Field("main_ms", (float) entry.MainThreadTime / result.TotalFrameCount)
+                    .Measurement("profiler_players")
+                    .Tag("player_name", playerName)
+                    .Field("main_ms", mainMs)
                     .Write();
             }
         }

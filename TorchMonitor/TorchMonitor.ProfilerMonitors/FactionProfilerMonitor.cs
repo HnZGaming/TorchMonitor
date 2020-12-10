@@ -8,6 +8,7 @@ using Profiler.Basics;
 using Profiler.Core;
 using Sandbox.Game.World;
 using TorchMonitor.Monitors;
+using TorchMonitor.Utils;
 using Utils.General;
 using Utils.Torch;
 using VRage.Game.ModAPI;

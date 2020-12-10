@@ -3,7 +3,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Utils.General;
 
-namespace TorchMonitor.Monitors
+namespace TorchMonitor.Utils
 {
     public sealed class PlayerOnlineTimeDb
     {
