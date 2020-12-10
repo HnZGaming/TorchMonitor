@@ -6,7 +6,7 @@ using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using Utils.General;
 
-namespace TorchMonitor.Monitors
+namespace TorchMonitor.Utils
 {
     public sealed class BlockCategoryCounter
     {

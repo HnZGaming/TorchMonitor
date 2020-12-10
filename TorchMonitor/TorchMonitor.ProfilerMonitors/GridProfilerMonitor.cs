@@ -7,6 +7,7 @@ using Profiler.Basics;
 using Profiler.Core;
 using Sandbox.Game.Entities;
 using TorchMonitor.Monitors;
+using TorchMonitor.Utils;
 using Utils.General;
 
 namespace TorchMonitor.ProfilerMonitors

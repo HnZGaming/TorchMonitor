@@ -1,4 +1,4 @@
-﻿namespace TorchMonitor.Monitors
+﻿namespace TorchMonitor.Utils
 {
     public interface IMonitorGeneralConfig
     {
