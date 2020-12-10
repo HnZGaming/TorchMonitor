@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using Utils.General;
 
-namespace TorchMonitor.Monitors
+namespace TorchMonitor.Utils
 {
     public sealed class NameConflictSolver
     {

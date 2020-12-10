@@ -51,11 +51,11 @@ namespace Utils.Torch
             return new HashSet<long>(group.SelectMany(g => g.BigOwners));
         }
 
-        public static bool TryGetPlayerById(long id, out MyPlayer player)
+        public static bool TryGetPlayerById(this MyPlayerCollection self, long id, out MyPlayer player)
         {
             player = null;
-            return MySession.Static.Players.TryGetPlayerId(id, out var playerId) &&
-                   MySession.Static.Players.TryGetPlayerById(playerId, out player);
+            return self.TryGetPlayerId(id, out var playerId) &&
+                   self.TryGetPlayerById(playerId, out player);
         }
 
         public static bool IsConcealed(this IMyEntity entity)
