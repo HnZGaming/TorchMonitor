@@ -58,23 +58,26 @@ namespace TorchMonitor
             var playerOnlineTimeDb = new PlayerOnlineTimeDb(_localDb);
             playerOnlineTimeDb.Read();
 
+            var gridNameConflictSolver = new NameConflictSolver();
+            var playerNameConflictSolver = new NameConflictSolver();
+
             _intervalRunner = new IntervalRunner(Config, 1);
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
                 new SyncMonitor(Config),
-                //new GridMonitor(Config, new NameConflictSolver()),
+                //new GridMonitor(Config, gridNameConflictSolver),
                 //new FloatingObjectsMonitor(Config),
                 new RamUsageMonitor(Config),
                 //new VoxelMonitor(),
-                new OnlinePlayersMonitor(new NameConflictSolver(), playerOnlineTimeDb),
+                new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb),
                 new GeoLocationMonitor(_ipstackEndpoints, Config),
                 new BlockTypeProfilerMonitor(Config),
                 new FactionProfilerMonitor(Config),
                 new GameLoopProfilerMonitor(Config),
-                new GridProfilerMonitor(Config),
+                new GridProfilerMonitor(Config, gridNameConflictSolver),
                 //new MethodNameProfilerMonitor(Config),
                 new SessionComponentsProfilerMonitor(Config),
-                new PlayerProfilerMonitor(Config, new NameConflictSolver()),
+                new PlayerProfilerMonitor(Config, playerNameConflictSolver),
             });
         }
 
