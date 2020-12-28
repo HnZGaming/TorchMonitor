@@ -47,6 +47,12 @@ namespace TorchMonitor.Monitors
                 factions.Increment(factionTag);
 
                 var playerName = onlinePlayer.DisplayName;
+
+                if (string.IsNullOrEmpty(playerName))
+                {
+                    playerName = "<noname>";
+                }
+
                 playerName = _nameConflictSolver.GetSafeName(playerName, onlinePlayer.PlayerId());
 
                 TorchInfluxDbWriter
