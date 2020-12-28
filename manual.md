@@ -1,35 +1,41 @@
-# Setting Up Torch Monitor Cloud
+# Abstract
 
-## Talk to Cloud Admin
+This manual will cover cloud-hosting and self-hosting workflows.
 
-Hit up @ryo at #general in Torch Discord to sign up.
+1. Cloud setup -- 5 minutes.
+2. Self-hosting setup -- 1-2 days depending on your configuration.
 
-You will shortly receive following things:
+Cloud setup is recommended for first timers or light users 
+because the cloud admin will manage the infrastructure on behalf of you.
+As you get the grip of it you should consider a self-hosted setup.
+The cloud admin will let you export your data in case of conversion.
 
-- Credentials to write to your dedicated database.
-- A URL to your dedicated dashboard page.
+In any event feel free to reach out to the community on Discord: <br/>
+https://discord.gg/H5ncHjZyVD
 
-## Download Torch Plugins
+# Cloud Setup
 
-Save these plugin zips in your Plugins folder:
+## Talk to the cloud admin
 
-Profiler v3.1.0.17-6-g47b0d09<br/>
-https://torchapi.net/plugins/item/da82de0f-9d2f-4571-af1c-88c7921bc063<br/>
-`<guid>da82de0f-9d2f-4571-af1c-88c7921bc063</guid> <!--Profiler-->`
+Ping someone at the #general channel on Discord.
 
-TorchInfluxDB v2.1.0<br/>
-https://github.com/HnZGaming/TorchInfluxDb/releases<br/>
-`<guid>5af3a335-0e25-4ddd-9fc7-6084d7e42e79</guid> <!--TorchInfluxDB-->`
+## Install Torch plugins
 
-TorchMonitor v2.1.1<br/>
+TorchMonitor<br/>
 https://github.com/HnZGaming/TorchMonitor/releases <br/>
 `<guid>5ffdf796-4fca-446b-bc2e-2dee3d971532</guid> <!--TorchMonitor-->`
 
-Make sure GUIDs are registered to your Torch.cfg as well.
+TorchInfluxDB<br/>
+https://github.com/HnZGaming/TorchInfluxDb/releases <br/>
+`<guid>5af3a335-0e25-4ddd-9fc7-6084d7e42e79</guid> <!--TorchInfluxDB-->`
 
-## Configure TorchInfluxDB Plugin
+Profiler v3.1.*<br/>
+https://torchapi.net/plugins/item/da82de0f-9d2f-4571-af1c-88c7921bc063 <br/>
+`<guid>da82de0f-9d2f-4571-af1c-88c7921bc063</guid> <!--Profiler-->`
 
-Navigate to `InfluxDB Integration` in the plugin list on Torch UI and 
+## Configure Torch plugins
+
+Navigate to `InfluxDB Integration` plugin on Torch UI and 
 enter following credentials that you've received from the cloud admin:
 
 - `Host URL`
@@ -37,9 +43,9 @@ enter following credentials that you've received from the cloud admin:
 - `Bucket`
 - `Authentication Token`
 
-You do NOT need to restart Torch to change these configs.
+You do NOT need to restart Torch to apply these changes.
 
-Or, fill the following XML & save as `TorchInfluxDbPlugin.cfg` in your Instance folder:
+If your server is not running, you can save following config as `Instance/TorchInfluxDbPlugin.cfg`:
 
 ```
 <?xml version="1.0" encoding="utf-8"?>
@@ -54,43 +60,120 @@ Or, fill the following XML & save as `TorchInfluxDbPlugin.cfg` in your Instance 
 </TorchInfluxDbConfig>
 ```
 
-Other plugins don't need initial configuration.
+Configure other plugins per your need or leave them as-is.
 
-Make sure both TorchInfluxDB and TorchMonitor plugins are enabled by their plugin configs.
+## Watch your dashboard
 
-## Common Issues & Diagnosis
+Sign in & watch the dashboard via links that you've received from the cloud admin.
 
-### Dashboard has red markers with a descriptive error message
+You can 
+
+## Configure guest access
+
+Guests can watch your dashboards via `guest_grafana.torchmonitor.net` to the same path.
+To prevent a guest access to your dashboard, remove the view permission in the dashboard settings.
+For more information see:
+
+https://grafana.com/docs/grafana/latest/permissions/dashboard_folder_permissions/
+
+## Common Issues
+
+### Dashboard has a red marker with an error message
 
 Talk to the cloud admin.
 
-### Can't see data in the dashboard
+### Dashboard has empty panels
 
-Dashboard will not immediately fill in because your data needs to accumulate first.
+1. Wait for your Torch monitor to push some data into the database.
+1. Set the window time to "Last 5 minutes" on the dashboard.
+1. Make sure your server's OS time zone is in sync with the hardware clock.
 
-1. From the top right corner of the page, change "Last 24 hours" to "Last 5 minutes". Wait for data to flow in.
-1. Make sure your server's OS time zone is in sync with the machine's clock.
-1. Wait for 5 minutes and see if the dashboard starts filling.
+### `System.IO.FileNotFoundException`
 
-### Still can't see it
-
-Look into the plugin's logs.
-
-1. Find the log file (`Torch.log`) or the console, and see if any errors are yielded by `InfluxDb.*` or `TorchMonitor.*`.
-1. Set new NLog rule for `InfluxDb.*` and `TorchMonitor.*` with `minlevel` set to `Trace`. See `NLog.config` in Torch directory. Note a restart is needed for this to take effect.
-
-### `System.IO.FileNotFoundException` in Torch log
-
-You have install wrong version of plugins.
+You might have install wrong version of plugins.
 
 ### `Failed to write to database (NotFound)`
 
-You have input wrong Host URL or Organization ID.
+You might have wrong Host URL or Organization ID in the plugin config.
 
 ### `Failed to write to database (AccessDenied)`
 
-You have input wrong auth credentials.
+You might have wrong auth credentials in the plugin config.
 
 ## Questions & Feedbacks
 
-Ping @ryo at #general in Torch Discord.
+Ping someone at the #help channel on Discord.
+
+# Self-hosting Setup
+
+## Architecture
+
+### Platforms
+
+Either Windows or Linux works.
+
+### Data Flow
+
+1. Torch Monitor plugin (Torch) will collect game data using Profiler plugin.
+1. Torch InfluxDB plugin (Torch) will write the game data to your InfluxDB instance.
+1. Your InfluxDB instance will store the game data.
+1. Your Grafana instance will read and display the game data from your InfluxDB instance.
+
+### Ports
+
+1. Torch doesn't need one open (for this feature).
+1. InfluxDB doesn't need one open either, unless written/read via network.
+1. Grafana needs one open (default TCP 3000) so that you can watch the dashboard via network.
+
+## Download & install InfluxDB OSS v1.8 or v2.0
+
+### Windows
+
+InfluxDB v1.8 is recommended for Windows because there's an official build available.
+Note that the connector plugin doesn't support authentication for v1.8 (unless requested).
+You'll need to disable the database's auth so that the connector can write.
+Make sure the database's port is not open to the Internet.
+
+You can probably build v2.0 yourself starting from the source code.
+Alternatively you can utilize WSL or InfluxDB Cloud v2.0.
+
+### Linux
+
+InfluxDB v2.0 is the most reliable option for Linux.
+
+## Download & install Grafana OSS or Enterprise
+
+Grafana provides OSS and Enterprise versions which differ slightly to one another.
+Unless you plan to edit the source code the Enterprise version is recommended (it's free to host despite the name).
+
+Port (default TCP 3000) needs to open so that you can access the Web interface from the Internet.
+
+## Import the sample Grafana dashboard
+
+Get the JSON model of the sample Grafana dashboard linked in the #external-link channel on Discord.
+You will see all kinds of errors in the imported dashboard because datasources are not set up yet.
+
+## Set up InfluxDB datasources in Grafana
+
+For the sample dashboard to work, you need to configure both InfluxQL and Flux datasources in Grafana.
+InfluxQL and Flux are query interfaces of InfluxDB and must point to the same database.
+Note that those datasource names must confirm to the regex pattern in the datasource variables defined in the sample dashboard.
+
+### Create DBRP mapping for InfluxQL in InfluxDB v2.0
+
+InfluxQL interface is not accessible by default in InfluxDB v2.0 and you'll need to wire it up manually 
+(so that Grafana can query your database via InfluxQL interface). 
+For more information see:
+
+https://docs.influxdata.com/influxdb/v2.0/reference/api/influxdb-1x/dbrp
+
+## Configure guest access in Grafana
+
+Grafana allows unauthenticated users to sign in anonymously in a guest organization
+that you define in the app config.
+You can set up public dashboards in that organization.
+Guest users cannot view any dashboards outside the organization.
+
+## Questions & Feedback
+
+In any event feel free to reach out to the community on Discord.
