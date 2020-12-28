@@ -4,6 +4,7 @@ using Ipstack;
 using Torch;
 using Torch.Views;
 using TorchMonitor.Monitors;
+using TorchMonitor.ProfilerMonitors;
 using TorchMonitor.Utils;
 
 namespace TorchMonitor
@@ -13,11 +14,13 @@ namespace TorchMonitor
         IpstackEndpoints.IConfig,
         GeoLocationMonitor.IConfig,
         IntervalRunner.IConfig,
-        IMonitorGeneralConfig
+        IMonitorGeneralConfig,
+        GridProfilerMonitor.IConfig
     {
         bool _enabled = true;
         string _ipstackApiKey = "apikey";
         int _firstIgnoredSeconds = 120;
+        bool _gridProfilerDetailOutput;
 
         [XmlElement("Enabled")]
         [Display(Order = 0, Name = "Enabled")]
@@ -41,6 +44,14 @@ namespace TorchMonitor
         {
             get => _ipstackApiKey;
             set => SetValue(ref _ipstackApiKey, value);
+        }
+
+        [XmlElement("GridProfilerMonitor.DetailOutput")]
+        [Display(Order = 4, Name = "Grid Profiler Detail Output")]
+        public bool DetailOutput
+        {
+            get => _gridProfilerDetailOutput;
+            set => SetValue(ref _gridProfilerDetailOutput, value);
         }
 
         bool GeoLocationMonitor.IConfig.Enabled => !string.IsNullOrEmpty(ApiKey);
