@@ -130,9 +130,14 @@ Either Windows or Linux works.
 ### Windows
 
 InfluxDB v1.8 is recommended for Windows because there's an official build available.
+
 Note that the connector plugin doesn't support authentication for v1.8 (unless requested).
 You'll need to disable the database's auth so that the connector can write.
 Make sure the database's port is not open to the Internet.
+
+Also note that "database" means "bucket" in InfluxDB v1.8.
+Should you see "bucket" in the Torch InfluxDB plugin please translate it to "database" in v1.8.
+Both words point to an equivalent concept (in our context) and you can treat them equally.
 
 You can probably build v2.0 yourself starting from the source code.
 Alternatively you can utilize WSL or InfluxDB Cloud v2.0.
@@ -173,6 +178,15 @@ Grafana allows unauthenticated users to sign in anonymously in a guest organizat
 that you define in the app config.
 You can set up public dashboards in that organization.
 Guest users cannot view any dashboards outside the organization.
+
+## Common Issues
+
+### Can't find "bucket" in InfluxDB v1.8
+
+It's termed as "database" in InfluxDB v1.8, updated to "bucket" in v2.0.
+Means the same thing. For more information see:
+
+https://docs.influxdata.com/influxdb/v1.8/concepts/glossary/
 
 ## Questions & Feedback
 
