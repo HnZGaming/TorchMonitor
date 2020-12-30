@@ -55,13 +55,16 @@ namespace TorchMonitor.ProfilerMonitors
         {
             foreach (var (pb, entity) in result.GetTopEntities(MaxDisplayCount))
             {
-                var grid = pb.GetParentEntityOfType<MyCubeGrid>();
+                var grid = pb?.GetParentEntityOfType<MyCubeGrid>();
+                if (grid == null) return;
+
                 var gridName = _nameConflictSolver.GetSafeName(grid.DisplayName, grid.EntityId);
+                var mainMs = (float) entity.MainThreadTime / result.TotalFrameCount;
 
                 TorchInfluxDbWriter
                     .Measurement("profiler_scripts")
                     .Tag("grid_name", gridName)
-                    .Field("main_ms", (float) entity.MainThreadTime / result.TotalFrameCount)
+                    .Field("main_ms", mainMs)
                     .Write();
             }
         }
