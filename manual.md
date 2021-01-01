@@ -66,8 +66,6 @@ Configure other plugins per your need or leave them as-is.
 
 Sign in & watch the dashboard via links that you've received from the cloud admin.
 
-You can 
-
 ## Configure guest access
 
 Guests can watch your dashboards via `guest_grafana.torchmonitor.net` to the same path.
