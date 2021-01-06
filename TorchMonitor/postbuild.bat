@@ -1,8 +1,8 @@
 @echo off
 cmd 
 
-set PLUGINS_DIR="C://torch-server/Plugins"
-set TORCH_EXE_PATH="C://torch-server/Torch.Server.exe"
+set PLUGINS_DIR="C://Torch/server0/Plugins"
+set TORCH_EXE_PATH="C://Torch/server0/Torch.Server.exe"
 echo "plugins output path: %PLUGINS_DIR%, exe: %TORCH_EXE_PATH%"
 
 REM Prerequisites:
