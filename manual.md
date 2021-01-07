@@ -170,6 +170,15 @@ For more information see:
 
 https://docs.influxdata.com/influxdb/v2.0/reference/api/influxdb-1x/dbrp
 
+## Metrics
+
+For existing metrics and making your own, see here:
+
+https://github.com/HnZGaming/TorchMonitor/blob/master/readme.md
+
+Note that the plugin ships with some "commented out" metrics that you may be interested to try out.
+Those metrics consume some more database space but give you some more detail into the server health.
+
 ## Configure guest access in Grafana
 
 Grafana allows unauthenticated users to sign in anonymously in a guest organization
