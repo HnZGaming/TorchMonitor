@@ -164,9 +164,9 @@ Note that those datasource names must confirm to the regex pattern in the dataso
 
 ### Create DBRP mapping for InfluxQL in InfluxDB v2.0
 
-InfluxQL interface is not accessible by default in InfluxDB v2.0 and you'll need to wire it up manually 
-(so that Grafana can query your database via InfluxQL interface). 
-For more information see:
+InfluxQL interface's HTTP API is not accessible by default in InfluxDB v2.0 and you'll need to wire it up manually 
+(so that Grafana can query your database via InfluxQL interface).
+For more information and instruction on how to "map" v1.8 databases to v2.0 HTTP API, see:
 
 https://docs.influxdata.com/influxdb/v2.0/reference/api/influxdb-1x/dbrp
 
