@@ -17,13 +17,16 @@ namespace TorchMonitor
         IMonitorGeneralConfig,
         GridProfilerMonitor.IConfig
     {
+        const string OpGroupName = "Operation";
+        const string OutputGroupName = "Output";
+
         bool _enabled = true;
         string _ipstackApiKey = "apikey";
         int _firstIgnoredSeconds = 120;
         bool _gridProfilerDetailOutput;
 
         [XmlElement("Enabled")]
-        [Display(Order = 0, Name = "Enabled")]
+        [Display(Order = 0, Name = "Enabled", GroupName = OpGroupName)]
         public bool Enabled
         {
             get => _enabled;
@@ -31,7 +34,9 @@ namespace TorchMonitor
         }
 
         [XmlElement("FirstIgnoredSeconds")]
-        [Display(Order = 2, Name = "First Ignored Seconds")]
+        [Display(
+            Order = 2, Name = "First ignored seconds", GroupName = OpGroupName,
+            Description = "Skip writing for the first N seconds of the session.")]
         public int FirstIgnoredSeconds
         {
             get => _firstIgnoredSeconds;
@@ -39,7 +44,7 @@ namespace TorchMonitor
         }
 
         [XmlElement("Ipstack.ApiKey")]
-        [Display(Order = 3, Name = "Ipstack.ApiKey")]
+        [Display(Order = 3, Name = "Ipstack.ApiKey", GroupName = OpGroupName)]
         public string ApiKey
         {
             get => _ipstackApiKey;
@@ -47,7 +52,9 @@ namespace TorchMonitor
         }
 
         [XmlElement("GridProfilerMonitor.DetailOutput")]
-        [Display(Order = 4, Name = "Grid Profiler Detail Output")]
+        [Display(
+            Order = 4, Name = "Grid owners", GroupName = OutputGroupName,
+            Description = "Show the name of grid owners.")]
         public bool DetailOutput
         {
             get => _gridProfilerDetailOutput;

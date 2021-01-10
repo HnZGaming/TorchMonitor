@@ -20,7 +20,9 @@ namespace TorchMonitor.Utils
             var ids = GetIdsByName(name);
             ids.Add(id);
 
-            return ids.Count == 1 ? name : $"{name} ({id})";
+            if (ids.Count == 1) return name;
+
+            return $"{name} ({id})";
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]

@@ -46,14 +46,7 @@ namespace TorchMonitor.Monitors
                 var factionTag = faction?.Tag ?? "<single>";
                 factions.Increment(factionTag);
 
-                var playerName = onlinePlayer.DisplayName;
-
-                if (string.IsNullOrEmpty(playerName))
-                {
-                    playerName = "<noname>";
-                }
-
-                playerName = _nameConflictSolver.GetSafeName(playerName, onlinePlayer.PlayerId());
+                var playerName = FormatPlayerName(onlinePlayer);
 
                 TorchInfluxDbWriter
                     .Measurement("players_players")
@@ -83,6 +76,20 @@ namespace TorchMonitor.Monitors
                 .Write();
 
             _playerOnlineTimeDb.Write();
+        }
+
+        string FormatPlayerName(MyPlayer onlinePlayer)
+        {
+            var playerName = onlinePlayer.DisplayName;
+
+            if (string.IsNullOrEmpty(playerName))
+            {
+                playerName = "<noname>";
+            }
+
+            playerName = _nameConflictSolver.GetSafeName(playerName, onlinePlayer.PlayerId());
+
+            return playerName;
         }
     }
 }

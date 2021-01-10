@@ -112,7 +112,9 @@ namespace TorchMonitor.ProfilerMonitors
                 gridName = "<noname>";
             }
 
-            return _nameConflictSolver.GetSafeName(gridName, grid.EntityId);
+            gridName = _nameConflictSolver.GetSafeName(gridName, grid.EntityId);
+
+            return gridName;
         }
     }
 }
