@@ -11,7 +11,7 @@ As you get the grip of it you should consider a self-hosted setup.
 The cloud admin will let you export your data in case of conversion.
 
 In any event feel free to reach out to the community on Discord: <br/>
-https://discord.gg/H5ncHjZyVD
+https://discord.gg/AaqdbWa3AP
 
 # Cloud Setup
 
