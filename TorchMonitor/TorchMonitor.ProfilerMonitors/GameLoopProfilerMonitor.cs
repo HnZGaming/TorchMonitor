@@ -5,7 +5,6 @@ using Intervals;
 using NLog;
 using Profiler.Basics;
 using Profiler.Core;
-using TorchMonitor.Monitors;
 using TorchMonitor.Utils;
 using Utils.General;
 
@@ -45,8 +44,9 @@ namespace TorchMonitor.ProfilerMonitors
 
         void OnProfilingFinished(BaseProfilerResult<ProfilerCategory> result)
         {
+            var frameMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.Frame, 0);
+            var lockMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.Lock, 0);
             var updateMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.Update, 0);
-            var waitMs = result.TotalTime - updateMs;
             var updateNetworkMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateNetwork, 0);
             var updateReplMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateReplication, 0);
             var updateSessionCompsMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateSessionComponents, 0);
@@ -58,9 +58,8 @@ namespace TorchMonitor.ProfilerMonitors
 
             TorchInfluxDbWriter
                 .Measurement("profiler_game_loop")
-                .Field("tick", result.TotalFrameCount)
-                .Field("frame", result.TotalTime / result.TotalFrameCount)
-                .Field("wait", waitMs / result.TotalFrameCount)
+                .Field("frame", frameMs / result.TotalFrameCount)
+                .Field("lock", lockMs / result.TotalFrameCount)
                 .Field("update", updateMs / result.TotalFrameCount)
                 .Field("update_network", updateNetworkMs / result.TotalFrameCount)
                 .Field("update_replication", updateReplMs / result.TotalFrameCount)
