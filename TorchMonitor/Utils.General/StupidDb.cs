@@ -27,7 +27,7 @@ namespace Utils.General
     /// <remarks>
     /// Intended for a temporary and limited use only. Shouldn't be expected to process big data.
     /// </remarks>
-    internal sealed class StupidDb
+    public sealed class StupidDb
     {
         /// <summary>
         /// Attribute to specify an ID property of a row type.

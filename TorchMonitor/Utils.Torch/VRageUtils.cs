@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Sandbox;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Multiplayer;
@@ -15,20 +17,14 @@ namespace Utils.Torch
 {
     internal static class VRageUtils
     {
-        public static IEnumerable<long> Owners(this IMyCubeGrid self)
+        public static MyFaction GetOwnerFactionOrNull(this MyFactionCollection self, IMyCubeGrid grid)
         {
-            var ownerIds = new HashSet<long>();
-            foreach (var owner in self.BigOwners)
+            if (grid.BigOwners.TryGetFirst(out var ownerId))
             {
-                ownerIds.Add(owner);
+                return self.GetPlayerFaction(ownerId);
             }
 
-            foreach (var owner in self.SmallOwners)
-            {
-                ownerIds.Add(owner);
-            }
-
-            return ownerIds;
+            return null;
         }
 
         public static ulong SteamId(this MyPlayer p)
@@ -103,6 +99,11 @@ namespace Utils.Torch
             return onlinePlayer.PromoteLevel == MyPromoteLevel.None;
         }
 
+        public static bool IsAdmin(this IMyPlayer onlinePlayer)
+        {
+            return onlinePlayer.PromoteLevel >= MyPromoteLevel.Admin;
+        }
+
         public static ulong GetAdminSteamId()
         {
             if (!MySandboxGame.ConfigDedicated.Administrators.TryGetFirst(out var adminSteamIdStr)) return 0L;
@@ -140,9 +141,59 @@ namespace Utils.Torch
 
         public static ulong CurrentGameFrameCount => MySandboxGame.Static.SimulationFrameCounter;
 
+        public static bool IsSessionThread(this Thread self)
+        {
+            return self.ManagedThreadId == MySandboxGame.Static.UpdateThread.ManagedThreadId;
+        }
+
         public static void SendAddGps(this MyGpsCollection self, long identityId, MyGps gps, bool playSound)
         {
             self.SendAddGps(identityId, ref gps, gps.EntityId, playSound);
+        }
+
+        public static bool TryGetPlayerByGrid(this MyPlayerCollection self, IMyCubeGrid grid, out MyPlayer player)
+        {
+            player = null;
+            return grid.BigOwners.TryGetFirst(out var ownerId) &&
+                   self.TryGetPlayerById(ownerId, out player);
+        }
+
+        public static bool TryGetSteamId(this MyPlayerCollection self, long playerId, out ulong steamId)
+        {
+            steamId = self.TryGetSteamId(playerId);
+            return steamId != 0;
+        }
+
+        static IEnumerable<ulong> GetSteamIdsFromFactionId(long factionId)
+        {
+            var faction = MySession.Static.Factions.TryGetFactionById(factionId);
+            if (faction == null) yield break;
+
+            foreach (var (_, member) in faction.Members)
+            {
+                var playerId = member.PlayerId;
+                if (MySession.Static.Players.TryGetSteamId(playerId, out var steamId))
+                {
+                    yield return steamId;
+                }
+            }
+        }
+
+        public static bool TryGetFactionById(this MyFactionCollection self, long factionId, out IMyFaction faction)
+        {
+            faction = self.TryGetFactionById(factionId);
+            return faction != null;
+        }
+
+        public static bool TryGetPlayerFaction(this MyFactionCollection self, long playerId, out IMyFaction faction)
+        {
+            faction = MySession.Static.Factions.TryGetPlayerFaction(playerId);
+            return faction != null;
+        }
+
+        public static bool IsTopMostParent<T>(this MyEntity self)
+        {
+            return self.GetTopMostParent(typeof(T)) == self;
         }
     }
 }

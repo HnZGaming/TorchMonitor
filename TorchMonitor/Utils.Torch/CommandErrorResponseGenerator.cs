@@ -18,7 +18,7 @@ namespace Utils.Torch
             }
             catch (Exception e)
             {
-                LogAndRespond(self, e);
+                LogAndRespond(self, e, m => self.Context.Respond(m, Color.Red));
             }
         }
 
@@ -30,15 +30,15 @@ namespace Utils.Torch
             }
             catch (Exception e)
             {
-                LogAndRespond(self, e);
+                LogAndRespond(self, e, m => self.Context.Respond(m, Color.Red));
             }
         }
 
-        static void LogAndRespond(CommandModule self, Exception e)
+        public static void LogAndRespond(object self, Exception e, Action<string> f)
         {
             var errorId = $"{Random.Next(0, 999999):000000}";
             self.GetFullNameLogger().Error(e, errorId);
-            self.Context.Respond($"Oops, something broke. #{errorId}. Cause: \"{e.Message}\".", Color.Red);
+            f($"Oops, something broke. #{errorId}. Cause: \"{e.Message}\".");
         }
 
         static ILogger GetFullNameLogger(this object self)
