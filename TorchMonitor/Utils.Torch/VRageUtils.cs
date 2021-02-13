@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Sandbox;
+using Sandbox.Engine.Physics;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Multiplayer;
 using Sandbox.Game.Screens.Helpers;
 using Sandbox.Game.World;
 using Utils.General;
+using VRage;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Game.ObjectBuilders.Components;
@@ -146,54 +148,118 @@ namespace Utils.Torch
             return self.ManagedThreadId == MySandboxGame.Static.UpdateThread.ManagedThreadId;
         }
 
+        public static void ThrowIfNotSessionThread(this Thread self)
+        {
+            if (!self.IsSessionThread())
+            {
+                throw new Exception("not main thread");
+            }
+        }
+
         public static void SendAddGps(this MyGpsCollection self, long identityId, MyGps gps, bool playSound)
         {
             self.SendAddGps(identityId, ref gps, gps.EntityId, playSound);
+        }
+
+        public static bool TryGetFactionByPlayerId(this MyFactionCollection self, long playerId, out IMyFaction faction)
+        {
+            faction = MySession.Static.Factions.GetPlayerFaction(playerId);
+            return faction != null;
         }
 
         public static bool TryGetPlayerByGrid(this MyPlayerCollection self, IMyCubeGrid grid, out MyPlayer player)
         {
             player = null;
             return grid.BigOwners.TryGetFirst(out var ownerId) &&
-                   self.TryGetPlayerById(ownerId, out player);
+                   MySession.Static.Players.TryGetPlayerById(ownerId, out player);
         }
 
-        public static bool TryGetSteamId(this MyPlayerCollection self, long playerId, out ulong steamId)
+        public static bool IsNpcFaction(this MyFactionCollection self, string factionTag)
         {
-            steamId = self.TryGetSteamId(playerId);
-            return steamId != 0;
+            var faction = self.TryGetFactionByTag(factionTag);
+            if (faction == null) return false;
+            return faction.IsEveryoneNpc();
         }
 
-        static IEnumerable<ulong> GetSteamIdsFromFactionId(long factionId)
+        public static string GetPlayerFactionTag(this MyFactionCollection self, long playerId)
         {
-            var faction = MySession.Static.Factions.TryGetFactionById(factionId);
-            if (faction == null) yield break;
+            var faction = self.GetPlayerFaction(playerId);
+            return faction?.Tag;
+        }
 
-            foreach (var (_, member) in faction.Members)
+        public static bool TryGetCubeGridById(long gridId, out MyCubeGrid grid)
+        {
+            if (!MyEntityIdentifier.TryGetEntity(gridId, out var entity))
             {
-                var playerId = member.PlayerId;
-                if (MySession.Static.Players.TryGetSteamId(playerId, out var steamId))
+                grid = null;
+                return false;
+            }
+
+            if (!(entity is MyCubeGrid g))
+            {
+                throw new Exception($"Not a grid: {gridId} -> {entity.GetType()}");
+            }
+
+            grid = g;
+            return true;
+        }
+
+        public static long GetOwnerPlayerId(long gridId)
+        {
+            if (!Thread.CurrentThread.IsSessionThread())
+            {
+                throw new Exception("Not in the main thread");
+            }
+
+            if (TryGetCubeGridById(gridId, out var grid) &&
+                grid.BigOwners.TryGetFirst(out var ownerId))
+            {
+                return ownerId;
+            }
+
+            return 0;
+        }
+
+        public static string GetPlayerNameOrElse(this MyPlayerCollection self, long playerId, string defaultPlayerName)
+        {
+            if (self.TryGetPlayerById(playerId, out var p))
+            {
+                return p.DisplayName;
+            }
+
+            return defaultPlayerName;
+        }
+
+        public static string GetEntityNameOrElse(long entityId, string defaultName)
+        {
+            return MyEntities.TryGetEntityById(entityId, out var e) ? e.DisplayName : defaultName;
+        }
+
+        public static bool TryGetSelectedGrid(this IMyPlayer self, out MyCubeGrid selectedGrid)
+        {
+            if (self.Controller?.ControlledEntity?.Entity is MyCubeGrid seatedGrid)
+            {
+                selectedGrid = seatedGrid;
+                return true;
+            }
+
+            var from = self.GetPosition();
+            var vec = (self.Character.AimedPoint - from).Normalize();
+            var to = from + vec * 1000;
+            var hits = new List<MyPhysics.HitInfo>();
+            MyPhysics.CastRay(from, to, hits);
+            foreach (var hit in hits)
+            {
+                var hitEntity = hit.HkHitInfo.GetHitEntity();
+                if (hitEntity is MyCubeGrid hitGrid)
                 {
-                    yield return steamId;
+                    selectedGrid = hitGrid;
+                    return true;
                 }
             }
-        }
 
-        public static bool TryGetFactionById(this MyFactionCollection self, long factionId, out IMyFaction faction)
-        {
-            faction = self.TryGetFactionById(factionId);
-            return faction != null;
-        }
-
-        public static bool TryGetPlayerFaction(this MyFactionCollection self, long playerId, out IMyFaction faction)
-        {
-            faction = MySession.Static.Factions.TryGetPlayerFaction(playerId);
-            return faction != null;
-        }
-
-        public static bool IsTopMostParent<T>(this MyEntity self)
-        {
-            return self.GetTopMostParent(typeof(T)) == self;
+            selectedGrid = null;
+            return false;
         }
     }
 }

@@ -206,13 +206,11 @@
         <Compile Include="Utils.General\TaskUtils.cs" />
         <Compile Include="Utils.General\ThreadSafeThrottle.cs" />
         <Compile Include="Utils.General\TimeSeries.cs" />
-        <Compile Include="Utils.Torch\CommandErrorResponseGenerator.cs" />
         <Compile Include="Utils.Torch\CommandOption.cs" />
         <Compile Include="Utils.Torch\GameLoopObserver.cs" />
         <Compile Include="Utils.Torch\GameLoopObserverManager.cs" />
         <Compile Include="Utils.Torch\TorchPluginUtils.cs" />
         <Compile Include="Utils.Torch\TorchUtils.cs" />
-        <Compile Include="Utils.Torch\ViewUtils.cs" />
         <Compile Include="Utils.Torch\VRageUtils.cs" />
         <Compile Include="Utils.Torch\XmlUtils.cs" />
     </ItemGroup>

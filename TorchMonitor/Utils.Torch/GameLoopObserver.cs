@@ -57,8 +57,15 @@ namespace Utils.Torch
 
             OnNextUpdate(() =>
             {
-                canceller.ThrowIfCancellationRequested();
-                taskSource.TrySetResult(0);
+                try
+                {
+                    canceller.ThrowIfCancellationRequested();
+                    taskSource.TrySetResult(0);
+                }
+                catch (Exception e)
+                {
+                    taskSource.SetException(e);
+                }
             });
 
             return taskSource.Task;
