@@ -79,6 +79,7 @@ namespace TorchMonitor
                 new SessionComponentsProfilerMonitor(Config),
                 new PlayerProfilerMonitor(Config, playerNameConflictSolver),
                 new ScriptProfilerMonitor(Config, gridNameConflictSolver),
+                new NetworkEventProfilerMonitor(Config),
             });
         }
 
