@@ -50,6 +50,12 @@ namespace Utils.Torch
             return TryParse(key, out var str) && int.TryParse(str, out value);
         }
 
+        public bool TryParseLong(string key, out long value)
+        {
+            value = 0;
+            return TryParse(key, out var str) && long.TryParse(str, out value);
+        }
+
         public bool TryParseDouble(string key, out double value)
         {
             value = 0d;
