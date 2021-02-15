@@ -75,7 +75,7 @@ namespace TorchMonitor
                 new FactionProfilerMonitor(Config),
                 new GameLoopProfilerMonitor(Config),
                 new GridProfilerMonitor(Config, Config, gridNameConflictSolver),
-                //new MethodNameProfilerMonitor(Config),
+                new MethodNameProfilerMonitor(Config),
                 new SessionComponentsProfilerMonitor(Config),
                 new PlayerProfilerMonitor(Config, playerNameConflictSolver),
                 new ScriptProfilerMonitor(Config, gridNameConflictSolver),

@@ -1,54 +1,31 @@
 ﻿using System;
-using System.Threading.Tasks;
 using InfluxDb.Torch;
-using Intervals;
-using NLog;
 using Profiler.Basics;
-using Profiler.Core;
 using Sandbox.Game.World;
 using TorchMonitor.Utils;
-using Utils.General;
 
 namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class PlayerProfilerMonitor : IIntervalListener
+    public sealed class PlayerProfilerMonitor : ProfilerMonitorBase<MyIdentity>
     {
-        const int SamplingSeconds = 10;
-        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IMonitorGeneralConfig _config;
         readonly NameConflictSolver _nameConflictSolver;
 
         public PlayerProfilerMonitor(
             IMonitorGeneralConfig config,
-            NameConflictSolver nameConflictSolver)
+            NameConflictSolver nameConflictSolver) : base(config)
         {
-            _config = config;
             _nameConflictSolver = nameConflictSolver;
         }
 
-        public void OnInterval(int intervalsSinceStart)
-        {
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
-            if (intervalsSinceStart % SamplingSeconds != 0) return;
+        protected override int SamplingSeconds => 10;
 
-            Profile().Forget(Log);
+        protected override BaseProfiler<MyIdentity> MakeProfiler()
+        {
+            var mask = new GameEntityMask(null, null, null);
+            return new PlayerProfiler(mask);
         }
 
-        async Task Profile()
-        {
-            var gameEntityMask = new GameEntityMask(null, null, null);
-            using (var profiler = new PlayerProfiler(gameEntityMask))
-            using (ProfilerResultQueue.Profile(profiler))
-            {
-                profiler.MarkStart();
-                await Task.Delay(TimeSpan.FromSeconds(SamplingSeconds));
-
-                var result = profiler.GetResult();
-                OnProfilingFinished(result);
-            }
-        }
-
-        void OnProfilingFinished(BaseProfilerResult<MyIdentity> result)
+        protected override void OnProfilingFinished(BaseProfilerResult<MyIdentity> result)
         {
             foreach (var (player, entity) in result.GetTopEntities())
             {

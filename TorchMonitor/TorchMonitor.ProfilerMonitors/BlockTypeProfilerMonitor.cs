@@ -1,51 +1,27 @@
 ﻿using System;
-using System.Threading.Tasks;
 using InfluxDb.Torch;
-using Intervals;
-using NLog;
 using Profiler.Basics;
-using Profiler.Core;
-using TorchMonitor.Monitors;
 using TorchMonitor.Utils;
-using Utils.General;
 
 namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class BlockTypeProfilerMonitor : IIntervalListener
+    public sealed class BlockTypeProfilerMonitor : ProfilerMonitorBase<Type>
     {
-        const int SamplingSeconds = 10;
         const int MaxDisplayCount = 10;
-        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IMonitorGeneralConfig _config;
 
-        public BlockTypeProfilerMonitor(IMonitorGeneralConfig config)
+        public BlockTypeProfilerMonitor(IMonitorGeneralConfig config) : base(config)
         {
-            _config = config;
         }
 
-        public void OnInterval(int intervalsSinceStart)
-        {
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
-            if (intervalsSinceStart % SamplingSeconds != 0) return;
+        protected override int SamplingSeconds => 10;
 
-            Profile().Forget(Log);
+        protected override BaseProfiler<Type> MakeProfiler()
+        {
+            var mask = new GameEntityMask(null, null, null);
+            return new BlockTypeProfiler(mask);
         }
 
-        async Task Profile()
-        {
-            var gameEntityMask = new GameEntityMask(null, null, null);
-            using (var profiler = new BlockTypeProfiler(gameEntityMask))
-            using (ProfilerResultQueue.Profile(profiler))
-            {
-                profiler.MarkStart();
-                await Task.Delay(TimeSpan.FromSeconds(SamplingSeconds));
-
-                var result = profiler.GetResult();
-                OnProfilingFinished(result);
-            }
-        }
-
-        void OnProfilingFinished(BaseProfilerResult<Type> result)
+        protected override void OnProfilingFinished(BaseProfilerResult<Type> result)
         {
             foreach (var (type, entry) in result.GetTopEntities(MaxDisplayCount))
             {

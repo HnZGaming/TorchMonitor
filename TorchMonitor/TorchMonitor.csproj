@@ -144,6 +144,9 @@
         <Reference Include="SpaceEngineers.ObjectBuilders.XmlSerializers">
             <HintPath>$(SolutionDir)\GameBinaries\SpaceEngineers.ObjectBuilders.XmlSerializers.dll</HintPath>
         </Reference>
+        <Reference Include="HavokWrapper, Version=0.1.1.0, Culture=neutral, PublicKeyToken=null">
+            <HintPath>..\GameBinaries\HavokWrapper.dll</HintPath>
+        </Reference>
     </ItemGroup>
     <ItemGroup>
         <Reference Include="WindowsBase" />
@@ -172,6 +175,7 @@
         <Compile Include="TorchMonitor.Monitors\RamUsageMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\SyncMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\PlayerProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\ProfilerMonitorBase.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\ScriptProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.Reflections\MySteamGameService_Networking.cs" />
         <Compile Include="TorchMonitor.Utils\BlockCategoryCounter.cs" />

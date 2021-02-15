@@ -1,50 +1,25 @@
 ﻿using System;
-using System.Threading.Tasks;
 using InfluxDb.Torch;
-using Intervals;
-using NLog;
 using Profiler.Basics;
-using Profiler.Core;
-using TorchMonitor.Monitors;
 using TorchMonitor.Utils;
-using Utils.General;
 using VRage.Game.Components;
 
 namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class SessionComponentsProfilerMonitor : IIntervalListener
+    public sealed class SessionComponentsProfilerMonitor : ProfilerMonitorBase<MySessionComponentBase>
     {
-        const int SamplingSeconds = 10;
-        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IMonitorGeneralConfig _config;
-
-        public SessionComponentsProfilerMonitor(IMonitorGeneralConfig config)
+        public SessionComponentsProfilerMonitor(IMonitorGeneralConfig config) : base(config)
         {
-            _config = config;
         }
 
-        public void OnInterval(int intervalsSinceStart)
-        {
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
-            if (intervalsSinceStart % SamplingSeconds != 0) return;
+        protected override int SamplingSeconds => 10;
 
-            Profile().Forget(Log);
+        protected override BaseProfiler<MySessionComponentBase> MakeProfiler()
+        {
+            return new SessionComponentsProfiler();
         }
 
-        async Task Profile()
-        {
-            using (var profiler = new SessionComponentsProfiler())
-            using (ProfilerResultQueue.Profile(profiler))
-            {
-                profiler.MarkStart();
-                await Task.Delay(TimeSpan.FromSeconds(SamplingSeconds));
-
-                var result = profiler.GetResult();
-                OnProfilingFinished(result);
-            }
-        }
-
-        void OnProfilingFinished(BaseProfilerResult<MySessionComponentBase> result)
+        protected override void OnProfilingFinished(BaseProfilerResult<MySessionComponentBase> result)
         {
             foreach (var (comp, entity) in result.GetTopEntities())
             {

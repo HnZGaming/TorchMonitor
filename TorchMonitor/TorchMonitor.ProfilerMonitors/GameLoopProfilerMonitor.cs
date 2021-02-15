@@ -1,48 +1,24 @@
-﻿using System;
-using System.Threading.Tasks;
-using InfluxDb.Torch;
-using Intervals;
-using NLog;
+﻿using InfluxDb.Torch;
 using Profiler.Basics;
 using Profiler.Core;
 using TorchMonitor.Utils;
-using Utils.General;
 
 namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class GameLoopProfilerMonitor : IIntervalListener
+    public sealed class GameLoopProfilerMonitor : ProfilerMonitorBase<ProfilerCategory>
     {
-        const int SamplingSeconds = 10;
-        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IMonitorGeneralConfig _config;
-
-        public GameLoopProfilerMonitor(IMonitorGeneralConfig config)
+        public GameLoopProfilerMonitor(IMonitorGeneralConfig config) : base(config)
         {
-            _config = config;
         }
 
-        public void OnInterval(int intervalsSinceStart)
-        {
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
-            if (intervalsSinceStart % SamplingSeconds != 0) return;
+        protected override int SamplingSeconds => 10;
 
-            Profile().Forget(Log);
+        protected override BaseProfiler<ProfilerCategory> MakeProfiler()
+        {
+            return new GameLoopProfiler();
         }
 
-        async Task Profile()
-        {
-            var profiler = new GameLoopProfiler();
-            using (ProfilerResultQueue.Profile(profiler))
-            {
-                profiler.MarkStart();
-                await Task.Delay(TimeSpan.FromSeconds(SamplingSeconds));
-
-                var result = profiler.GetResult();
-                OnProfilingFinished(result);
-            }
-        }
-
-        void OnProfilingFinished(BaseProfilerResult<ProfilerCategory> result)
+        protected override void OnProfilingFinished(BaseProfilerResult<ProfilerCategory> result)
         {
             var frameMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.Frame, 0);
             var lockMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.Lock, 0);
