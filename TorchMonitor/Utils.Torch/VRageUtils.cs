@@ -10,6 +10,7 @@ using Sandbox.Game.Screens.Helpers;
 using Sandbox.Game.World;
 using Utils.General;
 using VRage;
+using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Game.ObjectBuilders.Components;
@@ -259,6 +260,16 @@ namespace Utils.Torch
             }
 
             selectedGrid = null;
+            return false;
+        }
+
+        public static bool IsSomeoneNpc(this MyFaction self)
+        {
+            foreach (var (id, _) in self.Members)
+            {
+                if (Sync.Players.IdentityIsNpc(id)) return true;
+            }
+
             return false;
         }
     }

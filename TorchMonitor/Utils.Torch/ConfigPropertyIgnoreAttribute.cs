@@ -3,7 +3,7 @@
 namespace Utils.Torch
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public sealed class ConfigCommandIgnoreAttribute : Attribute
+    public sealed class ConfigPropertyIgnoreAttribute : Attribute
     {
     }
 }

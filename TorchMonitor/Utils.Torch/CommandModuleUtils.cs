@@ -86,7 +86,8 @@ namespace Utils.Torch
                 return;
             }
 
-            var properties = GetConfigurableProperties(config).ToArray();
+            var promoLevel = self.Context.Player?.PromoteLevel ?? MyPromoteLevel.Admin;
+            var properties = GetConfigurableProperties(config, promoLevel).ToArray();
 
             var propertyName = propertyNameOrIndex;
             if (int.TryParse(propertyNameOrIndex, out var propertyIndex))
@@ -109,7 +110,16 @@ namespace Utils.Torch
                 return;
             }
 
-            if (self.Context.Args.TryGetElementAt(1, out var arg))
+            if (property.TryGetAttribute(out ConfigPropertyAttribute prop) &&
+                !prop.IsVisibleTo(promoLevel))
+            {
+                self.Context.Respond($"Property not visible: \"{propertyName}\"", Color.Red);
+                self.ShowConfigurableProperties(config);
+                return;
+            }
+
+            if (promoLevel == MyPromoteLevel.Admin &&
+                self.Context.Args.TryGetElementAt(1, out var arg))
             {
                 var newValue = ParsePrimitive(property.PropertyType, arg);
                 property.SetValue(config, newValue);
@@ -121,7 +131,8 @@ namespace Utils.Torch
 
         static void ShowConfigurablePropertyValues(this CommandModule self, object config)
         {
-            var properties = GetConfigurableProperties(config).ToArray();
+            var promoLevel = self.Context.Player?.PromoteLevel ?? MyPromoteLevel.Admin;
+            var properties = GetConfigurableProperties(config, promoLevel).ToArray();
             if (!properties.Any())
             {
                 self.Context.Respond("No configurable properties");
@@ -137,12 +148,15 @@ namespace Utils.Torch
                 msgBuilder.AppendLine($"> {name}: {value}");
             }
 
+            msgBuilder.AppendLine("To update, either `config <index> <value>` or `config <name> <value>`.");
+
             self.Context.Respond(msgBuilder.ToString());
         }
 
         static void ShowConfigurableProperties(this CommandModule self, object config)
         {
-            var properties = GetConfigurableProperties(config).ToArray();
+            var promoLevel = self.Context.Player?.PromoteLevel ?? MyPromoteLevel.Admin;
+            var properties = GetConfigurableProperties(config, promoLevel).ToArray();
             if (!properties.Any())
             {
                 self.Context.Respond("No configurable properties");
@@ -170,14 +184,19 @@ namespace Utils.Torch
             self.Context.Respond(msgBuilder.ToString());
         }
 
-        static IEnumerable<PropertyInfo> GetConfigurableProperties(object config)
+        static IEnumerable<PropertyInfo> GetConfigurableProperties(object config, MyPromoteLevel promoLevel)
         {
             var properties = config.GetType().GetProperties();
             foreach (var property in properties)
             {
                 if (!IsParseablePrimitive(property.PropertyType)) continue;
                 if (property.GetSetMethod() == null) continue;
-                if (property.HasAttribute<ConfigCommandIgnoreAttribute>()) continue;
+                if (property.HasAttribute<ConfigPropertyIgnoreAttribute>()) continue;
+
+                if (property.TryGetAttribute(out ConfigPropertyAttribute prop))
+                {
+                    if (!prop.IsVisibleTo(promoLevel)) continue;
+                }
 
                 yield return property;
             }
