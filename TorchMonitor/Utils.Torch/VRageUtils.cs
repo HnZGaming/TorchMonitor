@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Sandbox;
+using Sandbox.Engine.Physics;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Multiplayer;
 using Sandbox.Game.Screens.Helpers;
 using Sandbox.Game.World;
 using Utils.General;
+using VRage;
+using VRage.Game;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 using VRage.Game.ObjectBuilders.Components;
@@ -15,20 +20,14 @@ namespace Utils.Torch
 {
     internal static class VRageUtils
     {
-        public static IEnumerable<long> Owners(this IMyCubeGrid self)
+        public static MyFaction GetOwnerFactionOrNull(this MyFactionCollection self, IMyCubeGrid grid)
         {
-            var ownerIds = new HashSet<long>();
-            foreach (var owner in self.BigOwners)
+            if (grid.BigOwners.TryGetFirst(out var ownerId))
             {
-                ownerIds.Add(owner);
+                return self.GetPlayerFaction(ownerId);
             }
 
-            foreach (var owner in self.SmallOwners)
-            {
-                ownerIds.Add(owner);
-            }
-
-            return ownerIds;
+            return null;
         }
 
         public static ulong SteamId(this MyPlayer p)
@@ -103,6 +102,11 @@ namespace Utils.Torch
             return onlinePlayer.PromoteLevel == MyPromoteLevel.None;
         }
 
+        public static bool IsAdmin(this IMyPlayer onlinePlayer)
+        {
+            return onlinePlayer.PromoteLevel >= MyPromoteLevel.Admin;
+        }
+
         public static ulong GetAdminSteamId()
         {
             if (!MySandboxGame.ConfigDedicated.Administrators.TryGetFirst(out var adminSteamIdStr)) return 0L;
@@ -140,9 +144,133 @@ namespace Utils.Torch
 
         public static ulong CurrentGameFrameCount => MySandboxGame.Static.SimulationFrameCounter;
 
+        public static bool IsSessionThread(this Thread self)
+        {
+            return self.ManagedThreadId == MySandboxGame.Static.UpdateThread.ManagedThreadId;
+        }
+
+        public static void ThrowIfNotSessionThread(this Thread self)
+        {
+            if (!self.IsSessionThread())
+            {
+                throw new Exception("not main thread");
+            }
+        }
+
         public static void SendAddGps(this MyGpsCollection self, long identityId, MyGps gps, bool playSound)
         {
             self.SendAddGps(identityId, ref gps, gps.EntityId, playSound);
+        }
+
+        public static bool TryGetFactionByPlayerId(this MyFactionCollection self, long playerId, out IMyFaction faction)
+        {
+            faction = MySession.Static.Factions.GetPlayerFaction(playerId);
+            return faction != null;
+        }
+
+        public static bool TryGetPlayerByGrid(this MyPlayerCollection self, IMyCubeGrid grid, out MyPlayer player)
+        {
+            player = null;
+            return grid.BigOwners.TryGetFirst(out var ownerId) &&
+                   MySession.Static.Players.TryGetPlayerById(ownerId, out player);
+        }
+
+        public static bool IsNpcFaction(this MyFactionCollection self, string factionTag)
+        {
+            var faction = self.TryGetFactionByTag(factionTag);
+            if (faction == null) return false;
+            return faction.IsEveryoneNpc();
+        }
+
+        public static string GetPlayerFactionTag(this MyFactionCollection self, long playerId)
+        {
+            var faction = self.GetPlayerFaction(playerId);
+            return faction?.Tag;
+        }
+
+        public static bool TryGetCubeGridById(long gridId, out MyCubeGrid grid)
+        {
+            if (!MyEntityIdentifier.TryGetEntity(gridId, out var entity))
+            {
+                grid = null;
+                return false;
+            }
+
+            if (!(entity is MyCubeGrid g))
+            {
+                throw new Exception($"Not a grid: {gridId} -> {entity.GetType()}");
+            }
+
+            grid = g;
+            return true;
+        }
+
+        public static long GetOwnerPlayerId(long gridId)
+        {
+            if (!Thread.CurrentThread.IsSessionThread())
+            {
+                throw new Exception("Not in the main thread");
+            }
+
+            if (TryGetCubeGridById(gridId, out var grid) &&
+                grid.BigOwners.TryGetFirst(out var ownerId))
+            {
+                return ownerId;
+            }
+
+            return 0;
+        }
+
+        public static string GetPlayerNameOrElse(this MyPlayerCollection self, long playerId, string defaultPlayerName)
+        {
+            if (self.TryGetPlayerById(playerId, out var p))
+            {
+                return p.DisplayName;
+            }
+
+            return defaultPlayerName;
+        }
+
+        public static string GetEntityNameOrElse(long entityId, string defaultName)
+        {
+            return MyEntities.TryGetEntityById(entityId, out var e) ? e.DisplayName : defaultName;
+        }
+
+        public static bool TryGetSelectedGrid(this IMyPlayer self, out MyCubeGrid selectedGrid)
+        {
+            if (self.Controller?.ControlledEntity?.Entity is MyCubeGrid seatedGrid)
+            {
+                selectedGrid = seatedGrid;
+                return true;
+            }
+
+            var from = self.GetPosition();
+            var vec = (self.Character.AimedPoint - from).Normalize();
+            var to = from + vec * 1000;
+            var hits = new List<MyPhysics.HitInfo>();
+            MyPhysics.CastRay(from, to, hits);
+            foreach (var hit in hits)
+            {
+                var hitEntity = hit.HkHitInfo.GetHitEntity();
+                if (hitEntity is MyCubeGrid hitGrid)
+                {
+                    selectedGrid = hitGrid;
+                    return true;
+                }
+            }
+
+            selectedGrid = null;
+            return false;
+        }
+
+        public static bool IsSomeoneNpc(this MyFaction self)
+        {
+            foreach (var (id, _) in self.Members)
+            {
+                if (Sync.Players.IdentityIsNpc(id)) return true;
+            }
+
+            return false;
         }
     }
 }
