@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NLog;
 
 namespace Utils.General
 {
@@ -38,6 +39,7 @@ namespace Utils.General
         {
         }
 
+        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly string _filePath;
         readonly Dictionary<Type, PropertyInfo> _cachedIdProperties;
         readonly Dictionary<string, JToken> _ramCopy;
@@ -82,6 +84,12 @@ namespace Utils.General
             {
                 var fileText = File.ReadAllText(_filePath);
                 var copy = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(fileText);
+                if (copy == null) // corrupt file
+                {
+                    Log.Warn("File corrupted");
+                    return;
+                }
+
                 _ramCopy.AddRange(copy);
             }
         }
