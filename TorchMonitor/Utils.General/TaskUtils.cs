@@ -10,13 +10,14 @@ namespace Utils.General
     {
         public static async void Forget(this Task self, ILogger logger)
         {
-            await self.ContinueWith(t =>
+            try
             {
-                if (t.IsFaulted)
-                {
-                    logger.Error(t.Exception);
-                }
-            });
+                await self;
+            }
+            catch (Exception e)
+            {
+                logger.Error(e);
+            }
         }
 
         public static Task MoveToThreadPool(CancellationToken canceller = default)
@@ -27,29 +28,27 @@ namespace Utils.General
 
             ThreadPool.QueueUserWorkItem(_ =>
             {
-                canceller.ThrowIfCancellationRequested();
-                taskSource.SetResult(0);
+                try
+                {
+                    canceller.ThrowIfCancellationRequested();
+                    taskSource.SetResult(0);
+                }
+                catch (Exception e)
+                {
+                    taskSource.SetException(e);
+                }
             });
 
             return taskSource.Task;
         }
 
-        public static Task RunUntilCancelledAsync(Func<CancellationToken, Task> f, CancellationToken canceller)
+        public static async Task RunUntilCancelledAsync(Func<CancellationToken, Task> f, CancellationToken canceller)
         {
-            return Task.Factory.StartNew(async () =>
-            {
-                try
-                {
-                    await f(canceller);
-                }
-                catch (OperationCanceledException)
-                {
-                    // ignored
-                }
-            }, canceller);
+            await MoveToThreadPool(canceller);
+            await f(canceller);
         }
 
-        public static Task DelayMin(Stopwatch stopwatch, TimeSpan timeSpan, CancellationToken canceller = default)
+        public static Task DelayMax(Stopwatch stopwatch, TimeSpan timeSpan, CancellationToken canceller = default)
         {
             var n = (timeSpan - stopwatch.Elapsed).Milliseconds;
             var m = Math.Max(n, 0);
