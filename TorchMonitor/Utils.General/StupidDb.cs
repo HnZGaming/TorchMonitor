@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NLog;
 
 namespace Utils.General
 {
@@ -27,7 +28,7 @@ namespace Utils.General
     /// <remarks>
     /// Intended for a temporary and limited use only. Shouldn't be expected to process big data.
     /// </remarks>
-    internal sealed class StupidDb
+    public sealed class StupidDb
     {
         /// <summary>
         /// Attribute to specify an ID property of a row type.
@@ -38,6 +39,7 @@ namespace Utils.General
         {
         }
 
+        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly string _filePath;
         readonly Dictionary<Type, PropertyInfo> _cachedIdProperties;
         readonly Dictionary<string, JToken> _ramCopy;
@@ -82,6 +84,12 @@ namespace Utils.General
             {
                 var fileText = File.ReadAllText(_filePath);
                 var copy = JsonConvert.DeserializeObject<Dictionary<string, JToken>>(fileText);
+                if (copy == null) // corrupt file
+                {
+                    Log.Warn("File corrupted");
+                    return;
+                }
+
                 _ramCopy.AddRange(copy);
             }
         }

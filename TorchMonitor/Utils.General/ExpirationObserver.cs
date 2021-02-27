@@ -5,32 +5,29 @@ using System.Linq;
 
 namespace Utils.General
 {
-    internal sealed class DeprecationObserver<T>
+    internal sealed class ExpirationObserver<T>
     {
         readonly ConcurrentDictionary<T, DateTime> _items;
 
-        public DeprecationObserver()
+        public ExpirationObserver()
         {
             _items = new ConcurrentDictionary<T, DateTime>();
         }
 
-        public IEnumerable<T> Items => _items.Keys;
+        public IEnumerable<T> AllItems => _items.Keys;
 
         public void Add(T item)
         {
             _items[item] = DateTime.UtcNow;
         }
 
-        public IEnumerable<T> RemoveDeprecated(TimeSpan lifespan)
+        public IEnumerable<T> RemoveOlderThan(TimeSpan lifespan)
         {
             var endTime = DateTime.UtcNow - lifespan;
 
             var removedItems = new List<T>();
-            foreach (var ti in _items)
+            foreach (var (item, timestamp) in _items)
             {
-                var item = ti.Key;
-                var timestamp = ti.Value;
-
                 if (timestamp < endTime)
                 {
                     removedItems.Add(item);

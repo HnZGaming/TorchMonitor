@@ -2,7 +2,7 @@
 
 namespace Utils.Torch
 {
-    internal class CommandOption
+    internal sealed class CommandOption
     {
         public const string Prefix = "-";
         static readonly Regex _optionRegex = new Regex($@"{Prefix}(\w+?)=(.+?)(?: |$)");
@@ -50,6 +50,12 @@ namespace Utils.Torch
             return TryParse(key, out var str) && int.TryParse(str, out value);
         }
 
+        public bool TryParseLong(string key, out long value)
+        {
+            value = 0;
+            return TryParse(key, out var str) && long.TryParse(str, out value);
+        }
+
         public bool TryParseDouble(string key, out double value)
         {
             value = 0d;
@@ -65,7 +71,7 @@ namespace Utils.Torch
             return keyStr == key;
         }
 
-        public bool IsParameterless(string key, out bool exists)
+        public bool TryGetParameterlessBool(string key, out bool exists)
         {
             exists = false;
             var match = _parameterlessOptionRegex.Match(_arg);
