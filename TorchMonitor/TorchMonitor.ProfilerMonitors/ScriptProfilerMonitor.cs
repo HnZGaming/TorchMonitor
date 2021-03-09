@@ -19,11 +19,11 @@ namespace TorchMonitor.ProfilerMonitors
         const int MaxDisplayCount = 4;
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly IMonitorGeneralConfig _config;
-        readonly NameConflictSolver _nameConflictSolver;
+        readonly NameConflictSolver<long> _nameConflictSolver;
 
         public ScriptProfilerMonitor(
             IMonitorGeneralConfig config,
-            NameConflictSolver nameConflictSolver)
+            NameConflictSolver<long> nameConflictSolver)
         {
             _config = config;
             _nameConflictSolver = nameConflictSolver;

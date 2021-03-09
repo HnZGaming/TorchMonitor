@@ -58,8 +58,8 @@ namespace TorchMonitor
             var playerOnlineTimeDb = new PlayerOnlineTimeDb(_localDb);
             playerOnlineTimeDb.Read();
 
-            var gridNameConflictSolver = new NameConflictSolver();
-            var playerNameConflictSolver = new NameConflictSolver();
+            var gridNameConflictSolver = new NameConflictSolver<long>();
+            var playerNameConflictSolver = new NameConflictSolver<ulong>();
 
             _intervalRunner = new IntervalRunner(Config, 1);
             _intervalRunner.AddListeners(new IIntervalListener[]

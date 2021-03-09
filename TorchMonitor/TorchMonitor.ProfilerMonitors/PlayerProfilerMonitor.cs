@@ -16,11 +16,11 @@ namespace TorchMonitor.ProfilerMonitors
         const int SamplingSeconds = 10;
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly IMonitorGeneralConfig _config;
-        readonly NameConflictSolver _nameConflictSolver;
+        readonly NameConflictSolver<ulong> _nameConflictSolver;
 
         public PlayerProfilerMonitor(
             IMonitorGeneralConfig config,
-            NameConflictSolver nameConflictSolver)
+            NameConflictSolver<ulong> nameConflictSolver)
         {
             _config = config;
             _nameConflictSolver = nameConflictSolver;
@@ -53,7 +53,8 @@ namespace TorchMonitor.ProfilerMonitors
             foreach (var (player, entity) in result.GetTopEntities())
             {
                 var playerName = player.DisplayName;
-                playerName = _nameConflictSolver.GetSafeName(playerName, player.IdentityId);
+                var steamId = MySession.Static.Players.TryGetSteamId(player.IdentityId);
+                playerName = _nameConflictSolver.GetSafeName(playerName, steamId);
 
                 var mainMs = entity.MainThreadTime / result.TotalFrameCount;
 

@@ -16,14 +16,14 @@ namespace TorchMonitor.Monitors
     public sealed class GridMonitor : IIntervalListener
     {
         readonly IMonitorGeneralConfig _config;
-        readonly NameConflictSolver _nameConflictSolver;
+        readonly NameConflictSolver<long> _nameConflictSolver;
 
         int? _lastGroupCount;
         int? _lastBlockCount;
 
         public GridMonitor(
             IMonitorGeneralConfig config,
-            NameConflictSolver nameConflictSolver)
+            NameConflictSolver<long> nameConflictSolver)
         {
             _config = config;
             _nameConflictSolver = nameConflictSolver;
