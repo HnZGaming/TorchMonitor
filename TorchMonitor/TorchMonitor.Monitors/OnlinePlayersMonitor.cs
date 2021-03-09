@@ -12,11 +12,11 @@ namespace TorchMonitor.Monitors
     public sealed class OnlinePlayersMonitor : IIntervalListener
     {
         const int IntervalSecs = 10;
-        readonly NameConflictSolver _nameConflictSolver;
+        readonly NameConflictSolver<ulong> _nameConflictSolver;
         readonly PlayerOnlineTimeDb _playerOnlineTimeDb;
 
         public OnlinePlayersMonitor(
-            NameConflictSolver nameConflictSolver,
+            NameConflictSolver<ulong> nameConflictSolver,
             PlayerOnlineTimeDb playerOnlineTimeDb)
         {
             _nameConflictSolver = nameConflictSolver;
@@ -50,10 +50,12 @@ namespace TorchMonitor.Monitors
 
                 if (string.IsNullOrEmpty(playerName))
                 {
-                    playerName = "<noname>";
+                    playerName = $"{steamId}";
                 }
-
-                playerName = _nameConflictSolver.GetSafeName(playerName, onlinePlayer.PlayerId());
+                else
+                {
+                    playerName = _nameConflictSolver.GetSafeName(playerName, steamId);
+                }
 
                 TorchInfluxDbWriter
                     .Measurement("players_players")
