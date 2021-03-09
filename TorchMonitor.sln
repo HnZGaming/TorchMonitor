@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorchMonitor", "TorchMonito
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quickies", "Quickies\Quickies.csproj", "{196F6FAF-24E0-4DB5-8B83-6FB72E0A6E34}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Utils.General", "TorchUtils\Utils.General\Utils.General.shproj", "{4E4B3282-B361-4E86-B971-059EFF657677}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Utils.Torch", "TorchUtils\Utils.Torch\Utils.Torch.shproj", "{27569BFC-809F-4253-8959-78107741620D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
