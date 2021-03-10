@@ -18,12 +18,12 @@ namespace TorchMonitor.ProfilerMonitors
 
         const int MaxDisplayCount = 4;
         readonly IConfig _gridProfilerConfig;
-        readonly NameConflictSolver _nameConflictSolver;
+        readonly NameConflictSolver<long> _nameConflictSolver;
 
         public GridProfilerMonitor(
             IMonitorGeneralConfig generalConfig,
             IConfig gridProfilerConfig,
-            NameConflictSolver nameConflictSolver) : base(generalConfig)
+            NameConflictSolver<long> nameConflictSolver) : base(generalConfig)
         {
             _gridProfilerConfig = gridProfilerConfig;
             _nameConflictSolver = nameConflictSolver;

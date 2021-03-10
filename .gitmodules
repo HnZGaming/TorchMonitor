@@ -1,0 +1,3 @@
+[submodule "TorchUtils"]
+	path = TorchUtils
+	url = git@github.com:HnZGaming/TorchUtils.git

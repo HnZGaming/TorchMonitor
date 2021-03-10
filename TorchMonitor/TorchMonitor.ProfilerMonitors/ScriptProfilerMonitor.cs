@@ -11,11 +11,9 @@ namespace TorchMonitor.ProfilerMonitors
     public sealed class ScriptProfilerMonitor : ProfilerMonitorBase<MyProgrammableBlock>
     {
         const int MaxDisplayCount = 4;
-        readonly NameConflictSolver _nameConflictSolver;
+        readonly NameConflictSolver<long> _nameConflictSolver;
 
-        public ScriptProfilerMonitor(
-            IMonitorGeneralConfig config,
-            NameConflictSolver nameConflictSolver) : base(config)
+        public ScriptProfilerMonitor(IMonitorGeneralConfig config, NameConflictSolver<long> nameConflictSolver) : base(config)
         {
             _nameConflictSolver = nameConflictSolver;
         }

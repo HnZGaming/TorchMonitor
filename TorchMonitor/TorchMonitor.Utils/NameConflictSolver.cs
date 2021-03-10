@@ -4,17 +4,17 @@ using Utils.General;
 
 namespace TorchMonitor.Utils
 {
-    public sealed class NameConflictSolver
+    public sealed class NameConflictSolver<T>
     {
-        readonly Dictionary<string, HashSet<long>> _self;
+        readonly Dictionary<string, HashSet<T>> _self;
 
         public NameConflictSolver()
         {
-            _self = new Dictionary<string, HashSet<long>>();
+            _self = new Dictionary<string, HashSet<T>>();
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public string GetSafeName(string name, long id)
+        public string GetSafeName(string name, T id)
         {
             name.ThrowIfNullOrEmpty(nameof(name));
             var ids = GetIdsByName(name);
@@ -26,11 +26,11 @@ namespace TorchMonitor.Utils
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        ISet<long> GetIdsByName(string name)
+        ISet<T> GetIdsByName(string name)
         {
             if (!_self.TryGetValue(name, out var ids))
             {
-                ids = new HashSet<long>();
+                ids = new HashSet<T>();
                 _self[name] = ids;
             }
 

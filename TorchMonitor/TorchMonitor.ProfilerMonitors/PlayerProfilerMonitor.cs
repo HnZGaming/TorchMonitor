@@ -8,11 +8,9 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class PlayerProfilerMonitor : ProfilerMonitorBase<MyIdentity>
     {
-        readonly NameConflictSolver _nameConflictSolver;
+        readonly NameConflictSolver<ulong> _nameConflictSolver;
 
-        public PlayerProfilerMonitor(
-            IMonitorGeneralConfig config,
-            NameConflictSolver nameConflictSolver) : base(config)
+        public PlayerProfilerMonitor(IMonitorGeneralConfig config, NameConflictSolver<ulong> nameConflictSolver) : base(config)
         {
             _nameConflictSolver = nameConflictSolver;
         }
@@ -30,7 +28,8 @@ namespace TorchMonitor.ProfilerMonitors
             foreach (var (player, entity) in result.GetTopEntities())
             {
                 var playerName = player.DisplayName;
-                playerName = _nameConflictSolver.GetSafeName(playerName, player.IdentityId);
+                var steamId = MySession.Static.Players.TryGetSteamId(player.IdentityId);
+                playerName = _nameConflictSolver.GetSafeName(playerName, steamId);
 
                 var mainMs = entity.MainThreadTime / result.TotalFrameCount;
 
