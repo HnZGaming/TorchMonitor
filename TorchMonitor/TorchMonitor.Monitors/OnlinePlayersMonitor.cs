@@ -28,7 +28,6 @@ namespace TorchMonitor.Monitors
             if (intervalsSinceStart % IntervalSecs != 0) return;
 
             var onlinePlayers = MySession.Static.Players.GetOnlinePlayers().ToArray();
-
             var factionList = MySession.Static.Factions.Factions.Values;
             var factions = new Dictionary<string, int>();
 
@@ -36,8 +35,9 @@ namespace TorchMonitor.Monitors
             {
                 if (onlinePlayer == null) continue;
 
-                var steamId = onlinePlayer.SteamId();
                 var playerId = onlinePlayer.PlayerId();
+                var steamId = onlinePlayer.SteamId();
+                if (steamId == 0) continue;
 
                 _playerOnlineTimeDb.IncrementPlayerOnlineTime(steamId, (double) IntervalSecs / 3600);
                 var onlineTime = _playerOnlineTimeDb.GetPlayerOnlineTime(steamId);
@@ -47,15 +47,7 @@ namespace TorchMonitor.Monitors
                 factions.Increment(factionTag);
 
                 var playerName = onlinePlayer.DisplayName;
-
-                if (string.IsNullOrEmpty(playerName))
-                {
-                    playerName = $"{steamId}";
-                }
-                else
-                {
-                    playerName = _nameConflictSolver.GetSafeName(playerName, steamId);
-                }
+                playerName = _nameConflictSolver.GetSafeName(playerName, steamId);
 
                 TorchInfluxDbWriter
                     .Measurement("players_players")
