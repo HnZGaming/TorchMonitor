@@ -26,12 +26,12 @@ namespace TorchMonitor.ProfilerMonitors
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly IMonitorGeneralConfig _generalConfig;
         readonly IConfig _gridProfilerConfig;
-        readonly NameConflictSolver _nameConflictSolver;
+        readonly NameConflictSolver<long> _nameConflictSolver;
 
         public GridProfilerMonitor(
             IMonitorGeneralConfig generalConfig,
             IConfig gridProfilerConfig,
-            NameConflictSolver nameConflictSolver)
+            NameConflictSolver<long> nameConflictSolver)
         {
             _generalConfig = generalConfig;
             _gridProfilerConfig = gridProfilerConfig;
