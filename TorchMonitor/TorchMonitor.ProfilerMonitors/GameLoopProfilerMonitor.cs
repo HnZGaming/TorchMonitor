@@ -35,7 +35,7 @@ namespace TorchMonitor.ProfilerMonitors
             TorchInfluxDbWriter
                 .Measurement("profiler_game_loop")
                 .Field("frame", frameMs / result.TotalFrameCount)
-                .Field("lock", lockMs / result.TotalFrameCount)
+                .Field("wait", lockMs / result.TotalFrameCount)
                 .Field("update", updateMs / result.TotalFrameCount)
                 .Field("update_network", updateNetworkMs / result.TotalFrameCount)
                 .Field("update_replication", updateReplMs / result.TotalFrameCount)
