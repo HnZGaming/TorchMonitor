@@ -24,8 +24,9 @@ namespace TorchMonitor
         string _ipstackApiKey = "apikey";
         int _firstIgnoredSeconds = 120;
         bool _gridProfilerDetailOutput;
+        bool _resolveNameConflict = true;
 
-        [XmlElement("Enabled")]
+        [XmlElement]
         [Display(Order = 0, Name = "Enabled", GroupName = OpGroupName)]
         public bool Enabled
         {
@@ -33,7 +34,7 @@ namespace TorchMonitor
             set => SetValue(ref _enabled, value);
         }
 
-        [XmlElement("FirstIgnoredSeconds")]
+        [XmlElement]
         [Display(
             Order = 2, Name = "First ignored seconds", GroupName = OpGroupName,
             Description = "Skip writing for the first N seconds of the session.")]
@@ -53,12 +54,21 @@ namespace TorchMonitor
 
         [XmlElement("GridProfilerMonitor.DetailOutput")]
         [Display(
-            Order = 4, Name = "Grid owners", GroupName = OutputGroupName,
+            Name = "Grid owners", GroupName = OutputGroupName,
             Description = "Show the name of grid owners.")]
-        public bool DetailOutput
+        public bool ShowOwnerName
         {
             get => _gridProfilerDetailOutput;
             set => SetValue(ref _gridProfilerDetailOutput, value);
+        }
+
+        [XmlElement("GridProfilerMonitor.ResolveNameConflict")]
+        [Display(Name = "Resolve Grid Name Conflict", GroupName = OutputGroupName,
+            Description = "Show entity ID if multiple grids share the same name.")]
+        public bool ResolveNameConflict
+        {
+            get => _resolveNameConflict;
+            set => SetValue(ref _resolveNameConflict, value);
         }
 
         bool GeoLocationMonitor.IConfig.Enabled => !string.IsNullOrEmpty(ApiKey);

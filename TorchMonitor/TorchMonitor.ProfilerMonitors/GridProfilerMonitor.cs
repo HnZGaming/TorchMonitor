@@ -6,6 +6,7 @@ using Profiler.Basics;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using TorchMonitor.Utils;
+using Utils.General;
 
 namespace TorchMonitor.ProfilerMonitors
 {
@@ -13,7 +14,8 @@ namespace TorchMonitor.ProfilerMonitors
     {
         public interface IConfig
         {
-            bool DetailOutput { get; }
+            bool ShowOwnerName { get; }
+            bool ResolveNameConflict { get; }
         }
 
         const int MaxDisplayCount = 4;
@@ -53,7 +55,7 @@ namespace TorchMonitor.ProfilerMonitors
         {
             var safeGridName = GetSafeGridName(grid);
 
-            if (!_gridProfilerConfig.DetailOutput)
+            if (!_gridProfilerConfig.ShowOwnerName)
             {
                 return safeGridName;
             }
@@ -83,13 +85,12 @@ namespace TorchMonitor.ProfilerMonitors
 
         string GetSafeGridName(MyCubeGrid grid)
         {
-            var gridName = grid.DisplayName;
-            if (string.IsNullOrEmpty(gridName))
-            {
-                gridName = "<noname>";
-            }
+            var gridName = grid.DisplayName.OrNull() ?? "<noname>";
 
-            gridName = _nameConflictSolver.GetSafeName(gridName, grid.EntityId);
+            if (_gridProfilerConfig.ResolveNameConflict)
+            {
+                gridName = _nameConflictSolver.GetSafeName(gridName, grid.EntityId);
+            }
 
             return gridName;
         }
