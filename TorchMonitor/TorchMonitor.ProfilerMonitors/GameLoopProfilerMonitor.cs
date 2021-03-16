@@ -1,52 +1,28 @@
-﻿using System;
-using System.Threading.Tasks;
-using InfluxDb.Torch;
-using Intervals;
-using NLog;
+﻿using InfluxDb.Torch;
 using Profiler.Basics;
 using Profiler.Core;
-using TorchMonitor.Monitors;
 using TorchMonitor.Utils;
-using Utils.General;
 
 namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class GameLoopProfilerMonitor : IIntervalListener
+    public sealed class GameLoopProfilerMonitor : ProfilerMonitorBase<ProfilerCategory>
     {
-        const int SamplingSeconds = 10;
-        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IMonitorGeneralConfig _config;
-
-        public GameLoopProfilerMonitor(IMonitorGeneralConfig config)
+        public GameLoopProfilerMonitor(IMonitorGeneralConfig config) : base(config)
         {
-            _config = config;
         }
 
-        public void OnInterval(int intervalsSinceStart)
-        {
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
-            if (intervalsSinceStart % SamplingSeconds != 0) return;
+        protected override int SamplingSeconds => 10;
 
-            Profile().Forget(Log);
+        protected override BaseProfiler<ProfilerCategory> MakeProfiler()
+        {
+            return new GameLoopProfiler();
         }
 
-        async Task Profile()
+        protected override void OnProfilingFinished(BaseProfilerResult<ProfilerCategory> result)
         {
-            var profiler = new GameLoopProfiler();
-            using (ProfilerResultQueue.Profile(profiler))
-            {
-                profiler.MarkStart();
-                await Task.Delay(TimeSpan.FromSeconds(SamplingSeconds));
-
-                var result = profiler.GetResult();
-                OnProfilingFinished(result);
-            }
-        }
-
-        void OnProfilingFinished(BaseProfilerResult<ProfilerCategory> result)
-        {
+            var frameMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.Frame, 0);
+            var lockMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.Lock, 0);
             var updateMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.Update, 0);
-            var waitMs = result.TotalTime - updateMs;
             var updateNetworkMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateNetwork, 0);
             var updateReplMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateReplication, 0);
             var updateSessionCompsMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateSessionComponents, 0);
@@ -58,9 +34,8 @@ namespace TorchMonitor.ProfilerMonitors
 
             TorchInfluxDbWriter
                 .Measurement("profiler_game_loop")
-                .Field("tick", result.TotalFrameCount)
-                .Field("frame", result.TotalTime / result.TotalFrameCount)
-                .Field("wait", waitMs / result.TotalFrameCount)
+                .Field("frame", frameMs / result.TotalFrameCount)
+                .Field("wait", lockMs / result.TotalFrameCount)
                 .Field("update", updateMs / result.TotalFrameCount)
                 .Field("update_network", updateNetworkMs / result.TotalFrameCount)
                 .Field("update_replication", updateReplMs / result.TotalFrameCount)

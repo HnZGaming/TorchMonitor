@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using InfluxDb.Torch;
-using Intervals;
-using NLog;
 using Profiler.Basics;
-using Profiler.Core;
 using Sandbox.Game.World;
-using TorchMonitor.Monitors;
 using TorchMonitor.Utils;
 using Utils.General;
 using Utils.Torch;
@@ -15,40 +10,21 @@ using VRage.Game.ModAPI;
 
 namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class FactionProfilerMonitor : IIntervalListener
+    public sealed class FactionProfilerMonitor : ProfilerMonitorBase<IMyFaction>
     {
-        const int SamplingSeconds = 10;
-        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IMonitorGeneralConfig _config;
-
-        public FactionProfilerMonitor(IMonitorGeneralConfig config)
+        public FactionProfilerMonitor(IMonitorGeneralConfig config) : base(config)
         {
-            _config = config;
         }
 
-        public void OnInterval(int intervalsSinceStart)
-        {
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
-            if (intervalsSinceStart % SamplingSeconds != 0) return;
+        protected override int SamplingSeconds => 10;
 
-            Profile().Forget(Log);
+        protected override BaseProfiler<IMyFaction> MakeProfiler()
+        {
+            var mask = new GameEntityMask(null, null, null);
+            return new FactionProfiler(mask);
         }
 
-        async Task Profile()
-        {
-            var gameEntityMask = new GameEntityMask(null, null, null);
-            using (var profiler = new FactionProfiler(gameEntityMask))
-            using (ProfilerResultQueue.Profile(profiler))
-            {
-                profiler.MarkStart();
-                await Task.Delay(TimeSpan.FromSeconds(SamplingSeconds));
-
-                var result = profiler.GetResult();
-                OnProfilingFinished(result);
-            }
-        }
-
-        void OnProfilingFinished(BaseProfilerResult<IMyFaction> result)
+        protected override void OnProfilingFinished(BaseProfilerResult<IMyFaction> result)
         {
             // get online players per faction
             var onlineFactions = new Dictionary<string, int>();

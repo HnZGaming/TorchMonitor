@@ -1,49 +1,23 @@
-﻿using System;
-using System.Threading.Tasks;
-using InfluxDb.Torch;
-using Intervals;
-using NLog;
+﻿using InfluxDb.Torch;
 using Profiler.Basics;
-using Profiler.Core;
-using TorchMonitor.Monitors;
 using TorchMonitor.Utils;
-using Utils.General;
 
 namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class MethodNameProfilerMonitor : IIntervalListener
+    public sealed class MethodNameProfilerMonitor : ProfilerMonitorBase<string>
     {
-        const int SamplingSeconds = 10;
-        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IMonitorGeneralConfig _config;
-
-        public MethodNameProfilerMonitor(IMonitorGeneralConfig config)
+        public MethodNameProfilerMonitor(IMonitorGeneralConfig config) : base(config)
         {
-            _config = config;
         }
 
-        public void OnInterval(int intervalsSinceStart)
-        {
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
-            if (intervalsSinceStart % SamplingSeconds != 0) return;
+        protected override int SamplingSeconds => 10;
 
-            Profile().Forget(Log);
+        protected override BaseProfiler<string> MakeProfiler()
+        {
+            return new MethodNameProfiler();
         }
 
-        async Task Profile()
-        {
-            using (var profiler = new MethodNameProfiler())
-            using (ProfilerResultQueue.Profile(profiler))
-            {
-                profiler.MarkStart();
-                await Task.Delay(TimeSpan.FromSeconds(SamplingSeconds));
-
-                var result = profiler.GetResult();
-                OnProfilingFinished(result);
-            }
-        }
-
-        void OnProfilingFinished(BaseProfilerResult<string> result)
+        protected override void OnProfilingFinished(BaseProfilerResult<string> result)
         {
             foreach (var (name, entity) in result.GetTopEntities())
             {
