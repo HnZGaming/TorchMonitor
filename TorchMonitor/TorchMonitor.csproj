@@ -174,7 +174,9 @@
         <Compile Include="TorchMonitor.Monitors\OnlinePlayersMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\RamUsageMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\SyncMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\NetworkEventProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\PlayerProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\ProfilerMonitorBase.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\ScriptProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.Reflections\MySteamGameService_Networking.cs" />
         <Compile Include="TorchMonitor.Utils\BlockCategoryCounter.cs" />

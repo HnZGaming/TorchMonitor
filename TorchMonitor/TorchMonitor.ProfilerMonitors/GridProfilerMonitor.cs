@@ -1,66 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using InfluxDb.Torch;
-using Intervals;
-using NLog;
 using Profiler.Basics;
-using Profiler.Core;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
-using Utils.General;
 using TorchMonitor.Utils;
+using Utils.General;
 
 namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class GridProfilerMonitor : IIntervalListener
+    public sealed class GridProfilerMonitor : ProfilerMonitorBase<MyCubeGrid>
     {
         public interface IConfig
         {
-            bool DetailOutput { get; }
+            bool ShowOwnerName { get; }
+            bool ResolveNameConflict { get; }
         }
 
-        const int SamplingSeconds = 10;
         const int MaxDisplayCount = 4;
-        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IMonitorGeneralConfig _generalConfig;
         readonly IConfig _gridProfilerConfig;
         readonly NameConflictSolver<long> _nameConflictSolver;
 
         public GridProfilerMonitor(
             IMonitorGeneralConfig generalConfig,
             IConfig gridProfilerConfig,
-            NameConflictSolver<long> nameConflictSolver)
+            NameConflictSolver<long> nameConflictSolver) : base(generalConfig)
         {
-            _generalConfig = generalConfig;
             _gridProfilerConfig = gridProfilerConfig;
             _nameConflictSolver = nameConflictSolver;
         }
 
-        public void OnInterval(int intervalsSinceStart)
-        {
-            if (intervalsSinceStart < _generalConfig.FirstIgnoredSeconds) return;
-            if (intervalsSinceStart % SamplingSeconds != 0) return;
+        protected override int SamplingSeconds => 10;
 
-            Profile().Forget(Log);
+        protected override BaseProfiler<MyCubeGrid> MakeProfiler()
+        {
+            var mask = new GameEntityMask(null, null, null);
+            return new GridProfiler(mask);
         }
 
-        async Task Profile()
-        {
-            var gameEntityMask = new GameEntityMask(null, null, null);
-            using (var profiler = new GridProfiler(gameEntityMask))
-            using (ProfilerResultQueue.Profile(profiler))
-            {
-                profiler.MarkStart();
-                await Task.Delay(TimeSpan.FromSeconds(SamplingSeconds));
-
-                var result = profiler.GetResult();
-                OnProfilingFinished(result);
-            }
-        }
-
-        void OnProfilingFinished(BaseProfilerResult<MyCubeGrid> result)
+        protected override void OnProfilingFinished(BaseProfilerResult<MyCubeGrid> result)
         {
             foreach (var (grid, entity) in result.GetTopEntities(MaxDisplayCount))
             {
@@ -76,7 +55,7 @@ namespace TorchMonitor.ProfilerMonitors
         {
             var safeGridName = GetSafeGridName(grid);
 
-            if (!_gridProfilerConfig.DetailOutput)
+            if (!_gridProfilerConfig.ShowOwnerName)
             {
                 return safeGridName;
             }
@@ -106,13 +85,14 @@ namespace TorchMonitor.ProfilerMonitors
 
         string GetSafeGridName(MyCubeGrid grid)
         {
-            var gridName = grid.DisplayName;
-            if (string.IsNullOrEmpty(gridName))
+            var gridName = grid.DisplayName.OrNull() ?? "<noname>";
+
+            if (_gridProfilerConfig.ResolveNameConflict)
             {
-                gridName = "<noname>";
+                gridName = _nameConflictSolver.GetSafeName(gridName, grid.EntityId);
             }
 
-            return _nameConflictSolver.GetSafeName(gridName, grid.EntityId);
+            return gridName;
         }
     }
 }
