@@ -8,7 +8,7 @@ Intended for server health monitoring and analysis.
 
 To view the data, hook up a graphical dashboard like [Grafana](https://grafana.com/).
 
-[See an example dashboard](http://play.se.hnz.asia:3000/d/9UUUl7pGk/hnz-gaalsien?orgId=1&refresh=30s) (if still alive).
+[See an example dashboard](https://guest-grafana.torchmonitor.net/d/9UUUl7pGk/short-term-monitor?orgId=6&refresh=1m) (if still alive).
 
 ## Dependencies
 
