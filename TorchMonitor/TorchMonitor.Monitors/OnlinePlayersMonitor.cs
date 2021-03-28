@@ -76,7 +76,7 @@ namespace TorchMonitor.Monitors
                 .Field("online_time", totalOnlineTime)
                 .Write();
 
-            _playerOnlineTimeDb.Write();
+            _playerOnlineTimeDb.WriteToDb();
         }
     }
 }
