@@ -40,11 +40,14 @@ namespace TorchMonitor.Utils
         {
             _dbCopy.Clear();
             _localDb.Read();
+
             foreach (var doc in _localDb.QueryAll())
             {
-                var steamId = ulong.Parse(doc.SteamId);
+                if (!ulong.TryParse(doc.SteamId, out var steamId)) continue;
                 _dbCopy[steamId] = doc.OnlineTime;
             }
+
+            WriteToDb();
         }
 
         public void IncrementPlayerOnlineTime(ulong steamId, double addedOnlineTime)
