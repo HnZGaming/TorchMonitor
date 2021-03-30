@@ -2,6 +2,7 @@
 using System.Linq;
 using InfluxDb.Torch;
 using Intervals;
+using Sandbox.Game.Multiplayer;
 using Sandbox.Game.World;
 using TorchMonitor.Utils;
 using Utils.General;
@@ -38,6 +39,7 @@ namespace TorchMonitor.Monitors
                 var playerId = onlinePlayer.PlayerId();
                 var steamId = onlinePlayer.SteamId();
                 if (steamId == 0) continue;
+                if (Sync.Players.IdentityIsNpc(playerId)) continue;
 
                 _playerOnlineTimeDb.IncrementPlayerOnlineTime(steamId, (double) IntervalSecs / 3600);
                 var onlineTime = _playerOnlineTimeDb.GetPlayerOnlineTime(steamId);
