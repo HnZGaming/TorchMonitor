@@ -24,7 +24,6 @@ namespace TorchMonitor
         CancellationTokenSource _canceller;
         IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
-        StupidDb _localDb;
 
         TorchMonitorConfig Config => _config.Data;
 
@@ -52,10 +51,7 @@ namespace TorchMonitor
             _ipstackEndpoints = new IpstackEndpoints(Config);
 
             var localDbFilePath = this.MakeFilePath($"{nameof(TorchMonitor)}.json");
-            _localDb = new StupidDb(localDbFilePath);
-            _localDb.Read();
-
-            var playerOnlineTimeDb = new PlayerOnlineTimeDb(_localDb);
+            var playerOnlineTimeDb = new PlayerOnlineTimeDb(localDbFilePath);
             playerOnlineTimeDb.Read();
 
             var gridNameConflictSolver = new NameConflictSolver<long>();

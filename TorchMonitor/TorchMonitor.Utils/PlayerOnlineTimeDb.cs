@@ -20,34 +20,34 @@ namespace TorchMonitor.Utils
                 OnlineTime = onlineTime;
             }
 
-            [JsonProperty("steam_id"), StupidDb.Id]
+            [JsonProperty("steam_id"), StupidDbId]
             public string SteamId { get; private set; }
 
             [JsonProperty("online_time")]
             public double OnlineTime { get; private set; }
         }
 
-        const string TableName = "online_times";
-
-        readonly StupidDb _localDb;
+        readonly StupidDb<Document> _localDb;
         readonly Dictionary<ulong, double> _dbCopy;
 
-        internal PlayerOnlineTimeDb(StupidDb localDb)
+        internal PlayerOnlineTimeDb(string filePath)
         {
-            _localDb = localDb;
+            _localDb = new StupidDb<Document>(filePath);
             _dbCopy = new Dictionary<ulong, double>();
         }
 
         public void Read()
         {
             _dbCopy.Clear();
+            _localDb.Read();
 
-            var docs = _localDb.Query<Document>(TableName);
-            foreach (var doc in docs)
+            foreach (var doc in _localDb.QueryAll())
             {
-                var steamId = ulong.Parse(doc.SteamId);
+                if (!ulong.TryParse(doc.SteamId, out var steamId)) continue;
                 _dbCopy[steamId] = doc.OnlineTime;
             }
+
+            WriteToDb();
         }
 
         public void IncrementPlayerOnlineTime(ulong steamId, double addedOnlineTime)
@@ -68,7 +68,7 @@ namespace TorchMonitor.Utils
             return _dbCopy.Sum(p => p.Value);
         }
 
-        public void Write()
+        public void WriteToDb()
         {
             var docs = new List<Document>();
             foreach (var (steamId, onlineTime) in _dbCopy)
@@ -77,7 +77,8 @@ namespace TorchMonitor.Utils
                 docs.Add(doc);
             }
 
-            _localDb.Insert(TableName, docs);
+            _localDb.Clear();
+            _localDb.InsertAll(docs);
             _localDb.Write();
         }
     }
