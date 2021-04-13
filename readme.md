@@ -10,6 +10,8 @@ To view the data, hook up a graphical dashboard like [Grafana](https://grafana.c
 
 [See an example dashboard](https://guest-grafana.torchmonitor.net/d/9UUUl7pGk/short-term-monitor?orgId=6&refresh=1m) (if still alive).
 
+[See the user manual](manual.md) to get started <--
+
 ## Dependencies
 
 * [TorchInfluxDb plugin](https://github.com/HnZGaming/TorchInfluxDb) to write to the database.
