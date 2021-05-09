@@ -70,7 +70,7 @@ Sign in & watch the dashboard via links that you've received from the cloud admi
 
 ## Configure guest access
 
-Guests can watch your dashboards via `guest_grafana.torchmonitor.net` to the same path.
+Guests can watch your dashboards via `guest-grafana.torchmonitor.net` to the same path.
 To prevent a guest access to your dashboard, remove the view permission in the dashboard settings.
 For more information see:
 
