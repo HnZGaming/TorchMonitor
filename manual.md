@@ -21,6 +21,8 @@ Ping someone at [#torch-monitor](https://discord.gg/TE26pukevH) on Discord.
 
 ## Install Torch plugins
 
+See: [How to install plugins to your Torch server](https://wiki.torchapi.net/index.php/Plugins)
+
 TorchMonitor<br/>
 https://github.com/HnZGaming/TorchMonitor/releases <br/>
 `<guid>5ffdf796-4fca-446b-bc2e-2dee3d971532</guid> <!--TorchMonitor-->`
