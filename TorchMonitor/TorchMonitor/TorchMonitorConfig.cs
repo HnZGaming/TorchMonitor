@@ -15,7 +15,8 @@ namespace TorchMonitor
         GeoLocationMonitor.IConfig,
         IntervalRunner.IConfig,
         IMonitorGeneralConfig,
-        GridProfilerMonitor.IConfig
+        GridProfilerMonitor.IConfig, 
+        SessionComponentsProfilerMonitor.IConfig
     {
         const string OpGroupName = "Operation";
         const string OutputGroupName = "Output";
@@ -25,6 +26,7 @@ namespace TorchMonitor
         int _firstIgnoredSeconds = 120;
         bool _gridProfilerDetailOutput;
         bool _resolveNameConflict = true;
+        bool _monitorSessionComponentNamespace;
 
         [XmlElement]
         [Display(Order = 0, Name = "Enabled", GroupName = OpGroupName)]
@@ -72,5 +74,14 @@ namespace TorchMonitor
         }
 
         bool GeoLocationMonitor.IConfig.Enabled => !string.IsNullOrEmpty(ApiKey);
+
+        [XmlElement("SessionComponentsProfilerMonitor.MonitorNamespace")]
+        [Display(Name = "Monitor namespace of session components", GroupName = OutputGroupName,
+            Description = "Show type namespace of session components.")]
+        public bool MonitorSessionComponentNamespace
+        {
+            get => _monitorSessionComponentNamespace;
+            set => SetValue(ref _monitorSessionComponentNamespace, value);
+        }
     }
 }
