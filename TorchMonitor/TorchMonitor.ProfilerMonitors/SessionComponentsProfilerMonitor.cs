@@ -8,8 +8,18 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class SessionComponentsProfilerMonitor : ProfilerMonitorBase<MySessionComponentBase>
     {
-        public SessionComponentsProfilerMonitor(IMonitorGeneralConfig config) : base(config)
+        readonly IConfig _myConfig;
+
+        public interface IConfig
         {
+            bool MonitorSessionComponentNamespace { get; }
+        }
+
+        public SessionComponentsProfilerMonitor(
+            IMonitorGeneralConfig generalConfig,
+            IConfig myConfig) : base(generalConfig)
+        {
+            _myConfig = myConfig;
         }
 
         protected override int SamplingSeconds => 10;
@@ -23,10 +33,17 @@ namespace TorchMonitor.ProfilerMonitors
         {
             foreach (var (comp, entity) in result.GetTopEntities())
             {
+                var ms = (float) entity.MainThreadTime / result.TotalFrameCount;
+
+                var type = comp.GetType();
+                var name = _myConfig.MonitorSessionComponentNamespace
+                    ? $"{type.Namespace}/{type.Name}"
+                    : type.Name;
+
                 TorchInfluxDbWriter
                     .Measurement("profiler_game_loop_session_components")
-                    .Tag("comp_name", comp.GetType().Name)
-                    .Field("main_ms", (float) entity.MainThreadTime / result.TotalFrameCount)
+                    .Tag("comp_name", name)
+                    .Field("main_ms", ms)
                     .Write();
             }
         }
