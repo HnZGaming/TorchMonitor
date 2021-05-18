@@ -4,7 +4,9 @@ using System.Linq;
 using InfluxDb.Torch;
 using Intervals;
 using Sandbox.Game.Entities;
+using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
+using Sandbox.ModAPI.Ingame;
 using TorchMonitor.Utils;
 using Utils.General;
 
@@ -12,6 +14,8 @@ namespace TorchMonitor.Monitors
 {
     public sealed class BlockCountMonitor : IIntervalListener
     {
+        const int MaxMonitoredCount = 5;
+
         readonly IMonitorGeneralConfig _config;
         readonly Dictionary<long, int> _playerBlockCounts;
         readonly Dictionary<string, int> _factionBlockCounts;
@@ -48,38 +52,39 @@ namespace TorchMonitor.Monitors
             // per player/faction
             {
                 _playerBlockCounts.Clear();
+                _factionBlockCounts.Clear();
 
                 foreach (var grid in allGrids)
                 foreach (var block in grid.CubeBlocks)
                 {
-                    _playerBlockCounts.Increment(block.OwnerId);
+                    var ownerId = GetOwnerId(block);
+                    _playerBlockCounts.Increment(ownerId);
                 }
 
-                var allIds = MySession.Static.Players.GetAllIdentities().ToDictionary(id => id.IdentityId);
-                foreach (var (idId, blockCount) in _playerBlockCounts)
+                var topPlayerBlockCounts = _playerBlockCounts.OrderByDescending(p => p.Value).Take(MaxMonitoredCount);
+                var allIds = MySession.Static.Players.GetAllIdentities().ToDictionary(id => id.IdentityId, id => id.DisplayName);
+                allIds[0] = "<nobody>";
+                foreach (var (id, blockCount) in topPlayerBlockCounts)
                 {
-                    if (!allIds.TryGetValue(idId, out var id)) continue;
+                    if (!allIds.TryGetValue(id, out var playerName)) continue;
 
                     TorchInfluxDbWriter
                         .Measurement("blocks_players")
-                        .Tag("name", id.DisplayName.Replace("\\", "-"))
+                        .Tag("name", playerName.Replace("\\", "-"))
                         .Field("block_count", blockCount)
                         .Write();
                 }
 
-                _playerBlockCounts.Clear();
-                _factionBlockCounts.Clear();
-
                 foreach (var (idId, blockCount) in _playerBlockCounts)
                 {
                     var faction = MySession.Static.Factions.TryGetPlayerFaction(idId);
-                    if (faction != null)
-                    {
-                        _factionBlockCounts.Increment(faction.Name, blockCount);
-                    }
+                    if (faction == null) continue;
+
+                    _factionBlockCounts.Increment(faction.Name, blockCount);
                 }
 
-                foreach (var (factionName, blockCount) in _factionBlockCounts)
+                var topFactionBlockCounts = _factionBlockCounts.OrderByDescending(p => p.Value).Take(MaxMonitoredCount);
+                foreach (var (factionName, blockCount) in topFactionBlockCounts)
                 {
                     TorchInfluxDbWriter
                         .Measurement("blocks_factions")
@@ -88,8 +93,20 @@ namespace TorchMonitor.Monitors
                         .Write();
                 }
 
+                _playerBlockCounts.Clear();
                 _factionBlockCounts.Clear();
             }
+        }
+
+        static long GetOwnerId(MySlimBlock block)
+        {
+            var ownerId = block.OwnerId;
+            if (ownerId == 0)
+            {
+                ownerId = block.BuiltBy;
+            }
+
+            return ownerId;
         }
     }
 }
