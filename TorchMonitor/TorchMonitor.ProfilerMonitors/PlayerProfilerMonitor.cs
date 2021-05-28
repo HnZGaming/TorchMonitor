@@ -25,7 +25,7 @@ namespace TorchMonitor.ProfilerMonitors
 
         protected override void OnProfilingFinished(BaseProfilerResult<MyIdentity> result)
         {
-            foreach (var (player, entity) in result.GetTopEntities())
+            foreach (var (player, entity) in result.GetTopEntities(10))
             {
                 var playerName = player.DisplayName;
                 var steamId = MySession.Static.Players.TryGetSteamId(player.IdentityId);
