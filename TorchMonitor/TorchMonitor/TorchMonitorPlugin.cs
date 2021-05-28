@@ -76,7 +76,7 @@ namespace TorchMonitor
                 new PlayerProfilerMonitor(Config, playerNameConflictSolver),
                 new ScriptProfilerMonitor(Config, gridNameConflictSolver),
                 new NetworkEventProfilerMonitor(Config),
-                new PhysicsProfilerMonitor(Config),
+                new PhysicsProfilerMonitor(Config, Config),
             });
         }
 
