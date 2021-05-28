@@ -6,7 +6,6 @@ using Intervals;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
-using Sandbox.ModAPI.Ingame;
 using TorchMonitor.Utils;
 using Utils.General;
 
@@ -17,15 +16,11 @@ namespace TorchMonitor.Monitors
         const int MaxMonitoredCount = 5;
 
         readonly IMonitorGeneralConfig _config;
-        readonly Dictionary<long, int> _playerBlockCounts;
-        readonly Dictionary<string, int> _factionBlockCounts;
 
         public BlockCountMonitor(
             IMonitorGeneralConfig config)
         {
             _config = config;
-            _playerBlockCounts = new Dictionary<long, int>();
-            _factionBlockCounts = new Dictionary<string, int>();
         }
 
         public void OnInterval(int intervalsSinceStart)
@@ -49,24 +44,46 @@ namespace TorchMonitor.Monitors
                     .Write();
             }
 
+            // per grid
+            {
+                var gridBlockCounts = new Dictionary<long, int>();
+                foreach (var grid in allGrids)
+                {
+                    gridBlockCounts.Increment(grid.EntityId);
+                }
+
+                var topGridBlockCounts = gridBlockCounts.OrderByDescending(p => p.Value).Take(MaxMonitoredCount);
+                var gridNames = allGrids.ToDictionary(p => p.EntityId, p => p.DisplayName);
+                foreach (var (gridId, blockCount) in topGridBlockCounts)
+                {
+                    var gridName = gridNames[gridId];
+
+                    TorchInfluxDbWriter
+                        .Measurement("blocks_grids")
+                        .Tag("name", gridName.Replace("\\", "-"))
+                        .Field("block_count", blockCount)
+                        .Write();
+                }
+            }
+
             // per player/faction
             {
-                _playerBlockCounts.Clear();
-                _factionBlockCounts.Clear();
+                var playerBlockCounts = new Dictionary<long, int>();
+                var factionBlockCounts = new Dictionary<string, int>();
 
                 foreach (var grid in allGrids)
                 foreach (var block in grid.CubeBlocks)
                 {
                     var ownerId = GetOwnerId(block);
-                    _playerBlockCounts.Increment(ownerId);
+                    playerBlockCounts.Increment(ownerId);
                 }
 
-                var topPlayerBlockCounts = _playerBlockCounts.OrderByDescending(p => p.Value).Take(MaxMonitoredCount);
-                var allIds = MySession.Static.Players.GetAllIdentities().ToDictionary(id => id.IdentityId, id => id.DisplayName);
-                allIds[0] = "<nobody>";
+                var topPlayerBlockCounts = playerBlockCounts.OrderByDescending(p => p.Value).Take(MaxMonitoredCount);
+                var playerNames = MySession.Static.Players.GetAllIdentities().ToDictionary(id => id.IdentityId, id => id.DisplayName);
+                playerNames[0] = "<nobody>";
                 foreach (var (id, blockCount) in topPlayerBlockCounts)
                 {
-                    if (!allIds.TryGetValue(id, out var playerName)) continue;
+                    if (!playerNames.TryGetValue(id, out var playerName)) continue;
 
                     TorchInfluxDbWriter
                         .Measurement("blocks_players")
@@ -75,15 +92,15 @@ namespace TorchMonitor.Monitors
                         .Write();
                 }
 
-                foreach (var (idId, blockCount) in _playerBlockCounts)
+                foreach (var (idId, blockCount) in playerBlockCounts)
                 {
                     var faction = MySession.Static.Factions.TryGetPlayerFaction(idId);
                     if (faction == null) continue;
 
-                    _factionBlockCounts.Increment(faction.Name, blockCount);
+                    factionBlockCounts.Increment(faction.Name, blockCount);
                 }
 
-                var topFactionBlockCounts = _factionBlockCounts.OrderByDescending(p => p.Value).Take(MaxMonitoredCount);
+                var topFactionBlockCounts = factionBlockCounts.OrderByDescending(p => p.Value).Take(MaxMonitoredCount);
                 foreach (var (factionName, blockCount) in topFactionBlockCounts)
                 {
                     TorchInfluxDbWriter
@@ -93,8 +110,8 @@ namespace TorchMonitor.Monitors
                         .Write();
                 }
 
-                _playerBlockCounts.Clear();
-                _factionBlockCounts.Clear();
+                playerBlockCounts.Clear();
+                factionBlockCounts.Clear();
             }
         }
 
