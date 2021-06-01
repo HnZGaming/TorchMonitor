@@ -170,11 +170,12 @@
         <Compile Include="TorchMonitor.Monitors\GeoLocationMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\VoxelMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\FloatingObjectsMonitor.cs" />
-        <Compile Include="TorchMonitor.Monitors\GridMonitor.cs" />
+        <Compile Include="TorchMonitor.Monitors\BlockCountMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\OnlinePlayersMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\RamUsageMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\SyncMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\NetworkEventProfilerMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\PhysicsProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\PlayerProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\ProfilerMonitorBase.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\ScriptProfilerMonitor.cs" />

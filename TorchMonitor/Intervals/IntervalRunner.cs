@@ -33,6 +33,12 @@ namespace Intervals
             _listeners.AddRange(listeners);
         }
 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void AddListener(IIntervalListener listener)
+        {
+            _listeners.Add(listener);
+        }
+
         public async Task LoopIntervals(CancellationToken canceller)
         {
             var intervalSinceStart = 0;

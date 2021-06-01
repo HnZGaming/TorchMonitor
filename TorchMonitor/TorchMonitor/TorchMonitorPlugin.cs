@@ -61,7 +61,7 @@ namespace TorchMonitor
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
                 new SyncMonitor(Config),
-                //new GridMonitor(Config, gridNameConflictSolver),
+                new BlockCountMonitor(Config),
                 //new FloatingObjectsMonitor(Config),
                 new RamUsageMonitor(Config),
                 //new VoxelMonitor(),
@@ -76,6 +76,7 @@ namespace TorchMonitor
                 new PlayerProfilerMonitor(Config, playerNameConflictSolver),
                 new ScriptProfilerMonitor(Config, gridNameConflictSolver),
                 new NetworkEventProfilerMonitor(Config),
+                new PhysicsProfilerMonitor(Config, Config),
             });
         }
 
