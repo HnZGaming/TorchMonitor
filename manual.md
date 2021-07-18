@@ -106,6 +106,10 @@ Ping someone at the #help channel on Discord.
 
 # Self-hosting Setup
 
+Setting up Torch Monitor on your own server can be tricky & involved especially if you haven't worked on DB etc.
+The community has cooked up an in-depth document to guide you through every detail on the procedure:
+https://docs.google.com/document/d/1U4H3BWdPg9kjEfuI8yzML4YEMYNbEAPv1QopeI8Ljsw/edit?usp=sharing
+
 ## Architecture
 
 ### Platforms
@@ -130,17 +134,7 @@ Either Windows or Linux works.
 ### Windows
 
 InfluxDB v1.8 is recommended for Windows because there's an official build available.
-
-Note that the connector plugin doesn't support authentication for v1.8 (unless requested).
-You'll need to disable the database's auth so that the connector can write.
-Make sure the database's port is not open to the Internet.
-
-Also note that "database" means "bucket" in InfluxDB v1.8.
-Should you see "bucket" in the Torch InfluxDB plugin please translate it to "database" in v1.8.
-Both words point to an equivalent concept (in our context) and you can treat them equally.
-
-You can probably build v2.0 yourself starting from the source code.
-Alternatively you can utilize WSL or InfluxDB Cloud v2.0.
+Note that some terminology had changed from v1.8 to v2.0: "database" -> "bucket" etc.
 
 ### Linux
 
@@ -148,8 +142,8 @@ InfluxDB v2.0 is the most reliable option for Linux.
 
 ## Download & install Grafana OSS or Enterprise
 
-Grafana provides OSS and Enterprise versions which differ slightly to one another.
-Unless you plan to edit the source code the Enterprise version is recommended (it's free to host despite the name).
+Enterprise version is recommended. It's called "enterprise" but free to download & use.
+If you plan to edit the program you might choose the OSS version. See the official manual for details.
 
 Port (default TCP 3000) needs to open so that you can access the Web interface from the Internet.
 
