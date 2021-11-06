@@ -19,8 +19,7 @@ namespace TorchMonitor.ProfilerMonitors
 
         protected override BaseProfiler<MyIdentity> MakeProfiler()
         {
-            var mask = new GameEntityMask(null, null, null);
-            return new PlayerProfiler(mask);
+            return new PlayerProfiler(GameEntityMask.Empty);
         }
 
         protected override void OnProfilingFinished(BaseProfilerResult<MyIdentity> result)

@@ -35,8 +35,7 @@ namespace TorchMonitor.ProfilerMonitors
 
         protected override BaseProfiler<MyCubeGrid> MakeProfiler()
         {
-            var mask = new GameEntityMask(null, null, null);
-            return new GridProfiler(mask);
+            return new GridProfiler(GameEntityMask.Empty);
         }
 
         protected override void OnProfilingFinished(BaseProfilerResult<MyCubeGrid> result)
