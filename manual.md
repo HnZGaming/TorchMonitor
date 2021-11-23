@@ -17,7 +17,7 @@ https://discord.gg/AaqdbWa3AP
 
 ## Talk to the cloud admin
 
-Ping someone at [#torch-monitor](https://discord.gg/TE26pukevH) on Discord.
+Ping @ryo at [#torch-monitor](https://discord.gg/TE26pukevH) on Discord.
 
 ## Install Torch plugins
 
