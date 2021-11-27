@@ -191,6 +191,7 @@
         <Compile Include="TorchMonitor\ITorchMonitorGeneralConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorCommandModule.cs" />
         <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />
+        <Compile Include="TorchMonitor\TorchMonitorNexus.cs" />
         <Compile Include="TorchMonitor\TorchMonitorPlugin.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\BlockTypeProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\FactionProfilerMonitor.cs" />
