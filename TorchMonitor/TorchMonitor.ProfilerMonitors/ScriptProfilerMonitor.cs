@@ -13,7 +13,7 @@ namespace TorchMonitor.ProfilerMonitors
         const int MaxDisplayCount = 4;
         readonly NameConflictSolver<long> _nameConflictSolver;
 
-        public ScriptProfilerMonitor(IMonitorGeneralConfig config, NameConflictSolver<long> nameConflictSolver) : base(config)
+        public ScriptProfilerMonitor(ITorchMonitorGeneralConfig config, NameConflictSolver<long> nameConflictSolver) : base(config)
         {
             _nameConflictSolver = nameConflictSolver;
         }

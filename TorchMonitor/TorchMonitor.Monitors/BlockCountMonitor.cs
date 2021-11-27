@@ -15,10 +15,10 @@ namespace TorchMonitor.Monitors
     {
         const int MaxMonitoredCount = 5;
 
-        readonly IMonitorGeneralConfig _config;
+        readonly ITorchMonitorGeneralConfig _config;
 
         public BlockCountMonitor(
-            IMonitorGeneralConfig config)
+            ITorchMonitorGeneralConfig config)
         {
             _config = config;
         }

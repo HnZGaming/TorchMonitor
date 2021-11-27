@@ -14,7 +14,7 @@ namespace TorchMonitor
         IpstackEndpoints.IConfig,
         GeoLocationMonitor.IConfig,
         IntervalRunner.IConfig,
-        IMonitorGeneralConfig,
+        ITorchMonitorGeneralConfig,
         GridProfilerMonitor.IConfig,
         SessionComponentsProfilerMonitor.IConfig,
         PhysicsProfilerMonitor.IConfig

@@ -26,10 +26,10 @@ namespace TorchMonitor.ProfilerMonitors
         }
 
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IMonitorGeneralConfig _config;
+        readonly ITorchMonitorGeneralConfig _config;
         readonly IConfig _physicsConfig;
 
-        public PhysicsProfilerMonitor(IMonitorGeneralConfig config, IConfig physicsConfig)
+        public PhysicsProfilerMonitor(ITorchMonitorGeneralConfig config, IConfig physicsConfig)
         {
             _config = config;
             _physicsConfig = physicsConfig;

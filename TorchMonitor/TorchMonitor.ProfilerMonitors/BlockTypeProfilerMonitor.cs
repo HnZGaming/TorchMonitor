@@ -9,7 +9,7 @@ namespace TorchMonitor.ProfilerMonitors
     {
         const int MaxDisplayCount = 10;
 
-        public BlockTypeProfilerMonitor(IMonitorGeneralConfig config) : base(config)
+        public BlockTypeProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
         {
         }
 

@@ -8,10 +8,10 @@ namespace TorchMonitor.Monitors
 {
     public class RamUsageMonitor : IIntervalListener
     {
-        readonly IMonitorGeneralConfig _config;
+        readonly ITorchMonitorGeneralConfig _config;
         readonly Process _process;
 
-        public RamUsageMonitor(IMonitorGeneralConfig config)
+        public RamUsageMonitor(ITorchMonitorGeneralConfig config)
         {
             _config = config;
             _process = Process.GetCurrentProcess();

@@ -8,9 +8,9 @@ namespace TorchMonitor.Monitors
 {
     public class FloatingObjectsMonitor : IIntervalListener
     {
-        readonly IMonitorGeneralConfig _config;
+        readonly ITorchMonitorGeneralConfig _config;
 
-        public FloatingObjectsMonitor(IMonitorGeneralConfig config)
+        public FloatingObjectsMonitor(ITorchMonitorGeneralConfig config)
         {
             _config = config;
         }

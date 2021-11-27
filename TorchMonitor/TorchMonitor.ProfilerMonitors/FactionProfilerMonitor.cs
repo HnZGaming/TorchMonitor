@@ -12,7 +12,7 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class FactionProfilerMonitor : ProfilerMonitorBase<IMyFaction>
     {
-        public FactionProfilerMonitor(IMonitorGeneralConfig config) : base(config)
+        public FactionProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
         {
         }
 

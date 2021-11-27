@@ -23,7 +23,7 @@ namespace TorchMonitor.ProfilerMonitors
         readonly NameConflictSolver<long> _nameConflictSolver;
 
         public GridProfilerMonitor(
-            IMonitorGeneralConfig generalConfig,
+            ITorchMonitorGeneralConfig generalConfig,
             IConfig gridProfilerConfig,
             NameConflictSolver<long> nameConflictSolver) : base(generalConfig)
         {

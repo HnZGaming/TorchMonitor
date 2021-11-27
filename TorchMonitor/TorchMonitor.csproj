@@ -185,9 +185,9 @@
         <Compile Include="TorchMonitor.ProfilerMonitors\ScriptProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.Reflections\MySteamGameService_Networking.cs" />
         <Compile Include="TorchMonitor.Utils\BlockCategoryCounter.cs" />
-        <Compile Include="TorchMonitor.Utils\IMonitorGeneralConfig.cs" />
         <Compile Include="TorchMonitor.Utils\NameConflictSolver.cs" />
         <Compile Include="TorchMonitor.Utils\PlayerOnlineTimeDb.cs" />
+        <Compile Include="TorchMonitor\ITorchMonitorGeneralConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorCommandModule.cs" />
         <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorPlugin.cs" />
