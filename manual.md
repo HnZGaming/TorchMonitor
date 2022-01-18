@@ -123,12 +123,6 @@ Either Windows or Linux works.
 1. Your InfluxDB instance will store the game data.
 1. Your Grafana instance will read and display the game data from your InfluxDB instance.
 
-### Ports
-
-1. Torch doesn't need one open (for this feature).
-1. InfluxDB doesn't need one open either, unless written/read via network.
-1. Grafana needs one open (default TCP 3000) so that you can watch the dashboard via network.
-
 ## Download & install InfluxDB OSS v1.8 or v2.0
 
 ### Windows
