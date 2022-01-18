@@ -1,3 +1,5 @@
+For the general info about this plugin see the readme first.
+
 # Abstract
 
 This manual will cover cloud-hosting and self-hosting workflows.
@@ -5,19 +7,24 @@ This manual will cover cloud-hosting and self-hosting workflows.
 1. Cloud setup -- 5 minutes.
 2. Self-hosting setup -- 1-2 days depending on your configuration.
 
-Cloud setup is recommended for first timers or light users 
-because the cloud admin will manage the infrastructure on behalf of you.
-As you get the grip of it you should consider a self-hosted setup.
-The cloud admin will let you export your data in case of conversion.
+"Cloud" refers to @ryo's EC2 instance that's hosting InfluxDB and Grafana
+with security and authentication so that you can get started fast and easy.
+@ryo will set up your dashboard on the cloud for free but the service and feature are limited.
+It's recommended that you set up your own server as soon as you get the hang of the toolset.
 
-In any event feel free to reach out to the community on Discord: <br/>
+Limitatinon of the cloud:
+- Keeps hold of 2 days length of data only.
+- Easily crashes if someone abuses the service.
+- Not very fast.
+
+Reach out to the community on Discord: <br/>
 https://discord.gg/AaqdbWa3AP
 
 # Cloud Setup
 
 ## Talk to the cloud admin
 
-Ping @ryo at [#torch-monitor](https://discord.gg/TE26pukevH) on Discord.
+Ping @ryo on [#torch-monitor](https://discord.gg/TE26pukevH).
 
 ## Install Torch plugins
 
