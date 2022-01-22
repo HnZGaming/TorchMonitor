@@ -10,7 +10,7 @@ namespace TorchMonitor.ProfilerMonitors
     {
         readonly NameConflictSolver<ulong> _nameConflictSolver;
 
-        public PlayerProfilerMonitor(IMonitorGeneralConfig config, NameConflictSolver<ulong> nameConflictSolver) : base(config)
+        public PlayerProfilerMonitor(ITorchMonitorGeneralConfig config, NameConflictSolver<ulong> nameConflictSolver) : base(config)
         {
             _nameConflictSolver = nameConflictSolver;
         }
@@ -19,8 +19,7 @@ namespace TorchMonitor.ProfilerMonitors
 
         protected override BaseProfiler<MyIdentity> MakeProfiler()
         {
-            var mask = new GameEntityMask(null, null, null);
-            return new PlayerProfiler(mask);
+            return new PlayerProfiler(GameEntityMask.Empty);
         }
 
         protected override void OnProfilingFinished(BaseProfilerResult<MyIdentity> result)

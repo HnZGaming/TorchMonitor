@@ -16,7 +16,7 @@ namespace TorchMonitor.ProfilerMonitors
         }
 
         public SessionComponentsProfilerMonitor(
-            IMonitorGeneralConfig generalConfig,
+            ITorchMonitorGeneralConfig generalConfig,
             IConfig myConfig) : base(generalConfig)
         {
             _myConfig = myConfig;

@@ -6,7 +6,7 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class MethodNameProfilerMonitor : ProfilerMonitorBase<string>
     {
-        public MethodNameProfilerMonitor(IMonitorGeneralConfig config) : base(config)
+        public MethodNameProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
         {
         }
 

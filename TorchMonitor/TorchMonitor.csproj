@@ -10,6 +10,7 @@
         <AssemblyName>TorchMonitor</AssemblyName>
         <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
+        <LangVersion>8</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>x64</PlatformTarget>
@@ -47,6 +48,9 @@
         </Reference>
         <Reference Include="Newtonsoft.Json, Version=12.0.0.0">
             <HintPath>..\TorchBinaries\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Net.Http, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+          <HintPath>..\GameBinaries\System.Net.Http.dll</HintPath>
         </Reference>
         <Reference Include="Torch">
             <HintPath>$(SolutionDir)\TorchBinaries\Torch.dll</HintPath>
@@ -181,9 +185,9 @@
         <Compile Include="TorchMonitor.ProfilerMonitors\ScriptProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.Reflections\MySteamGameService_Networking.cs" />
         <Compile Include="TorchMonitor.Utils\BlockCategoryCounter.cs" />
-        <Compile Include="TorchMonitor.Utils\IMonitorGeneralConfig.cs" />
         <Compile Include="TorchMonitor.Utils\NameConflictSolver.cs" />
         <Compile Include="TorchMonitor.Utils\PlayerOnlineTimeDb.cs" />
+        <Compile Include="TorchMonitor\ITorchMonitorGeneralConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorCommandModule.cs" />
         <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorPlugin.cs" />

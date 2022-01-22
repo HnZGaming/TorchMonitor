@@ -12,9 +12,9 @@ namespace TorchMonitor.ProfilerMonitors
     public abstract class ProfilerMonitorBase<T> : IIntervalListener
     {
         protected static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        protected readonly IMonitorGeneralConfig _config;
+        protected readonly ITorchMonitorGeneralConfig _config;
 
-        protected ProfilerMonitorBase(IMonitorGeneralConfig config)
+        protected ProfilerMonitorBase(ITorchMonitorGeneralConfig config)
         {
             _config = config;
         }

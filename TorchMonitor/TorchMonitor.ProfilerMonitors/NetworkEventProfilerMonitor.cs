@@ -6,7 +6,7 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class NetworkEventProfilerMonitor : ProfilerMonitorBase<string>
     {
-        public NetworkEventProfilerMonitor(IMonitorGeneralConfig config) : base(config)
+        public NetworkEventProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
         {
         }
 

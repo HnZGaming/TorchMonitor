@@ -9,7 +9,7 @@ namespace TorchMonitor.ProfilerMonitors
     {
         const int MaxDisplayCount = 10;
 
-        public BlockTypeProfilerMonitor(IMonitorGeneralConfig config) : base(config)
+        public BlockTypeProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
         {
         }
 
@@ -17,8 +17,7 @@ namespace TorchMonitor.ProfilerMonitors
 
         protected override BaseProfiler<Type> MakeProfiler()
         {
-            var mask = new GameEntityMask(null, null, null);
-            return new BlockTypeProfiler(mask);
+            return new BlockTypeProfiler(GameEntityMask.Empty);
         }
 
         protected override void OnProfilingFinished(BaseProfilerResult<Type> result)

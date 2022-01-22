@@ -11,9 +11,9 @@ namespace TorchMonitor.Monitors
         const int IntervalsPerWrite = 5;
 
         readonly float[] _simSpeeds;
-        readonly IMonitorGeneralConfig _config;
+        readonly ITorchMonitorGeneralConfig _config;
 
-        public SyncMonitor(IMonitorGeneralConfig config)
+        public SyncMonitor(ITorchMonitorGeneralConfig config)
         {
             _config = config;
             _simSpeeds = new float[IntervalsPerWrite];

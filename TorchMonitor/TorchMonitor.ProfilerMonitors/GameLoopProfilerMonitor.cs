@@ -7,7 +7,7 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class GameLoopProfilerMonitor : ProfilerMonitorBase<ProfilerCategory>
     {
-        public GameLoopProfilerMonitor(IMonitorGeneralConfig config) : base(config)
+        public GameLoopProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
         {
         }
 
