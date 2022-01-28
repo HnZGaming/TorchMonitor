@@ -2,6 +2,7 @@
 using System.Linq;
 using InfluxDb.Torch;
 using Intervals;
+using NLog;
 using Sandbox.Game.World;
 using TorchMonitor.Utils;
 using Utils.General;
@@ -12,15 +13,19 @@ namespace TorchMonitor.Monitors
     public sealed class OnlinePlayersMonitor : IIntervalListener
     {
         const int IntervalSecs = 10;
+        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly NameConflictSolver<ulong> _nameConflictSolver;
         readonly PlayerOnlineTimeDb _playerOnlineTimeDb;
+        readonly TorchMonitorNexus _nexus;
 
         public OnlinePlayersMonitor(
             NameConflictSolver<ulong> nameConflictSolver,
-            PlayerOnlineTimeDb playerOnlineTimeDb)
+            PlayerOnlineTimeDb playerOnlineTimeDb,
+            TorchMonitorNexus nexus)
         {
             _nameConflictSolver = nameConflictSolver;
             _playerOnlineTimeDb = playerOnlineTimeDb;
+            _nexus = nexus;
         }
 
         public void OnInterval(int intervalsSinceStart)
@@ -39,7 +44,7 @@ namespace TorchMonitor.Monitors
                 var steamId = onlinePlayer.SteamId();
                 if (steamId == 0) continue;
 
-                _playerOnlineTimeDb.IncrementPlayerOnlineTime(steamId, (double) IntervalSecs / 3600);
+                _playerOnlineTimeDb.IncrementPlayerOnlineTime(steamId, (double)IntervalSecs / 3600);
                 var onlineTime = _playerOnlineTimeDb.GetPlayerOnlineTime(steamId);
 
                 var faction = factionList.FirstOrDefault(f => f.Members.ContainsKey(playerId));
@@ -75,6 +80,21 @@ namespace TorchMonitor.Monitors
                 .Field("players", onlinePlayers.Length)
                 .Field("online_time", totalOnlineTime)
                 .Write();
+
+            // nexus
+            if (_nexus.IsEnabled)
+            {
+                var segments = _nexus.GetSegmentedPopulation(onlinePlayers);
+                foreach (var (segmentName, playerCount) in segments)
+                {
+                    TorchInfluxDbWriter
+                        .Measurement($"nexus_{segmentName}")
+                        .Field("players", playerCount)
+                        .Write();
+
+                    Log.Debug($"nexus segmented pop: {segmentName} -> {playerCount}");
+                }
+            }
 
             _playerOnlineTimeDb.WriteToDb();
         }

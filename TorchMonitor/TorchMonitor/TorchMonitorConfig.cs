@@ -1,11 +1,12 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 using Intervals;
 using Ipstack;
 using Torch;
 using Torch.Views;
 using TorchMonitor.Monitors;
 using TorchMonitor.ProfilerMonitors;
-using TorchMonitor.Utils;
+using VRageMath;
 
 namespace TorchMonitor
 {
@@ -17,11 +18,13 @@ namespace TorchMonitor
         ITorchMonitorGeneralConfig,
         GridProfilerMonitor.IConfig,
         SessionComponentsProfilerMonitor.IConfig,
-        PhysicsProfilerMonitor.IConfig
+        PhysicsProfilerMonitor.IConfig,
+        TorchMonitorNexus.IConfig
     {
         const string OpGroupName = "Operation";
         const string OutputGroupName = "Output";
         const string PhysicsGroupName = "Physics";
+        const string NexusGroupName = "Nexus";
 
         bool _enabled = true;
         string _ipstackApiKey = "apikey";
@@ -33,6 +36,14 @@ namespace TorchMonitor
         int _physicsFrameCount = 10;
         int _physicsMaxClusterCount = 5;
         bool _physicsEnabled = true;
+
+        bool _enableNexusFeature;
+        double _nexusOriginPositionX;
+        double _nexusOriginPositionY;
+        double _nexusOriginPositionZ;
+        double _nexusSectorDiameter = 1000000;
+        int _nexusSegmentationCount = 3;
+        string _nexusPrefix = "foo_";
 
         [XmlElement]
         [Display(Order = 0, Name = "Enabled", GroupName = OpGroupName)]
@@ -121,5 +132,81 @@ namespace TorchMonitor
             get => _physicsMaxClusterCount;
             set => SetValue(ref _physicsMaxClusterCount, value);
         }
+
+        [XmlElement]
+        [Display(Name = "Enable Nexus features", GroupName = NexusGroupName, Order = 0)]
+        public bool EnableNexusFeature
+        {
+            get => _enableNexusFeature;
+            set
+            {
+                SetValue(ref _enableNexusFeature, value);
+                RefreshModel();
+            }
+        }
+
+        [XmlElement]
+        [Display(Name = "Prefix", GroupName = NexusGroupName, Order = 1)]
+        public string NexusPrefix
+        {
+            get => _nexusPrefix;
+            set
+            {
+                SetValue(ref _nexusPrefix, value);
+                RefreshModel();
+            }
+        }
+
+        [XmlElement]
+        [Display(Name = "Origin position (x)", GroupName = NexusGroupName, Order = 2)]
+        public double NexusOriginPositionX
+        {
+            get => _nexusOriginPositionX;
+            set => SetValue(ref _nexusOriginPositionX, value);
+        }
+
+        [XmlElement]
+        [Display(Name = "Origin position (y)", GroupName = NexusGroupName, Order = 3)]
+        public double NexusOriginPositionY
+        {
+            get => _nexusOriginPositionY;
+            set => SetValue(ref _nexusOriginPositionY, value);
+        }
+
+        [XmlElement]
+        [Display(Name = "Origin position (z)", GroupName = NexusGroupName, Order = 4)]
+        public double NexusOriginPositionZ
+        {
+            get => _nexusOriginPositionZ;
+            set => SetValue(ref _nexusOriginPositionZ, value);
+        }
+
+        public Vector3D NexusOriginPosition => new Vector3D(
+            _nexusOriginPositionX,
+            _nexusOriginPositionY,
+            _nexusOriginPositionZ);
+
+        [XmlElement]
+        [Display(Name = "Sector diameter", GroupName = NexusGroupName, Order = 5)]
+        public double NexusSectorDiameter
+        {
+            get => _nexusSectorDiameter;
+            set => SetValue(ref _nexusSectorDiameter, value);
+        }
+
+        [XmlElement]
+        [Display(Name = "Segmentation per dimension", GroupName = NexusGroupName, Order = 6)]
+        public int NexusSegmentationCount
+        {
+            get => _nexusSegmentationCount;
+            set
+            {
+                SetValue(ref _nexusSegmentationCount, value);
+                RefreshModel();
+            }
+        }
+
+        [Display(Name = "Type !tm nexus", GroupName = NexusGroupName, Order = 7)]
+        public string Foo => EnableNexusFeature ? $"{Math.Pow(NexusSegmentationCount, 3)} segments; measurement name e.g.: \"nexus_{NexusPrefix}0_0_0\"" : "disabled";
     }
 }
