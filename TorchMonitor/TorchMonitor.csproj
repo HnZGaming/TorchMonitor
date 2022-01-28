@@ -8,7 +8,7 @@
         <OutputType>Library</OutputType>
         <AppDesignerFolder>Properties</AppDesignerFolder>
         <AssemblyName>TorchMonitor</AssemblyName>
-        <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <LangVersion>8</LangVersion>
     </PropertyGroup>
@@ -178,6 +178,7 @@
         <Compile Include="TorchMonitor.Monitors\OnlinePlayersMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\RamUsageMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\SyncMonitor.cs" />
+        <Compile Include="TorchMonitor.ProfilerMonitors\EntityTypeProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\NetworkEventProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\PhysicsProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\PlayerProfilerMonitor.cs" />
@@ -190,6 +191,7 @@
         <Compile Include="TorchMonitor\ITorchMonitorGeneralConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorCommandModule.cs" />
         <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />
+        <Compile Include="TorchMonitor\TorchMonitorNexus.cs" />
         <Compile Include="TorchMonitor\TorchMonitorPlugin.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\BlockTypeProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\FactionProfilerMonitor.cs" />

@@ -37,6 +37,8 @@ namespace TorchMonitor
             return _config.GetOrCreateUserControl(ref _userControl);
         }
 
+        public TorchMonitorNexus Nexus { get; private set; }
+
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
@@ -56,6 +58,7 @@ namespace TorchMonitor
 
             var gridNameConflictSolver = new NameConflictSolver<long>();
             var playerNameConflictSolver = new NameConflictSolver<ulong>();
+            Nexus = new TorchMonitorNexus(Config);
 
             _intervalRunner = new IntervalRunner(Config, 1);
             _intervalRunner.AddListeners(new IIntervalListener[]
@@ -65,9 +68,10 @@ namespace TorchMonitor
                 //new FloatingObjectsMonitor(Config),
                 new RamUsageMonitor(Config),
                 //new VoxelMonitor(),
-                new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb),
+                new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb, Nexus),
                 new GeoLocationMonitor(_ipstackEndpoints, Config),
                 new BlockTypeProfilerMonitor(Config),
+                new EntityTypeProfilerMonitor(Config),
                 new FactionProfilerMonitor(Config),
                 new GameLoopProfilerMonitor(Config),
                 new GridProfilerMonitor(Config, Config, gridNameConflictSolver),
