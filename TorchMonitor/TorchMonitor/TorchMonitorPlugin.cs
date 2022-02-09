@@ -68,6 +68,7 @@ namespace TorchMonitor
                 //new FloatingObjectsMonitor(Config),
                 new RamUsageMonitor(Config),
                 //new VoxelMonitor(),
+                new PingMonitor(Config),
                 new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb, Nexus),
                 new GeoLocationMonitor(_ipstackEndpoints, Config),
                 new BlockTypeProfilerMonitor(Config),
@@ -91,6 +92,7 @@ namespace TorchMonitor
 
         void OnGameUnloading()
         {
+            _intervalRunner?.Dispose();
             _config?.Dispose();
             _ipstackEndpoints?.Dispose();
             _canceller?.Cancel();
