@@ -64,7 +64,7 @@ namespace TorchMonitor
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
                 new SyncMonitor(Config),
-                new BlockCountMonitor(Config),
+                new GridMonitor(Config),
                 //new FloatingObjectsMonitor(Config),
                 new RamUsageMonitor(Config),
                 //new VoxelMonitor(),

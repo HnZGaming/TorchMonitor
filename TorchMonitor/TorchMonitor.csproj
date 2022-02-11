@@ -175,7 +175,7 @@
         <Compile Include="TorchMonitor.Monitors\PingMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\VoxelMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\FloatingObjectsMonitor.cs" />
-        <Compile Include="TorchMonitor.Monitors\BlockCountMonitor.cs" />
+        <Compile Include="TorchMonitor.Monitors\GridMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\OnlinePlayersMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\RamUsageMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\SyncMonitor.cs" />

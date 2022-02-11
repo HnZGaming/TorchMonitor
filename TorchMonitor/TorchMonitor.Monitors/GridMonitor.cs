@@ -3,21 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using InfluxDb.Torch;
 using Intervals;
+using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
-using TorchMonitor.Utils;
 using Utils.General;
+using VRage.ModAPI;
 
 namespace TorchMonitor.Monitors
 {
-    public sealed class BlockCountMonitor : IIntervalListener
+    public sealed class GridMonitor : IIntervalListener
     {
+        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
+
         const int MaxMonitoredCount = 5;
 
         readonly ITorchMonitorGeneralConfig _config;
 
-        public BlockCountMonitor(
+        public GridMonitor(
             ITorchMonitorGeneralConfig config)
         {
             _config = config;
@@ -28,11 +31,9 @@ namespace TorchMonitor.Monitors
             if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % 60 != 0) return;
 
-            var allGroups = MyCubeGridGroups.Static.Logical.Groups
-                .Select(g => g.Nodes.Select(n => n.NodeData).ToArray())
+            var allGrids = MyCubeGridGroups.Static.Logical.Groups
+                .SelectMany(g => g.Nodes.Select(n => n.NodeData))
                 .ToArray();
-
-            var allGrids = allGroups.SelectMany(g => g).ToArray();
 
             //total
             {
@@ -112,6 +113,32 @@ namespace TorchMonitor.Monitors
 
                 playerBlockCounts.Clear();
                 factionBlockCounts.Clear();
+            }
+
+            // concealment
+            var totalCount = allGrids.Length;
+            if (totalCount > 0)
+            {
+                var concealedCount = 0;
+                foreach (var grid in allGrids)
+                {
+                    var concealed = grid.Flags.HasFlag((EntityFlags)4);
+                    if (concealed)
+                    {
+                        concealedCount += 1;
+                    }
+
+                    //Log.Info($"{grid.DisplayName} concealment: {concealed}");
+                }
+
+                var concealmentRatio = (float)concealedCount / totalCount;
+
+                TorchInfluxDbWriter
+                    .Measurement("concealment")
+                    .Field("concealed_count", concealedCount)
+                    .Field("total_count", totalCount)
+                    .Field("concealment_ratio", concealmentRatio)
+                    .Write();
             }
         }
 
