@@ -8,7 +8,7 @@ using Utils.General;
 
 namespace Intervals
 {
-    public sealed class IntervalRunner
+    public sealed class IntervalRunner : IDisposable
     {
         public interface IConfig
         {
@@ -89,6 +89,20 @@ namespace Intervals
                     Log.Error(e);
                 }
             });
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void Dispose()
+        {
+            foreach (var listener in _listeners)
+            {
+                if (listener is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+            
+            _listeners.Clear();
         }
     }
 }

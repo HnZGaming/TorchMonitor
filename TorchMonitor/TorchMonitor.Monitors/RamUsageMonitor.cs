@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using InfluxDb.Torch;
 using Intervals;
-using TorchMonitor.Utils;
 
 namespace TorchMonitor.Monitors
 {

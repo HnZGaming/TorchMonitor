@@ -64,10 +64,11 @@ namespace TorchMonitor
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
                 new SyncMonitor(Config),
-                new BlockCountMonitor(Config),
+                new GridMonitor(Config),
                 //new FloatingObjectsMonitor(Config),
                 new RamUsageMonitor(Config),
                 //new VoxelMonitor(),
+                new PingMonitor(Config),
                 new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb, Nexus),
                 new GeoLocationMonitor(_ipstackEndpoints, Config),
                 new BlockTypeProfilerMonitor(Config),
@@ -91,6 +92,7 @@ namespace TorchMonitor
 
         void OnGameUnloading()
         {
+            _intervalRunner?.Dispose();
             _config?.Dispose();
             _ipstackEndpoints?.Dispose();
             _canceller?.Cancel();
