@@ -56,7 +56,6 @@ namespace TorchMonitor.Monitors
 
                 TorchInfluxDbWriter
                     .Measurement("players_players")
-                    .Tag("steam_id", $"{steamId}")
                     .Tag("player_name", playerName)
                     .Tag("faction_tag", factionTag)
                     .Field("is_online", 1)
@@ -88,7 +87,8 @@ namespace TorchMonitor.Monitors
                 foreach (var (segmentName, playerCount) in segments)
                 {
                     TorchInfluxDbWriter
-                        .Measurement($"nexus_{segmentName}")
+                        .Measurement("nexus")
+                        .Tag("segment", segmentName)
                         .Field("players", playerCount)
                         .Write();
 

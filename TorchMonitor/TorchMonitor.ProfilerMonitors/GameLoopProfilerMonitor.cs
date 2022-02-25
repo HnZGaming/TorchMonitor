@@ -26,11 +26,9 @@ namespace TorchMonitor.ProfilerMonitors
             var updateNetworkMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateNetwork, 0);
             var updateReplMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateReplication, 0);
             var updateSessionCompsMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateSessionComponents, 0);
-            var updateSessionCompsAllMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateSessionComponentsAll, 0);
-            var updateSessionCompsOtherMs = updateSessionCompsAllMs - updateSessionCompsMs;
             var updateGpsMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateGps, 0);
             var updateParallelWaitMs = (float) result.GetMainThreadTickMsOrElse(ProfilerCategory.UpdateParallelWait, 0);
-            var updateOtherMs = updateMs - updateNetworkMs - updateReplMs - updateSessionCompsAllMs - updateGpsMs - updateParallelWaitMs;
+            var updateOtherMs = updateMs - updateNetworkMs - updateReplMs - updateSessionCompsMs - updateGpsMs - updateParallelWaitMs;
 
             TorchInfluxDbWriter
                 .Measurement("profiler_game_loop")
@@ -40,8 +38,6 @@ namespace TorchMonitor.ProfilerMonitors
                 .Field("update_network", updateNetworkMs / result.TotalFrameCount)
                 .Field("update_replication", updateReplMs / result.TotalFrameCount)
                 .Field("update_session_components", updateSessionCompsMs / result.TotalFrameCount)
-                .Field("update_session_components_all", updateSessionCompsAllMs / result.TotalFrameCount)
-                .Field("update_session_components_other", updateSessionCompsOtherMs / result.TotalFrameCount)
                 .Field("update_gps", updateGpsMs / result.TotalFrameCount)
                 .Field("update_parallel_wait", updateParallelWaitMs / result.TotalFrameCount)
                 .Field("update_other", updateOtherMs / result.TotalFrameCount)
