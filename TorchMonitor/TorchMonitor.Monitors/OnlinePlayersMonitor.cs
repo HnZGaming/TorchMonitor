@@ -86,6 +86,9 @@ namespace TorchMonitor.Monitors
                 var segments = _nexus.GetSegmentedPopulation(onlinePlayers);
                 foreach (var (segmentName, playerCount) in segments)
                 {
+                    // save space
+                    if (playerCount == 0) continue;
+
                     TorchInfluxDbWriter
                         .Measurement("nexus")
                         .Tag("segment", segmentName)

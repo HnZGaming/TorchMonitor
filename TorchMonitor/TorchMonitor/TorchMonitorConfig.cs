@@ -207,6 +207,6 @@ namespace TorchMonitor
         }
 
         [Display(Name = "Type !tm nexus", GroupName = NexusGroupName, Order = 7)]
-        public string Foo => EnableNexusFeature ? $"{Math.Pow(NexusSegmentationCount, 3)} segments; measurement name e.g.: \"nexus_{NexusPrefix}0_0_0\"" : "disabled";
+        public string Foo => EnableNexusFeature ? $"{Math.Pow(NexusSegmentationCount, 3)} segments; tag name e.g.: \"nexus_{NexusPrefix}0_0_0\"" : "disabled";
     }
 }
