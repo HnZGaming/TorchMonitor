@@ -43,6 +43,11 @@ namespace TorchMonitor.Monitors
                     .Measurement("blocks_all")
                     .Field("block_count", totalBlockCount)
                     .Write();
+
+                TorchInfluxDbWriter
+                    .Measurement("grids_all")
+                    .Field("grid_count", allGrids.Length)
+                    .Write();
             }
 
             // per grid
