@@ -36,6 +36,7 @@ namespace TorchMonitor.ProfilerMonitors
             {
                 profiler.MarkStart();
                 await Task.Delay(TimeSpan.FromSeconds(SamplingSeconds));
+                profiler.MarkEnd();
 
                 var result = profiler.GetResult();
                 OnProfilingFinished(result);

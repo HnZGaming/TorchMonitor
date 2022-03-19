@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Havok;
 using InfluxDb.Torch;
@@ -11,7 +10,6 @@ using Sandbox.Game.World;
 using TorchMonitor.Utils;
 using Utils.General;
 using Utils.Torch;
-using VRage.Game.ModAPI;
 
 namespace TorchMonitor.ProfilerMonitors
 {
@@ -70,7 +68,7 @@ namespace TorchMonitor.ProfilerMonitors
             foreach (var (world, entity) in result.GetTopEntities(_physicsConfig.PhysicsMaxClusterCount))
             {
                 // this usually doesn't happen but just in case
-                if (!TryGetHeaviestGrid(world, out var heaviestGrid)) continue;
+                if (!PhysicsUtils.TryGetHeaviestGrid(world, out var heaviestGrid)) continue;
 
                 heaviestGrid.BigOwners.TryGetFirst(out var ownerId);
                 var faction = MySession.Static.Factions.GetPlayerFaction(ownerId);
@@ -84,25 +82,6 @@ namespace TorchMonitor.ProfilerMonitors
                     .Field("main_ms", mainMs)
                     .Write();
             }
-        }
-
-        static bool TryGetHeaviestGrid(HkWorld world, out IMyCubeGrid heaviestGrid)
-        {
-            var grids = world
-                .GetEntities()
-                .Where(e => e is IMyCubeGrid)
-                .Cast<IMyCubeGrid>()
-                .Where(e => e.IsTopMostParent())
-                .ToArray();
-
-            if (!grids.Any())
-            {
-                heaviestGrid = null;
-                return false;
-            }
-
-            heaviestGrid = grids.OrderByDescending(g => g.Physics.Mass).First();
-            return true;
         }
     }
 }

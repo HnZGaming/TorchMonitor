@@ -82,6 +82,8 @@ namespace TorchMonitor
                 new ScriptProfilerMonitor(Config, gridNameConflictSolver),
                 new NetworkEventProfilerMonitor(Config),
                 new PhysicsProfilerMonitor(Config, Config),
+                new PhysicsSimulateProfilerMonitor(Config),
+                new PhysicsSimulateMtProfilerMonitor(Config),
             });
         }
 
