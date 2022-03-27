@@ -3,6 +3,7 @@ using InfluxDb.Torch;
 using Profiler.Basics;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
+using TorchMonitor.Monitors;
 using TorchMonitor.Utils;
 using Utils.Torch;
 

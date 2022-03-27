@@ -173,6 +173,7 @@
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="TorchMonitor.Monitors\GeoLocationMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\PingMonitor.cs" />
+        <Compile Include="TorchMonitor.Monitors\PlayerOnlineTimeDb.cs" />
         <Compile Include="TorchMonitor.Monitors\VoxelMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\FloatingObjectsMonitor.cs" />
         <Compile Include="TorchMonitor.Monitors\GridMonitor.cs" />
@@ -188,10 +189,8 @@
         <Compile Include="TorchMonitor.ProfilerMonitors\ProfilerMonitorBase.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\ScriptProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.Reflections\MySteamGameService_Networking.cs" />
-        <Compile Include="TorchMonitor.Utils\BlockCategoryCounter.cs" />
         <Compile Include="TorchMonitor.Utils\NameConflictSolver.cs" />
         <Compile Include="TorchMonitor.Utils\PhysicsUtils.cs" />
-        <Compile Include="TorchMonitor.Utils\PlayerOnlineTimeDb.cs" />
         <Compile Include="TorchMonitor\ITorchMonitorGeneralConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorCommandModule.cs" />
         <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />

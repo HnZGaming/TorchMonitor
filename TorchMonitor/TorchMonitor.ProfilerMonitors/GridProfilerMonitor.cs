@@ -5,6 +5,7 @@ using InfluxDb.Torch;
 using Profiler.Basics;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
+using TorchMonitor.Monitors;
 using TorchMonitor.Utils;
 using Utils.General;
 
