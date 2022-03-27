@@ -19,15 +19,10 @@ namespace TorchMonitor.ProfilerMonitors
         }
 
         const int MaxDisplayCount = 4;
-        readonly IConfig _gridProfilerConfig;
         readonly NameConflictSolver<long> _nameConflictSolver;
 
-        public GridProfilerMonitor(
-            ITorchMonitorGeneralConfig generalConfig,
-            IConfig gridProfilerConfig,
-            NameConflictSolver<long> nameConflictSolver) : base(generalConfig)
+        public GridProfilerMonitor(NameConflictSolver<long> nameConflictSolver)
         {
-            _gridProfilerConfig = gridProfilerConfig;
             _nameConflictSolver = nameConflictSolver;
         }
 
@@ -54,7 +49,7 @@ namespace TorchMonitor.ProfilerMonitors
         {
             var safeGridName = GetSafeGridName(grid);
 
-            if (!_gridProfilerConfig.ShowOwnerName)
+            if (!TorchMonitorConfig.Instance.ShowOwnerName)
             {
                 return safeGridName;
             }
@@ -86,7 +81,7 @@ namespace TorchMonitor.ProfilerMonitors
         {
             var gridName = grid.DisplayName.OrNull() ?? "<noname>";
 
-            if (_gridProfilerConfig.ResolveNameConflict)
+            if (TorchMonitorConfig.Instance.ResolveNameConflict)
             {
                 gridName = _nameConflictSolver.GetSafeName(gridName, grid.EntityId);
             }

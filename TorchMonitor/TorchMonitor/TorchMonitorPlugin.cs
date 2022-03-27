@@ -25,13 +25,6 @@ namespace TorchMonitor
         IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
 
-        TorchMonitorConfig Config => _config.Data;
-
-        public bool Enabled
-        {
-            set => Config.Enabled = value;
-        }
-
         UserControl IWpfPlugin.GetControl()
         {
             return _config.GetOrCreateUserControl(ref _userControl);
@@ -47,10 +40,9 @@ namespace TorchMonitor
 
             _canceller = new CancellationTokenSource();
 
-            var configFilePath = this.MakeConfigFilePath();
-            _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
+            ReloadConfig();
 
-            _ipstackEndpoints = new IpstackEndpoints(Config);
+            _ipstackEndpoints = new IpstackEndpoints();
 
             var localDbFilePath = this.MakeFilePath($"{nameof(TorchMonitor)}.json");
             var playerOnlineTimeDb = new PlayerOnlineTimeDb(localDbFilePath);
@@ -58,32 +50,32 @@ namespace TorchMonitor
 
             var gridNameConflictSolver = new NameConflictSolver<long>();
             var playerNameConflictSolver = new NameConflictSolver<ulong>();
-            Nexus = new TorchMonitorNexus(Config);
+            Nexus = new TorchMonitorNexus();
 
-            _intervalRunner = new IntervalRunner(Config, 1);
+            _intervalRunner = new IntervalRunner(1);
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
-                new SyncMonitor(Config),
-                new GridMonitor(Config),
+                new SyncMonitor(),
+                new GridMonitor(),
                 //new FloatingObjectsMonitor(Config),
-                new RamUsageMonitor(Config),
+                new RamUsageMonitor(),
                 //new VoxelMonitor(),
-                new PingMonitor(Config),
+                new PingMonitor(),
                 new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb, Nexus),
-                new GeoLocationMonitor(_ipstackEndpoints, Config),
-                new BlockTypeProfilerMonitor(Config),
-                new EntityTypeProfilerMonitor(Config),
-                new FactionProfilerMonitor(Config),
-                new GameLoopProfilerMonitor(Config),
-                new GridProfilerMonitor(Config, Config, gridNameConflictSolver),
-                new MethodNameProfilerMonitor(Config),
-                new SessionComponentsProfilerMonitor(Config, Config),
-                new PlayerProfilerMonitor(Config, playerNameConflictSolver),
-                new ScriptProfilerMonitor(Config, gridNameConflictSolver),
-                new NetworkEventProfilerMonitor(Config),
-                new PhysicsProfilerMonitor(Config, Config),
-                new PhysicsSimulateProfilerMonitor(Config),
-                new PhysicsSimulateMtProfilerMonitor(Config),
+                new GeoLocationMonitor(_ipstackEndpoints),
+                new BlockTypeProfilerMonitor(),
+                new EntityTypeProfilerMonitor(),
+                new FactionProfilerMonitor(),
+                new GameLoopProfilerMonitor(),
+                new GridProfilerMonitor(gridNameConflictSolver),
+                new MethodNameProfilerMonitor(),
+                new SessionComponentsProfilerMonitor(),
+                new PlayerProfilerMonitor(playerNameConflictSolver),
+                new ScriptProfilerMonitor(gridNameConflictSolver),
+                new NetworkEventProfilerMonitor(),
+                new PhysicsProfilerMonitor(),
+                new PhysicsSimulateProfilerMonitor(),
+                new PhysicsSimulateMtProfilerMonitor(),
             });
         }
 
@@ -99,6 +91,15 @@ namespace TorchMonitor
             _ipstackEndpoints?.Dispose();
             _canceller?.Cancel();
             _canceller?.Dispose();
+        }
+
+        public void ReloadConfig()
+        {
+            var configFilePath = this.MakeConfigFilePath();
+            _config?.Dispose();
+            _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
+            TorchMonitorConfig.Instance = _config.Data;
+            Log.Info("reloaded configs");
         }
     }
 }

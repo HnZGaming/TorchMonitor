@@ -9,10 +9,6 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class PhysicsSimulateMtProfilerMonitor : ProfilerMonitorBase<HkWorld>
     {
-        public PhysicsSimulateMtProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
-        {
-        }
-
         protected override int SamplingSeconds => 10;
 
         protected override BaseProfiler<HkWorld> MakeProfiler()

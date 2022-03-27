@@ -81,7 +81,7 @@ namespace TorchMonitor.Monitors
                 .Write();
 
             // nexus
-            if (_nexus.IsEnabled)
+            if (TorchMonitorConfig.Instance.EnableNexusFeature)
             {
                 var segments = _nexus.GetSegmentedPopulation(onlinePlayers);
                 foreach (var (segmentName, playerCount) in segments)

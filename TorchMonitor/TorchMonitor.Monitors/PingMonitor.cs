@@ -12,15 +12,13 @@ namespace TorchMonitor.Monitors
     public sealed class PingMonitor : IIntervalListener, IDisposable
     {
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly ITorchMonitorGeneralConfig _config;
         readonly Ping _ping;
         bool _disposed;
 
         const string Host = "google.com";
 
-        public PingMonitor(ITorchMonitorGeneralConfig config)
+        public PingMonitor()
         {
-            _config = config;
             _ping = new Ping();
         }
 
@@ -32,7 +30,7 @@ namespace TorchMonitor.Monitors
 
         public void OnInterval(int intervalsSinceStart)
         {
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
+            if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % 10 != 0) return;
 
             SendPing().Forget(Log);

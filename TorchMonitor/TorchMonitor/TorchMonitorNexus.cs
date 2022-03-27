@@ -9,30 +9,12 @@ namespace TorchMonitor
 {
     public sealed class TorchMonitorNexus
     {
-        public interface IConfig
-        {
-            bool EnableNexusFeature { get; }
-            Vector3D NexusOriginPosition { get; }
-            double NexusSectorDiameter { get; }
-            int NexusSegmentationCount { get; }
-            string NexusPrefix { get; }
-        }
-
-        readonly IConfig _config;
-
-        public TorchMonitorNexus(IConfig config)
-        {
-            _config = config;
-        }
-
-        public bool IsEnabled => _config.EnableNexusFeature;
-
         public IReadOnlyDictionary<string, int> GetSegmentedPopulation(IEnumerable<MyPlayer> players)
         {
             var segmentPlayerCounts = new Dictionary<string, int>();
             foreach (var onlinePlayer in players)
             {
-                if (!(onlinePlayer.Character is { } character)) continue;
+                if (onlinePlayer.Character is not { } character) continue;
 
                 var characterPos = character.WorldMatrix.Translation;
                 var segmentName = GetNexusSegmentName(characterPos);
@@ -66,9 +48,9 @@ namespace TorchMonitor
         public IReadOnlyList<(Vector3I, Vector3D)> GetCenters()
         {
             var centers = new List<(Vector3I, Vector3D)>();
-            var originPos3 = _config.NexusOriginPosition;
-            var sectorDiameter = _config.NexusSectorDiameter;
-            var segmentationCount = _config.NexusSegmentationCount;
+            var originPos3 = TorchMonitorConfig.Instance.NexusOriginPosition;
+            var sectorDiameter = TorchMonitorConfig.Instance.NexusSectorDiameter;
+            var segmentationCount = TorchMonitorConfig.Instance.NexusSegmentationCount;
             for (var x = 0; x < segmentationCount; x++)
             for (var y = 0; y < segmentationCount; y++)
             for (var z = 0; z < segmentationCount; z++)
@@ -99,24 +81,24 @@ namespace TorchMonitor
                 var pos = position3.GetValueAtIndex(i);
                 var minPos = minPos3.GetValueAtIndex(i);
                 var maxPos = maxPos3.GetValueAtIndex(i);
-                var resultPos = MathUtils.Remap(minPos, maxPos, 0, _config.NexusSegmentationCount, pos);
-                resultPos = MathUtils.Clamp(resultPos, 0, _config.NexusSegmentationCount - 1);
+                var resultPos = MathUtils.Remap(minPos, maxPos, 0, TorchMonitorConfig.Instance.NexusSegmentationCount, pos);
+                resultPos = MathUtils.Clamp(resultPos, 0, TorchMonitorConfig.Instance.NexusSegmentationCount - 1);
                 segmentPos3.SetValueAtIndex(i, (int)resultPos);
             }
 
-            return $"{_config.NexusPrefix}{segmentPos3.X}_{segmentPos3.Y}_{segmentPos3.Z}";
+            return $"{TorchMonitorConfig.Instance.NexusPrefix}{segmentPos3.X}_{segmentPos3.Y}_{segmentPos3.Z}";
         }
 
         (Vector3D, Vector3D) GetMinMaxPositions()
         {
             var minPos3 = new Vector3D();
             var maxPos3 = new Vector3D();
-            var originPos3 = _config.NexusOriginPosition;
+            var originPos3 = TorchMonitorConfig.Instance.NexusOriginPosition;
             for (var i = 0; i < 3; i++)
             {
                 var originPos = originPos3.GetValueAtIndex(i);
-                var minPos = originPos - _config.NexusSectorDiameter / 2;
-                var maxPos = originPos + _config.NexusSectorDiameter / 2;
+                var minPos = originPos - TorchMonitorConfig.Instance.NexusSectorDiameter / 2;
+                var maxPos = originPos + TorchMonitorConfig.Instance.NexusSectorDiameter / 2;
 
                 if (minPos < minPos3.GetValueAtIndex(i))
                 {

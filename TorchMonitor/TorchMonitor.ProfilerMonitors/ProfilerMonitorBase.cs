@@ -4,7 +4,6 @@ using Intervals;
 using NLog;
 using Profiler.Basics;
 using Profiler.Core;
-using TorchMonitor.Utils;
 using Utils.General;
 
 namespace TorchMonitor.ProfilerMonitors
@@ -12,18 +11,12 @@ namespace TorchMonitor.ProfilerMonitors
     public abstract class ProfilerMonitorBase<T> : IIntervalListener
     {
         protected static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        protected readonly ITorchMonitorGeneralConfig _config;
-
-        protected ProfilerMonitorBase(ITorchMonitorGeneralConfig config)
-        {
-            _config = config;
-        }
 
         protected abstract int SamplingSeconds { get; }
 
         public void OnInterval(int intervalsSinceStart)
         {
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
+            if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % SamplingSeconds != 0) return;
 
             Profile().Forget(Log);

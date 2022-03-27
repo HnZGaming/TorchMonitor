@@ -18,26 +18,19 @@ namespace TorchMonitor.Monitors
 {
     public sealed class GeoLocationMonitor : IIntervalListener
     {
-        public interface IConfig
-        {
-            bool Enabled { get; }
-        }
-
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly IpstackEndpoints _ipstackEndpoints;
-        readonly IConfig _config;
         readonly ConcurrentDictionary<ulong, IpstackLocation> _ipLocations;
 
-        public GeoLocationMonitor(IpstackEndpoints ipstackEndpoints, IConfig config)
+        public GeoLocationMonitor(IpstackEndpoints ipstackEndpoints)
         {
             _ipstackEndpoints = ipstackEndpoints;
-            _config = config;
             _ipLocations = new ConcurrentDictionary<ulong, IpstackLocation>();
         }
 
         public void OnInterval(int intervalsSinceStart)
         {
-            if (!_config.Enabled) return;
+            if (!TorchMonitorConfig.Instance.GeoLocationEnabled) return;
             if (intervalsSinceStart % 20 != 0) return;
 
             var continents = new Dictionary<string, int>();

@@ -24,20 +24,12 @@ namespace TorchMonitor.ProfilerMonitors
         }
 
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly ITorchMonitorGeneralConfig _config;
-        readonly IConfig _physicsConfig;
-
-        public PhysicsProfilerMonitor(ITorchMonitorGeneralConfig config, IConfig physicsConfig)
-        {
-            _config = config;
-            _physicsConfig = physicsConfig;
-        }
 
         public void OnInterval(int intervalsSinceStart)
         {
-            if (!_physicsConfig.PhysicsEnabled) return;
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
-            if (intervalsSinceStart % _physicsConfig.PhysicsInterval != 0) return;
+            if (!TorchMonitorConfig.Instance.PhysicsEnabled) return;
+            if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
+            if (intervalsSinceStart % TorchMonitorConfig.Instance.PhysicsInterval != 0) return;
 
             Profile().Forget(Log);
         }
@@ -47,13 +39,13 @@ namespace TorchMonitor.ProfilerMonitors
             using (var profiler = new PhysicsProfiler())
             using (ProfilerResultQueue.Profile(profiler))
             {
-                await GameLoopObserver.MoveToGameLoop();
+                await VRageUtils.MoveToGameLoop();
 
                 profiler.MarkStart();
 
-                for (var i = 0; i < _physicsConfig.PhysicsFrameCount; i++)
+                for (var i = 0; i < TorchMonitorConfig.Instance.PhysicsFrameCount; i++)
                 {
-                    await GameLoopObserver.MoveToGameLoop();
+                    await VRageUtils.MoveToGameLoop();
                 }
 
                 profiler.MarkEnd();
@@ -65,7 +57,7 @@ namespace TorchMonitor.ProfilerMonitors
 
         void ProcessResult(BaseProfilerResult<HkWorld> result)
         {
-            foreach (var (world, entity) in result.GetTopEntities(_physicsConfig.PhysicsMaxClusterCount))
+            foreach (var (world, entity) in result.GetTopEntities(TorchMonitorConfig.Instance.PhysicsMaxClusterCount))
             {
                 // this usually doesn't happen but just in case
                 if (!PhysicsUtils.TryGetHeaviestGrid(world, out var heaviestGrid)) continue;

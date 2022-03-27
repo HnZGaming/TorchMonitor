@@ -10,7 +10,7 @@ namespace TorchMonitor.ProfilerMonitors
     {
         readonly NameConflictSolver<ulong> _nameConflictSolver;
 
-        public PlayerProfilerMonitor(ITorchMonitorGeneralConfig config, NameConflictSolver<ulong> nameConflictSolver) : base(config)
+        public PlayerProfilerMonitor(NameConflictSolver<ulong> nameConflictSolver)
         {
             _nameConflictSolver = nameConflictSolver;
         }

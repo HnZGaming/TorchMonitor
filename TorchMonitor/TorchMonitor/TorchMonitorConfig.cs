@@ -1,26 +1,15 @@
 ﻿using System;
 using System.Xml.Serialization;
-using Intervals;
-using Ipstack;
 using Torch;
 using Torch.Views;
-using TorchMonitor.Monitors;
-using TorchMonitor.ProfilerMonitors;
 using VRageMath;
 
 namespace TorchMonitor
 {
-    public sealed class TorchMonitorConfig :
-        ViewModel,
-        IpstackEndpoints.IConfig,
-        GeoLocationMonitor.IConfig,
-        IntervalRunner.IConfig,
-        ITorchMonitorGeneralConfig,
-        GridProfilerMonitor.IConfig,
-        SessionComponentsProfilerMonitor.IConfig,
-        PhysicsProfilerMonitor.IConfig,
-        TorchMonitorNexus.IConfig
+    public sealed class TorchMonitorConfig : ViewModel
     {
+        public static TorchMonitorConfig Instance { get; set; }
+        
         const string OpGroupName = "Operation";
         const string OutputGroupName = "Output";
         const string PhysicsGroupName = "Physics";
@@ -65,7 +54,7 @@ namespace TorchMonitor
 
         [XmlElement("Ipstack.ApiKey")]
         [Display(Order = 3, Name = "Ipstack.ApiKey", GroupName = OpGroupName)]
-        public string ApiKey
+        public string IpStackApiKey
         {
             get => _ipstackApiKey;
             set => SetValue(ref _ipstackApiKey, value);
@@ -90,7 +79,7 @@ namespace TorchMonitor
             set => SetValue(ref _resolveNameConflict, value);
         }
 
-        bool GeoLocationMonitor.IConfig.Enabled => !string.IsNullOrEmpty(ApiKey);
+        public bool GeoLocationEnabled => !string.IsNullOrEmpty(IpStackApiKey);
 
         [XmlElement("SessionComponentsProfilerMonitor.MonitorNamespace")]
         [Display(Name = "Monitor namespace of session components", GroupName = OutputGroupName,

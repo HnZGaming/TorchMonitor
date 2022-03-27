@@ -4,25 +4,19 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using NLog;
+using TorchMonitor;
 using Utils.General;
 
 namespace Intervals
 {
     public sealed class IntervalRunner : IDisposable
     {
-        public interface IConfig
-        {
-            bool Enabled { get; }
-        }
-
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
-        readonly IConfig _config;
         readonly int _intervalSeconds;
         readonly List<IIntervalListener> _listeners;
 
-        public IntervalRunner(IConfig config, int intervalSeconds)
+        public IntervalRunner(int intervalSeconds)
         {
-            _config = config;
             _intervalSeconds = intervalSeconds;
             _listeners = new List<IIntervalListener>();
         }
@@ -45,7 +39,7 @@ namespace Intervals
 
             while (!canceller.IsCancellationRequested)
             {
-                if (!_config.Enabled)
+                if (!TorchMonitorConfig.Instance.Enabled)
                 {
                     await Task.Delay(1.Seconds(), canceller);
                     continue;
@@ -101,7 +95,7 @@ namespace Intervals
                     disposable.Dispose();
                 }
             }
-            
+
             _listeners.Clear();
         }
     }

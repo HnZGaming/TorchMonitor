@@ -5,10 +5,6 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class PhysicsSimulateProfilerMonitor : ProfilerMonitorBase<string>
     {
-        public PhysicsSimulateProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
-        {
-        }
-
         protected override int SamplingSeconds => 10;
 
         protected override BaseProfiler<string> MakeProfiler()

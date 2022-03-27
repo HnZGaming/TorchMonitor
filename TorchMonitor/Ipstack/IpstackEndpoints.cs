@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NLog;
+using TorchMonitor;
 using Utils.General;
 
 namespace Ipstack
@@ -10,19 +11,12 @@ namespace Ipstack
     // https://ipstack.com/quickstart
     public sealed class IpstackEndpoints : IDisposable
     {
-        public interface IConfig
-        {
-            string ApiKey { get; }
-        }
-        
         const string Base = "http://api.ipstack.com";
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IConfig _config;
         readonly HttpClient _httpClient;
 
-        public IpstackEndpoints(IConfig config)
+        public IpstackEndpoints()
         {
-            _config = config;
             _httpClient = new HttpClient();
         }
 
@@ -32,7 +26,7 @@ namespace Ipstack
         {
             ipAddress.ThrowIfNullOrEmpty(nameof(ipAddress));
 
-            var apiKey = _config.ApiKey;
+            var apiKey = TorchMonitorConfig.Instance.IpStackApiKey;
             if (string.IsNullOrEmpty(apiKey)) return null; // not enabled
 
             var url = $"{Base}/{ipAddress}?access_key={apiKey}";

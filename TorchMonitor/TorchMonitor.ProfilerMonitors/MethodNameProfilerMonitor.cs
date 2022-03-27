@@ -6,10 +6,6 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class MethodNameProfilerMonitor : ProfilerMonitorBase<string>
     {
-        public MethodNameProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
-        {
-        }
-
         protected override int SamplingSeconds => 10;
 
         protected override BaseProfiler<string> MakeProfiler()

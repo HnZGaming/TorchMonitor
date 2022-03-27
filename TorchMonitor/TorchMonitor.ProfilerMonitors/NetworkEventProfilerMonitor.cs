@@ -6,10 +6,6 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class NetworkEventProfilerMonitor : ProfilerMonitorBase<string>
     {
-        public NetworkEventProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
-        {
-        }
-
         protected override int SamplingSeconds => 10;
 
         protected override BaseProfiler<string> MakeProfiler()
@@ -25,7 +21,7 @@ namespace TorchMonitor.ProfilerMonitors
                 TorchInfluxDbWriter
                     .Measurement("profiler_network_events")
                     .Tag("site_name", eventName)
-                    .Field("main_ms", (float) entry.MainThreadTime / result.TotalFrameCount)
+                    .Field("main_ms", (float)entry.MainThreadTime / result.TotalFrameCount)
                     .Write();
             }
         }
