@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Intervals;
 using Ipstack;
 using NLog;
@@ -19,7 +20,7 @@ namespace TorchMonitor
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
 
         Persistent<TorchMonitorConfig> _config;
-        UserControl _userControl;
+        TorchMonitorControl _userControl;
 
         CancellationTokenSource _canceller;
         IntervalRunner _intervalRunner;
@@ -27,7 +28,7 @@ namespace TorchMonitor
 
         UserControl IWpfPlugin.GetControl()
         {
-            return _config.GetOrCreateUserControl(ref _userControl);
+            return _userControl ??= new TorchMonitorControl(this);
         }
 
         public TorchMonitorNexus Nexus { get; private set; }
@@ -99,6 +100,12 @@ namespace TorchMonitor
             _config?.Dispose();
             _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
             TorchMonitorConfig.Instance = _config.Data;
+            _userControl?.Dispatcher.Invoke(() =>
+            {
+                _userControl.DataContext = TorchMonitorConfig.Instance;
+                _userControl.InitializeComponent();
+            });
+
             Log.Info("reloaded configs");
         }
     }
