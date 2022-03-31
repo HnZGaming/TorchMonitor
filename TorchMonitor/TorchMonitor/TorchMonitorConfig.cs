@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Xml.Serialization;
+using NLog;
 using Torch;
-using Torch.Views;
 using VRageMath;
 
 namespace TorchMonitor
 {
     public sealed class TorchMonitorConfig : ViewModel
     {
+        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
+
+        public TorchMonitorConfig()
+        {
+            Log.Info("<CTOR>");
+        }
+
         public static TorchMonitorConfig Instance { get; set; }
-        
-        const string OpGroupName = "Operation";
-        const string OutputGroupName = "Output";
-        const string PhysicsGroupName = "Physics";
-        const string NexusGroupName = "Nexus";
 
         bool _enabled = true;
         string _ipstackApiKey = "apikey";
@@ -35,7 +37,6 @@ namespace TorchMonitor
         string _nexusPrefix = "foo_";
 
         [XmlElement]
-        [Display(Order = 0, Name = "Enabled", GroupName = OpGroupName)]
         public bool Enabled
         {
             get => _enabled;
@@ -43,9 +44,6 @@ namespace TorchMonitor
         }
 
         [XmlElement]
-        [Display(
-            Order = 2, Name = "First ignored seconds", GroupName = OpGroupName,
-            Description = "Skip writing for the first N seconds of the session.")]
         public int FirstIgnoredSeconds
         {
             get => _firstIgnoredSeconds;
@@ -53,7 +51,6 @@ namespace TorchMonitor
         }
 
         [XmlElement("Ipstack.ApiKey")]
-        [Display(Order = 3, Name = "Ipstack.ApiKey", GroupName = OpGroupName)]
         public string IpStackApiKey
         {
             get => _ipstackApiKey;
@@ -61,9 +58,6 @@ namespace TorchMonitor
         }
 
         [XmlElement("GridProfilerMonitor.DetailOutput")]
-        [Display(
-            Name = "Grid owners", GroupName = OutputGroupName,
-            Description = "Show the name of grid owners.")]
         public bool ShowOwnerName
         {
             get => _gridProfilerDetailOutput;
@@ -71,8 +65,6 @@ namespace TorchMonitor
         }
 
         [XmlElement("GridProfilerMonitor.ResolveNameConflict")]
-        [Display(Name = "Resolve Grid Name Conflict", GroupName = OutputGroupName,
-            Description = "Show entity ID if multiple grids share the same name.")]
         public bool ResolveNameConflict
         {
             get => _resolveNameConflict;
@@ -82,8 +74,6 @@ namespace TorchMonitor
         public bool GeoLocationEnabled => !string.IsNullOrEmpty(IpStackApiKey);
 
         [XmlElement("SessionComponentsProfilerMonitor.MonitorNamespace")]
-        [Display(Name = "Monitor namespace of session components", GroupName = OutputGroupName,
-            Description = "Show type namespace of session components.")]
         public bool MonitorSessionComponentNamespace
         {
             get => _monitorSessionComponentNamespace;
@@ -91,7 +81,6 @@ namespace TorchMonitor
         }
 
         [XmlElement]
-        [Display(Name = "Enabled", GroupName = PhysicsGroupName, Description = "Profile physics", Order = 0)]
         public bool PhysicsEnabled
         {
             get => _physicsEnabled;
@@ -99,7 +88,6 @@ namespace TorchMonitor
         }
 
         [XmlElement]
-        [Display(Name = "Interval (seconds)", GroupName = PhysicsGroupName, Description = "Profile physics every N seconds.", Order = 1)]
         public int PhysicsInterval
         {
             get => _physicsInterval;
@@ -107,7 +95,6 @@ namespace TorchMonitor
         }
 
         [XmlElement]
-        [Display(Name = "Frame count", GroupName = PhysicsGroupName, Description = "Profile physics N frames at once.", Order = 2)]
         public int PhysicsFrameCount
         {
             get => _physicsFrameCount;
@@ -115,7 +102,6 @@ namespace TorchMonitor
         }
 
         [XmlElement]
-        [Display(Name = "Max entity count", GroupName = PhysicsGroupName, Description = "Submit N top clusters every interval.", Order = 3)]
         public int PhysicsMaxClusterCount
         {
             get => _physicsMaxClusterCount;
@@ -123,79 +109,83 @@ namespace TorchMonitor
         }
 
         [XmlElement]
-        [Display(Name = "Enable Nexus features", GroupName = NexusGroupName, Order = 0)]
         public bool EnableNexusFeature
         {
             get => _enableNexusFeature;
-            set
-            {
-                SetValue(ref _enableNexusFeature, value);
-                RefreshModel();
-            }
+            set => SetValue(ref _enableNexusFeature, value);
         }
 
         [XmlElement]
-        [Display(Name = "Prefix", GroupName = NexusGroupName, Order = 1)]
         public string NexusPrefix
         {
             get => _nexusPrefix;
             set
             {
                 SetValue(ref _nexusPrefix, value);
-                RefreshModel();
+                OnPropertyChanged(nameof(NexusPreview));
             }
         }
 
         [XmlElement]
-        [Display(Name = "Origin position (x)", GroupName = NexusGroupName, Order = 2)]
         public double NexusOriginPositionX
         {
             get => _nexusOriginPositionX;
-            set => SetValue(ref _nexusOriginPositionX, value);
+            set
+            {
+                SetValue(ref _nexusOriginPositionX, value);
+                OnPropertyChanged(nameof(NexusPreview));
+            }
         }
 
         [XmlElement]
-        [Display(Name = "Origin position (y)", GroupName = NexusGroupName, Order = 3)]
         public double NexusOriginPositionY
         {
             get => _nexusOriginPositionY;
-            set => SetValue(ref _nexusOriginPositionY, value);
+            set
+            {
+                SetValue(ref _nexusOriginPositionY, value);
+                OnPropertyChanged(nameof(NexusPreview));
+            }
         }
 
         [XmlElement]
-        [Display(Name = "Origin position (z)", GroupName = NexusGroupName, Order = 4)]
         public double NexusOriginPositionZ
         {
             get => _nexusOriginPositionZ;
-            set => SetValue(ref _nexusOriginPositionZ, value);
+            set
+            {
+                SetValue(ref _nexusOriginPositionZ, value);
+                OnPropertyChanged(nameof(NexusPreview));
+            }
         }
 
-        public Vector3D NexusOriginPosition => new Vector3D(
+        public Vector3D NexusOriginPosition => new(
             _nexusOriginPositionX,
             _nexusOriginPositionY,
             _nexusOriginPositionZ);
 
         [XmlElement]
-        [Display(Name = "Sector diameter", GroupName = NexusGroupName, Order = 5)]
         public double NexusSectorDiameter
         {
             get => _nexusSectorDiameter;
-            set => SetValue(ref _nexusSectorDiameter, value);
+            set
+            {
+                SetValue(ref _nexusSectorDiameter, value);
+                OnPropertyChanged(nameof(NexusPreview));
+            }
         }
 
         [XmlElement]
-        [Display(Name = "Segmentation per dimension", GroupName = NexusGroupName, Order = 6)]
         public int NexusSegmentationCount
         {
             get => _nexusSegmentationCount;
             set
             {
                 SetValue(ref _nexusSegmentationCount, value);
-                RefreshModel();
+                OnPropertyChanged(nameof(NexusPreview));
             }
         }
 
-        [Display(Name = "Type !tm nexus", GroupName = NexusGroupName, Order = 7)]
-        public string Foo => EnableNexusFeature ? $"{Math.Pow(NexusSegmentationCount, 3)} segments; tag name e.g.: \"nexus_{NexusPrefix}0_0_0\"" : "disabled";
+        public string NexusPreview => $"{Math.Pow(NexusSegmentationCount, 3)} segments; tags e.g.: \"nexus_{NexusPrefix}0_0_0\"";
     }
 }

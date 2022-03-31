@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Sandbox.Game;
 using Torch.Commands;
@@ -20,6 +21,11 @@ namespace TorchMonitor
         }
 
         TorchMonitorPlugin Plugin => (TorchMonitorPlugin)Context.Plugin;
+        
+        public static IEnumerable<CommandAttribute> GetAllCommands()
+        {
+            return CommandModuleUtils.GetCommandMethods(typeof(TorchMonitorCommandModule), MyPromoteLevel.Admin);
+        }
 
         [Command("on", "Starts monitoring")]
         [Permission(MyPromoteLevel.Admin)]

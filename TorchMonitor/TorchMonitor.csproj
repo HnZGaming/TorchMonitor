@@ -157,6 +157,7 @@
         <Reference Include="System.Core" />
         <Reference Include="System.Data" />
         <Reference Include="System.Web" />
+        <Reference Include="System.Xaml" />
         <Reference Include="System.Xml" />
         <Reference Include="System" />
         <Reference Include="Microsoft.CSharp" />
@@ -191,9 +192,9 @@
         <Compile Include="TorchMonitor.Reflections\MySteamGameService_Networking.cs" />
         <Compile Include="TorchMonitor.Utils\NameConflictSolver.cs" />
         <Compile Include="TorchMonitor.Utils\PhysicsUtils.cs" />
-        <Compile Include="TorchMonitor\ITorchMonitorGeneralConfig.cs" />
         <Compile Include="TorchMonitor\TorchMonitorCommandModule.cs" />
         <Compile Include="TorchMonitor\TorchMonitorConfig.cs" />
+        <Compile Include="TorchMonitor\TorchMonitorControl.xaml.cs" />
         <Compile Include="TorchMonitor\TorchMonitorNexus.cs" />
         <Compile Include="TorchMonitor\TorchMonitorPlugin.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\BlockTypeProfilerMonitor.cs" />
@@ -211,6 +212,9 @@
     <ItemGroup>
         <Content Include="manifest.xml" />
         <Content Include="postbuild.bat" />
+    </ItemGroup>
+    <ItemGroup>
+      <Page Include="TorchMonitor\TorchMonitorControl.xaml" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
