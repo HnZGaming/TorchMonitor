@@ -18,17 +18,9 @@ namespace TorchMonitor.Monitors
 
         const int MaxMonitoredCount = 5;
 
-        readonly ITorchMonitorGeneralConfig _config;
-
-        public GridMonitor(
-            ITorchMonitorGeneralConfig config)
-        {
-            _config = config;
-        }
-
         public void OnInterval(int intervalsSinceStart)
         {
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
+            if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % 60 != 0) return;
 
             var allGrids = MyCubeGridGroups.Static.Logical.Groups
@@ -42,6 +34,11 @@ namespace TorchMonitor.Monitors
                 TorchInfluxDbWriter
                     .Measurement("blocks_all")
                     .Field("block_count", totalBlockCount)
+                    .Write();
+
+                TorchInfluxDbWriter
+                    .Measurement("grids_all")
+                    .Field("grid_count", allGrids.Length)
                     .Write();
             }
 

@@ -10,11 +10,9 @@ namespace TorchMonitor.Monitors
         const int IntervalsPerWrite = 5;
 
         readonly float[] _simSpeeds;
-        readonly ITorchMonitorGeneralConfig _config;
 
-        public SyncMonitor(ITorchMonitorGeneralConfig config)
+        public SyncMonitor()
         {
-            _config = config;
             _simSpeeds = new float[IntervalsPerWrite];
         }
 
@@ -23,7 +21,7 @@ namespace TorchMonitor.Monitors
             var simSpeed = Sync.ServerSimulationRatio;
             _simSpeeds[intervalsSinceStart % _simSpeeds.Length] = simSpeed;
 
-            if (intervalsSinceStart < _config.FirstIgnoredSeconds) return;
+            if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % IntervalsPerWrite != 0) return;
 
             var maxSimSpeed = _simSpeeds.Max();

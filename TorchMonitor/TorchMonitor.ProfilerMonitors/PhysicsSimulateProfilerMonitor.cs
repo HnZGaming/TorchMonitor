@@ -1,26 +1,25 @@
 ﻿using InfluxDb.Torch;
 using Profiler.Basics;
-using TorchMonitor.Utils;
 
 namespace TorchMonitor.ProfilerMonitors
 {
-    public sealed class MethodNameProfilerMonitor : ProfilerMonitorBase<string>
+    public sealed class PhysicsSimulateProfilerMonitor : ProfilerMonitorBase<string>
     {
         protected override int SamplingSeconds => 10;
 
         protected override BaseProfiler<string> MakeProfiler()
         {
-            return new MethodNameProfiler();
+            return new PhysicsSimulateProfiler();
         }
 
         protected override void OnProfilingFinished(BaseProfilerResult<string> result)
         {
-            foreach (var (name, entity) in result.GetTopEntities())
+            foreach (var (methodName, entity) in result.GetTopEntities())
             {
                 TorchInfluxDbWriter
-                    .Measurement("profiler_method_names")
-                    .Tag("method_name", name)
-                    .Field("ms", (float) entity.MainThreadTime / result.TotalFrameCount)
+                    .Measurement("profiler_physics_simulate")
+                    .Tag("method_name", methodName)
+                    .Field("main_ms", (float)entity.MainThreadTime / result.TotalFrameCount)
                     .Write();
             }
         }

@@ -12,10 +12,6 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class FactionProfilerMonitor : ProfilerMonitorBase<IMyFaction>
     {
-        public FactionProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
-        {
-        }
-
         protected override int SamplingSeconds => 10;
 
         protected override BaseProfiler<IMyFaction> MakeProfiler()

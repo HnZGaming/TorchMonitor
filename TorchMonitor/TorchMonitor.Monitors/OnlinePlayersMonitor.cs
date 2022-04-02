@@ -81,11 +81,14 @@ namespace TorchMonitor.Monitors
                 .Write();
 
             // nexus
-            if (_nexus.IsEnabled)
+            if (TorchMonitorConfig.Instance.EnableNexusFeature)
             {
                 var segments = _nexus.GetSegmentedPopulation(onlinePlayers);
                 foreach (var (segmentName, playerCount) in segments)
                 {
+                    // save space
+                    if (playerCount == 0) continue;
+
                     TorchInfluxDbWriter
                         .Measurement("nexus")
                         .Tag("segment", segmentName)

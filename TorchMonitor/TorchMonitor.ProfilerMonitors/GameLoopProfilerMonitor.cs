@@ -7,10 +7,6 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class GameLoopProfilerMonitor : ProfilerMonitorBase<ProfilerCategory>
     {
-        public GameLoopProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
-        {
-        }
-
         protected override int SamplingSeconds => 10;
 
         protected override BaseProfiler<ProfilerCategory> MakeProfiler()

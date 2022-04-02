@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Sandbox.Game;
 using Torch.Commands;
@@ -20,31 +21,44 @@ namespace TorchMonitor
         }
 
         TorchMonitorPlugin Plugin => (TorchMonitorPlugin)Context.Plugin;
+        
+        public static IEnumerable<CommandAttribute> GetAllCommands()
+        {
+            return CommandModuleUtils.GetCommandMethods(typeof(TorchMonitorCommandModule), MyPromoteLevel.Admin);
+        }
 
         [Command("on", "Starts monitoring")]
         [Permission(MyPromoteLevel.Admin)]
         public void StartMonitoring()
         {
-            Plugin.Enabled = true;
+            TorchMonitorConfig.Instance.Enabled = true;
+            Context.Respond("success");
         }
 
         [Command("off", "Stops monitoring")]
         [Permission(MyPromoteLevel.Admin)]
         public void StopMonitoring()
         {
-            Plugin.Enabled = false;
+            TorchMonitorConfig.Instance.Enabled = false;
+            Context.Respond("success");
+        }
+
+        [Command("reload", "Reload configs")]
+        [Permission(MyPromoteLevel.Admin)]
+        public void ReloadConfigs()
+        {
+            Plugin.ReloadConfig();
+            Context.Respond("success");
         }
 
         [Command("nexus", "Shows Nexus help")]
         [Permission(MyPromoteLevel.Admin)]
         public void ShowNexusHelp()
         {
-            var adminId = GetCallerPlayer().IdentityId;
             var msg = new StringBuilder();
             msg.AppendLine("!tm nexus corners -- shows 8 corners of the monitored nexus sector");
             msg.AppendLine("!tm nexus centers -- shows the center position of all monitored segments");
-
-            MyVisualScriptLogicProvider.SendChatMessage(msg.ToString(), "", adminId);
+            Context.Respond(msg.ToString());
         }
 
         [Command("nexus corners", "Shows 8 corners of the monitored nexus sector")]
@@ -87,7 +101,7 @@ namespace TorchMonitor
 
         IMyPlayer GetCallerPlayer()
         {
-            if (!(Context.Player is { } admin))
+            if (Context.Player is not { } admin)
             {
                 throw new InvalidOperationException("must be called in game");
             }

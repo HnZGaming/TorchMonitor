@@ -7,10 +7,6 @@ namespace TorchMonitor.ProfilerMonitors
     {
         const int MaxDisplayCount = 10;
 
-        public EntityTypeProfilerMonitor(ITorchMonitorGeneralConfig config) : base(config)
-        {
-        }
-
         protected override int SamplingSeconds => 10;
 
         protected override BaseProfiler<string> MakeProfiler()

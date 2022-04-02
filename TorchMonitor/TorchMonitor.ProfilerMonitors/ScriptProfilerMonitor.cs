@@ -3,6 +3,7 @@ using InfluxDb.Torch;
 using Profiler.Basics;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Blocks;
+using TorchMonitor.Monitors;
 using TorchMonitor.Utils;
 using Utils.Torch;
 
@@ -13,7 +14,7 @@ namespace TorchMonitor.ProfilerMonitors
         const int MaxDisplayCount = 4;
         readonly NameConflictSolver<long> _nameConflictSolver;
 
-        public ScriptProfilerMonitor(ITorchMonitorGeneralConfig config, NameConflictSolver<long> nameConflictSolver) : base(config)
+        public ScriptProfilerMonitor(NameConflictSolver<long> nameConflictSolver)
         {
             _nameConflictSolver = nameConflictSolver;
         }
@@ -33,7 +34,7 @@ namespace TorchMonitor.ProfilerMonitors
                 if (grid == null) return;
 
                 var gridName = _nameConflictSolver.GetSafeName(grid.DisplayName, grid.EntityId);
-                var mainMs = (float) entity.MainThreadTime / result.TotalFrameCount;
+                var mainMs = (float)entity.MainThreadTime / result.TotalFrameCount;
 
                 TorchInfluxDbWriter
                     .Measurement("profiler_scripts")
