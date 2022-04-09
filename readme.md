@@ -31,9 +31,9 @@ Following monitors come with this plugin.
 
 ## Custom Monitors
 
-- Fork this repo 
-- Run `git submodule update`
-- Implement your own `Intervals.IIntervalListener` and run it in the plugin's main loop.
+1. Fork this repo 
+2. Run `git submodule update --init`
+3. Implement your own `Intervals.IIntervalListener` and run it in the plugin's main loop.
 
 ```C#
 public class YourMonitor : IIntervalListener
