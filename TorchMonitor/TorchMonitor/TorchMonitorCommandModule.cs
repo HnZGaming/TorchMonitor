@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using Sandbox.Game;
 using Torch.Commands;
 using Torch.Commands.Permissions;
 using Utils.Torch;
@@ -24,7 +24,7 @@ namespace TorchMonitor
         
         public static IEnumerable<CommandAttribute> GetAllCommands()
         {
-            return CommandModuleUtils.GetCommandMethods(typeof(TorchMonitorCommandModule), MyPromoteLevel.Admin);
+            return CommandModuleUtils.GetCommandMethods(typeof(TorchMonitorCommandModule)).Select(p => p.Command);
         }
 
         [Command("on", "Starts monitoring")]

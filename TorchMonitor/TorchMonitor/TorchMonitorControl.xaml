@@ -6,7 +6,8 @@
              xmlns:torchMonitor="clr-namespace:TorchMonitor"
              mc:Ignorable="d"
              d:DesignHeight="1000"
-             d:DesignWidth="400" d:DataContext="{x:Static torchMonitor:TorchMonitorConfig.Instance }">
+             d:DesignWidth="400" 
+             d:DataContext="{x:Static torchMonitor:TorchMonitorConfig.Instance }">
     <UserControl.Resources>
         <ObjectDataProvider x:Key="AllCommands"
                             ObjectType="{x:Type torchMonitor:TorchMonitorCommandModule}"
