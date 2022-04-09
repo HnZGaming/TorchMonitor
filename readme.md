@@ -20,6 +20,7 @@ To view the data, hook up a graphical dashboard like [Grafana](https://grafana.c
 ## Default Monitors
 
 Following monitors come with this plugin.
+Run `git submodule update` to sync up the util library.
 
 - `FloatingObjectsMonitor` counts the number of "floating objects".
 - `GeoLocationMonitor` monitors which countries your players are from.
