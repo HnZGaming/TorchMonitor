@@ -1,5 +1,7 @@
 For the general info about this plugin see the readme first.
 
+![Untitled Diagram drawio](https://user-images.githubusercontent.com/5270319/163676489-113bf21c-efa8-4354-956c-dd466787170d.png)
+
 # Abstract
 
 This manual will cover cloud-hosting and self-hosting workflows.
