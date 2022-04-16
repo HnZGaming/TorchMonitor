@@ -1,88 +1,37 @@
-# TorchMonitor
+![image](https://user-images.githubusercontent.com/5270319/163680754-1e0c0780-df62-4526-9c1f-95276d77ac65.png)
+![image](https://user-images.githubusercontent.com/5270319/163680772-e54c2c1a-79e9-463a-892f-b052a7e1ebe1.png)
+![image](https://user-images.githubusercontent.com/5270319/163680783-8e3e8dcf-19dd-4dba-b974-11964fe8e96e.png)
+![image](https://user-images.githubusercontent.com/5270319/163682335-e5788b93-727e-47f0-aedc-6e1b86e16a33.png)
 
-Collects and sends various game data to a database. 
+[See the sample LIVE dashboard](https://guest-grafana.torchmonitor.net/d/9UUUl7pGk/short-term-monitor?orgId=6&refresh=1m)
 
-![Untitled Diagram drawio](https://user-images.githubusercontent.com/5270319/163676500-4cec4b6c-5706-490b-8b35-0f048bfaf51b.png)
+# Why you need Torch Monitor
 
-## Usage
+Space Engineers is so complicated & poorly optimized that slight misconfiguration and/or a few player's activity can ruin everyone's experience. It's critical to monitor the server health and you need Torch Monitor for that, because the web-based dashboard will show you what's choking the server every given moment:
 
-Intended for server health monitoring and analysis. 
+* Server ping
+* RAM usage
+* Profiling of each faction, player, grid, block
+* Profiling of Havok physics
+* and more
 
-To view the data, hook up a graphical dashboard like [Grafana](https://grafana.com/).
+Space Engineers is a "competitive" game because the vanilla game is just a sandbox. To differenciate your server from the others it's essential to iterate your policies on solid data and you need Torch Monitor for that, because the time-series database will allow you to observe and analyze your population's pattern & growth:
 
-[See an example dashboard](https://guest-grafana.torchmonitor.net/d/9UUUl7pGk/short-term-monitor?orgId=6&refresh=1m) (if still alive).
+* Number of online players (per faction)
+* Total playtime of all players
+* Countries/states of connected players (requires 3rd-party API authentication)
+* and more
 
-[See the user manual](manual.md) to get started <--
+# How to get Torch Monitor
 
-## Dependencies
+Torch Monitor makes use of several OSS projects as a framework:
 
-* [TorchInfluxDb plugin](https://github.com/HnZGaming/TorchInfluxDb) to write to the database.
-* [Profiler plugin](https://github.com/TorchAPI/Profiler) to collect some game data.
+![Untitled Diagram drawio](https://user-images.githubusercontent.com/5270319/163439665-be0cd71a-0213-4489-9ecf-ea417e3ecce4.png)
 
-## Default Monitors
+All of which is freeware, readily available for anyone who can sit through the setup.
 
-Following monitors come with this plugin.
+See [our wiki](https://github.com/HnZGaming/TorchMonitor/wiki) to start installation. Shoot message to [our Discord](https://discord.gg/AaqdbWa3AP) if you need help.
 
-- `FloatingObjectsMonitor` counts the number of "floating objects".
-- `GeoLocationMonitor` monitors which countries your players are from.
-- `GridMonitor` monitors a lot of things about grids and factions.
-- `OnlinePlayersMonitor` counts the number of online players and more.
-- `RamUsageMonitor` monitors the total RAM usage of Torch and SE program.
-- `SyncMonitor` monitors the simulation speed.
-- `VoxelMonitor` counts the number of voxel bodies (planets and asteroids).
+# Contribution
 
-## Custom Monitors
-
-1. Fork this repo 
-2. Run `git submodule update --init`
-3. Implement your own `Intervals.IIntervalListener` and run it in the plugin's main loop.
-
-```C#
-public class YourMonitor : IIntervalListener
-{
-    public void OnInterval(int intervalsSinceStart)
-    {
-        // your monitor's implementation
-    }
-}
-```
-
-```C#
-void OnGameLoaded()
-{
-    _intervalRunner.AddListeners(new IIntervalListener[]
-    {
-        ...
-        new YourMonitor(), // Add this line
-        ...
-    });
-    
-    ...
-```
-
-This will make the plugin invoke your monitor during the game.
-
-### Example Implementation
-
-```C#
-public void OnInterval(int intervalsSinceStart)
-{
-    // Do work every 20 seconds
-    if (intervalsSinceStart % 20 != 0) return;
-
-    ...
-    
-    // Write to an InfluxDB database
-    InfluxDbPointFactory
-        .Measurement("my_measurement")
-        .Tag("my_tag", myTagValue)
-        .Field("my_field", myFieldValue)
-        .Write();
-}
-```
-
-See default monitors in the plugin for code examples.
-
-## Contribution
-
-Feel free to send us your PR or participate in our discussion in Torch Discord.
+Please help us support Torch Monitor users in [our Discord](https://discord.gg/AaqdbWa3AP). Also please feel free to send us issues or PR in this Git repo for features and bug fixes.
