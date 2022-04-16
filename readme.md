@@ -2,6 +2,8 @@
 
 Collects and sends various game data to a database. 
 
+![Untitled Diagram drawio](https://user-images.githubusercontent.com/5270319/163676500-4cec4b6c-5706-490b-8b35-0f048bfaf51b.png)
+
 ## Usage
 
 Intended for server health monitoring and analysis. 
