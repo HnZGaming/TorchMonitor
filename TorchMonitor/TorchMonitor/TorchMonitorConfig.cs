@@ -2,18 +2,15 @@
 using System.Xml.Serialization;
 using NLog;
 using Torch;
+using Utils.Torch;
 using VRageMath;
 
 namespace TorchMonitor
 {
-    public sealed class TorchMonitorConfig : ViewModel
+    public sealed class TorchMonitorConfig : ViewModel, FileLoggingConfigurator.IConfig
     {
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-
-        public TorchMonitorConfig()
-        {
-            Log.Info("<CTOR>");
-        }
+        public const string DefaultLogPath = "Logs/TorchMonitor-${shortdate}.log";
 
         public static TorchMonitorConfig Instance { get; set; }
 
@@ -35,6 +32,10 @@ namespace TorchMonitor
         double _nexusSectorDiameter = 1000000;
         int _nexusSegmentationCount = 3;
         string _nexusPrefix = "foo_";
+        bool _suppressWpfOutput;
+        bool _enableLoggingTrace;
+        bool _enableLoggingDebug;
+        string _logFilePath = DefaultLogPath;
 
         [XmlElement]
         public bool Enabled
@@ -187,5 +188,33 @@ namespace TorchMonitor
         }
 
         public string NexusPreview => $"{Math.Pow(NexusSegmentationCount, 3)} segments; tags e.g.: \"nexus_{NexusPrefix}0_0_0\"";
+
+        [XmlElement]
+        public bool SuppressWpfOutput
+        {
+            get => _suppressWpfOutput;
+            set => SetValue(ref _suppressWpfOutput, value);
+        }
+
+        [XmlElement]
+        public bool EnableLoggingTrace
+        {
+            get => _enableLoggingTrace;
+            set => SetValue(ref _enableLoggingTrace, value);
+        }
+
+        [XmlElement]
+        public bool EnableLoggingDebug
+        {
+            get => _enableLoggingDebug;
+            set => SetValue(ref _enableLoggingDebug, value);
+        }
+
+        [XmlElement]
+        public string LogFilePath
+        {
+            get => _logFilePath;
+            set => SetValue(ref _logFilePath, value);
+        }
     }
 }

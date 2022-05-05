@@ -1,6 +1,6 @@
-﻿using System.Threading;
+﻿using System.ComponentModel;
+using System.Threading;
 using System.Windows.Controls;
-using System.Windows.Threading;
 using Intervals;
 using Ipstack;
 using NLog;
@@ -25,6 +25,7 @@ namespace TorchMonitor
         CancellationTokenSource _canceller;
         IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
+        FileLoggingConfigurator _fileLogger;
 
         UserControl IWpfPlugin.GetControl()
         {
@@ -40,6 +41,12 @@ namespace TorchMonitor
             this.ListenOnGameUnloading(OnGameUnloading);
 
             _canceller = new CancellationTokenSource();
+
+            _fileLogger = new FileLoggingConfigurator(
+                nameof(TorchMonitor),
+                new[] { $"{nameof(TorchMonitor)}.*" },
+                TorchMonitorConfig.DefaultLogPath);
+            _fileLogger.Initialize();
 
             ReloadConfig();
 
@@ -96,6 +103,11 @@ namespace TorchMonitor
 
         public void ReloadConfig()
         {
+            if (_config != null)
+            {
+                _config.Data.PropertyChanged -= OnConfigChanged;
+            }
+
             var configFilePath = this.MakeConfigFilePath();
             _config?.Dispose();
             _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
@@ -106,7 +118,16 @@ namespace TorchMonitor
                 _userControl.InitializeComponent();
             });
 
+            _fileLogger.Configure(TorchMonitorConfig.Instance);
+
+            _config.Data.PropertyChanged += OnConfigChanged;
+
             Log.Info("reloaded configs");
+        }
+
+        void OnConfigChanged(object sender, PropertyChangedEventArgs e)
+        {
+            _fileLogger.Configure(TorchMonitorConfig.Instance);
         }
     }
 }
