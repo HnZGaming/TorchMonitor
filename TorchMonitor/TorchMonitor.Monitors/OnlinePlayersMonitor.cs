@@ -36,6 +36,8 @@ namespace TorchMonitor.Monitors
             var factionList = MySession.Static.Factions.Factions.Values;
             var factions = new Dictionary<string, int>();
 
+            Log.Trace("writing players_players");
+
             foreach (var onlinePlayer in onlinePlayers)
             {
                 if (onlinePlayer == null) continue;
@@ -51,8 +53,10 @@ namespace TorchMonitor.Monitors
                 var factionTag = faction?.Tag ?? "<single>";
                 factions.Increment(factionTag);
 
-                var playerName = onlinePlayer.DisplayName;
+                var playerName = onlinePlayer.DisplayName ?? "<noname>";
                 playerName = _nameConflictSolver.GetSafeName(playerName, steamId);
+
+                Log.Trace($"player name: {playerName}, faction tag: {factionTag}");
 
                 TorchInfluxDbWriter
                     .Measurement("players_players")
@@ -63,14 +67,20 @@ namespace TorchMonitor.Monitors
                     .Write();
             }
 
+            Log.Trace("writing players_factions");
+
             foreach (var (factionTag, onlineMemberCount) in factions)
             {
+                Log.Trace($"faction tag: {factionTag}");
+
                 TorchInfluxDbWriter
                     .Measurement("players_factions")
                     .Tag("faction_tag", factionTag)
                     .Field("online_member_count", onlineMemberCount)
                     .Write();
             }
+
+            Log.Trace("writing server");
 
             var totalOnlineTime = _playerOnlineTimeDb.GetTotalOnlineTime();
 
@@ -83,6 +93,8 @@ namespace TorchMonitor.Monitors
             // nexus
             if (TorchMonitorConfig.Instance.EnableNexusFeature)
             {
+                Log.Trace("writing nexus");
+
                 var segments = _nexus.GetSegmentedPopulation(onlinePlayers);
                 foreach (var (segmentName, playerCount) in segments)
                 {
