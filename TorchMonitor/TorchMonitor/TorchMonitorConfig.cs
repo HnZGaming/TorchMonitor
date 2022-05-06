@@ -36,6 +36,7 @@ namespace TorchMonitor
         bool _enableLoggingTrace;
         bool _enableLoggingDebug;
         string _logFilePath = DefaultLogPath;
+        bool _ignoreAnimals;
 
         [XmlElement]
         public bool Enabled
@@ -49,6 +50,13 @@ namespace TorchMonitor
         {
             get => _firstIgnoredSeconds;
             set => SetValue(ref _firstIgnoredSeconds, value);
+        }
+
+        [XmlElement]
+        public bool IgnoreAnimals
+        {
+            get => _ignoreAnimals;
+            set => SetValue(ref _ignoreAnimals, value);
         }
 
         [XmlElement("Ipstack.ApiKey")]

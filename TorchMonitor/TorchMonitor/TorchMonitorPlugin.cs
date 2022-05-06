@@ -44,7 +44,11 @@ namespace TorchMonitor
 
             _fileLogger = new FileLoggingConfigurator(
                 nameof(TorchMonitor),
-                new[] { $"{nameof(TorchMonitor)}.*" },
+                new[]
+                {
+                    $"{nameof(TorchMonitor)}.*",
+                    $"{nameof(Intervals)}.*",
+                },
                 TorchMonitorConfig.DefaultLogPath);
             _fileLogger.Initialize();
 

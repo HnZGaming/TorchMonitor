@@ -31,6 +31,9 @@
             <Label Content="Enabled" />
             <CheckBox IsChecked="{Binding Enabled}" VerticalAlignment="Center" />
 
+            <Label Content="Ignore Animals" />
+            <CheckBox IsChecked="{Binding IgnoreAnimals}" VerticalAlignment="Center" />
+
             <Label Content="Warmup (seconds)"></Label>
             <TextBox Text="{Binding FirstIgnoredSeconds}" VerticalAlignment="Center"></TextBox>
         </UniformGrid>

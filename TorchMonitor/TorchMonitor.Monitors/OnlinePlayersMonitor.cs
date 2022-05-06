@@ -53,7 +53,14 @@ namespace TorchMonitor.Monitors
                 var factionTag = faction?.Tag ?? "<single>";
                 factions.Increment(factionTag);
 
-                var playerName = onlinePlayer.DisplayName ?? "<noname>";
+                // animal
+                if (string.IsNullOrEmpty(onlinePlayer.DisplayName) &&
+                    TorchMonitorConfig.Instance.IgnoreAnimals)
+                {
+                    continue;
+                }
+
+                var playerName = onlinePlayer.DisplayName;
                 playerName = _nameConflictSolver.GetSafeName(playerName, steamId);
 
                 Log.Trace($"player name: {playerName}, faction tag: {factionTag}");
