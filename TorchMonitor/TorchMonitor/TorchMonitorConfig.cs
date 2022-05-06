@@ -36,7 +36,7 @@ namespace TorchMonitor
         bool _enableLoggingTrace;
         bool _enableLoggingDebug;
         string _logFilePath = DefaultLogPath;
-        bool _ignoreAnimals;
+        bool _ignoreAnimals = true;
 
         [XmlElement]
         public bool Enabled
