@@ -67,13 +67,13 @@ namespace Intervals
         [MethodImpl(MethodImplOptions.Synchronized)]
         void RunIntervalOnce(int currentInterval)
         {
-            Parallel.ForEach(_listeners, listener =>
+            Parallel.ForEach(_listeners, (listener, _, i) =>
             {
                 try
                 {
                     var startTime = DateTime.UtcNow;
 
-                    listener.OnInterval(currentInterval);
+                    listener.OnInterval(currentInterval + (int)i);
 
                     var time = (DateTime.UtcNow - startTime).TotalMilliseconds;
                     Log.Debug($"listener finished interval: \"{listener.GetType().Name}\", {time:0.000}ms");
