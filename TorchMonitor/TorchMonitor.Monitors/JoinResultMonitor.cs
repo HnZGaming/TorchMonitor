@@ -14,25 +14,32 @@ namespace TorchMonitor.Monitors
     public sealed class JoinResultMonitor : IIntervalListener, IDisposable
     {
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly ConcurrentQueue<(ulong, JoinResult)> _joinResponses;
+        readonly ConcurrentQueue<(ulong, string)> _joinResponses;
 
         public JoinResultMonitor()
         {
-            _joinResponses = new ConcurrentQueue<(ulong, JoinResult)>();
+            _joinResponses = new ConcurrentQueue<(ulong, string)>();
 
-            MultiplayerManagerDedicated_Patch.OnJoinResponded += OnJoinResponded;
+            MultiplayerManagerDedicated_UserRejected.OnJoinResponded += OnJoinResponded;
+            MyDedicatedServerBase_ConnectionFailed.OnConnectionFailed += OnConnectionFailed;
         }
 
         public void Dispose()
         {
             _joinResponses.Clear();
 
-            MultiplayerManagerDedicated_Patch.OnJoinResponded -= OnJoinResponded;
+            MultiplayerManagerDedicated_UserRejected.OnJoinResponded -= OnJoinResponded;
+            MyDedicatedServerBase_ConnectionFailed.OnConnectionFailed -= OnConnectionFailed;
         }
 
         void OnJoinResponded(ulong steamId, JoinResult failReason)
         {
-            _joinResponses.Enqueue((steamId, failReason));
+            _joinResponses.Enqueue((steamId, failReason.ToString()));
+        }
+
+        void OnConnectionFailed(ulong remoteUserId, string error)
+        {
+            _joinResponses.Enqueue((remoteUserId, error));
         }
 
         public void OnInterval(int intervalsSinceStart)
@@ -49,7 +56,7 @@ namespace TorchMonitor.Monitors
                 TorchInfluxDbWriter
                     .Measurement("players_connectivity")
                     .Tag("player_name", playerName)
-                    .Field("result", result.ToString())
+                    .Field("result", result)
                     .Write();
 
                 Log.Debug($"join result: {steamId} {playerName} {result}");

@@ -191,7 +191,8 @@
         <Compile Include="TorchMonitor.ProfilerMonitors\PlayerProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\ProfilerMonitorBase.cs" />
         <Compile Include="TorchMonitor.ProfilerMonitors\ScriptProfilerMonitor.cs" />
-        <Compile Include="TorchMonitor.Reflections\MultiplayerManagerDedicated_Patch.cs" />
+        <Compile Include="TorchMonitor.Reflections\MultiplayerManagerDedicated_UserRejected.cs" />
+        <Compile Include="TorchMonitor.Reflections\MyDedicatedServerBase_ConnectionFailed.cs" />
         <Compile Include="TorchMonitor.Reflections\MySteamGameService_Networking.cs" />
         <Compile Include="TorchMonitor.Utils\GeoLocationCollection.cs" />
         <Compile Include="TorchMonitor.Utils\NameConflictSolver.cs" />
