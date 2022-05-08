@@ -15,14 +15,6 @@ namespace TorchMonitor.ProfilerMonitors
 {
     public sealed class PhysicsProfilerMonitor : IIntervalListener
     {
-        public interface IConfig
-        {
-            bool PhysicsEnabled { get; }
-            int PhysicsInterval { get; }
-            int PhysicsFrameCount { get; }
-            int PhysicsMaxClusterCount { get; }
-        }
-
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
 
         public void OnInterval(int intervalsSinceStart)
