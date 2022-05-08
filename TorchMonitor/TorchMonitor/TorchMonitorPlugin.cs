@@ -88,6 +88,7 @@ namespace TorchMonitor
                 new PhysicsProfilerMonitor(),
                 new PhysicsSimulateProfilerMonitor(),
                 new PhysicsSimulateMtProfilerMonitor(),
+                new JoinResultMonitor(),
             });
         }
 
