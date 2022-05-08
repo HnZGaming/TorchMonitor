@@ -1,31 +1,24 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using InfluxDb.Torch;
 using Intervals;
-using Ipstack;
 using NLog;
 using Sandbox.Game.World;
-using TorchMonitor.Reflections;
+using TorchMonitor.Utils;
 using Utils.General;
 using Utils.Torch;
-using VRage.GameServices;
 
 namespace TorchMonitor.Monitors
 {
     public sealed class GeoLocationMonitor : IIntervalListener
     {
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly IpstackEndpoints _ipstackEndpoints;
-        readonly ConcurrentDictionary<ulong, IpstackLocation> _ipLocations;
+        readonly GeoLocationCollection _locations;
 
-        public GeoLocationMonitor(IpstackEndpoints ipstackEndpoints)
+        public GeoLocationMonitor(GeoLocationCollection locations)
         {
-            _ipstackEndpoints = ipstackEndpoints;
-            _ipLocations = new ConcurrentDictionary<ulong, IpstackLocation>();
+            _locations = locations;
         }
 
         public void OnInterval(int intervalsSinceStart)
@@ -41,7 +34,7 @@ namespace TorchMonitor.Monitors
                 if (onlinePlayer == null) return;
 
                 var steamId = onlinePlayer.SteamId();
-                if (_ipLocations.TryGetValue(steamId, out var ipLocation))
+                if (_locations.TryGetLocation(steamId, out var ipLocation))
                 {
                     // null when localhost
                     continents.Increment(ipLocation.ContinentName ?? "<unknown>");
@@ -50,7 +43,7 @@ namespace TorchMonitor.Monitors
                 else
                 {
                     // update `_ipLocations` (for next interval)
-                    LoadIpLocation(steamId).Forget(Log);
+                    _locations.Load(steamId).Forget(Log);
                 }
             }
 
@@ -75,20 +68,6 @@ namespace TorchMonitor.Monitors
                     .Field("online_player_count", count)
                     .Write();
             }
-        }
-
-        async Task LoadIpLocation(ulong steamId)
-        {
-            // Get the public IP of the Steam player
-            var state = new MyP2PSessionState();
-            var networking = MySteamGameService_Networking.Value;
-            networking.Peer2Peer.GetSessionState(steamId, ref state);
-            var ip = BitConverter.GetBytes(state.RemoteIP).Reverse().ToArray();
-            var ipAddress = new IPAddress(ip).ToString();
-
-            // Get the location
-            var location = await _ipstackEndpoints.GetLocationOrNullAsync(ipAddress);
-            _ipLocations[steamId] = location ?? new IpstackLocation();
         }
     }
 }

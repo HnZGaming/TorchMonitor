@@ -52,7 +52,7 @@ namespace TorchMonitor.Monitors
                     .Field("result", result.ToString())
                     .Write();
 
-                Log.Info($"join result: {steamId} {playerName} {result}");
+                Log.Debug($"join result: {steamId} {playerName} {result}");
             }
         }
     }

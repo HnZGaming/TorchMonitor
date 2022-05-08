@@ -26,6 +26,7 @@ namespace TorchMonitor
         IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
         FileLoggingConfigurator _fileLogger;
+        GeoLocationCollection _geoLocationCollection;
 
         UserControl IWpfPlugin.GetControl()
         {
@@ -64,6 +65,8 @@ namespace TorchMonitor
             var playerNameConflictSolver = new NameConflictSolver<ulong>();
             Nexus = new TorchMonitorNexus();
 
+            _geoLocationCollection = new GeoLocationCollection(_ipstackEndpoints);
+
             _intervalRunner = new IntervalRunner(1);
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
@@ -74,7 +77,7 @@ namespace TorchMonitor
                 //new VoxelMonitor(),
                 new PingMonitor(),
                 new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb, Nexus),
-                new GeoLocationMonitor(_ipstackEndpoints),
+                new GeoLocationMonitor(_geoLocationCollection),
                 new BlockTypeProfilerMonitor(),
                 new EntityTypeProfilerMonitor(),
                 new FactionProfilerMonitor(),
@@ -89,6 +92,7 @@ namespace TorchMonitor
                 new PhysicsSimulateProfilerMonitor(),
                 new PhysicsSimulateMtProfilerMonitor(),
                 new JoinResultMonitor(),
+                new ClientPingMonitor(_geoLocationCollection),
             });
         }
 
