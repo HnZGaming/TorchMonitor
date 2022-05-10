@@ -27,6 +27,7 @@ namespace TorchMonitor
         IpstackEndpoints _ipstackEndpoints;
         FileLoggingConfigurator _fileLogger;
         GeoLocationCollection _geoLocationCollection;
+        JoinResultMonitor _joinResultMonitor;
 
         UserControl IWpfPlugin.GetControl()
         {
@@ -91,9 +92,10 @@ namespace TorchMonitor
                 new PhysicsProfilerMonitor(),
                 new PhysicsSimulateProfilerMonitor(),
                 new PhysicsSimulateMtProfilerMonitor(),
-                new JoinResultMonitor(),
                 new ClientPingMonitor(_geoLocationCollection),
             });
+
+            _joinResultMonitor = new JoinResultMonitor();
         }
 
         void OnGameLoaded()
@@ -108,6 +110,7 @@ namespace TorchMonitor
             _ipstackEndpoints?.Dispose();
             _canceller?.Cancel();
             _canceller?.Dispose();
+            _joinResultMonitor?.Dispose();
         }
 
         public void ReloadConfig()

@@ -1,66 +1,51 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using InfluxDb.Torch;
-using Intervals;
 using NLog;
 using Sandbox.Engine.Multiplayer;
 using TorchMonitor.Reflections;
-using Utils.General;
 using VRage.Network;
 using VRage.Replication;
 
 namespace TorchMonitor.Monitors
 {
-    public sealed class JoinResultMonitor : IIntervalListener, IDisposable
+    public sealed class JoinResultMonitor : IDisposable
     {
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
-        readonly ConcurrentQueue<(ulong, string)> _joinResponses;
 
         public JoinResultMonitor()
         {
-            _joinResponses = new ConcurrentQueue<(ulong, string)>();
-
             MultiplayerManagerDedicated_UserRejected.OnJoinResponded += OnJoinResponded;
             MyDedicatedServerBase_ConnectionFailed.OnConnectionFailed += OnConnectionFailed;
         }
 
         public void Dispose()
         {
-            _joinResponses.Clear();
-
             MultiplayerManagerDedicated_UserRejected.OnJoinResponded -= OnJoinResponded;
             MyDedicatedServerBase_ConnectionFailed.OnConnectionFailed -= OnConnectionFailed;
         }
 
         void OnJoinResponded(ulong steamId, JoinResult failReason)
         {
-            _joinResponses.Enqueue((steamId, failReason.ToString()));
+            Write(steamId, failReason.ToString());
         }
 
         void OnConnectionFailed(ulong remoteUserId, string error)
         {
-            _joinResponses.Enqueue((remoteUserId, error));
+            Write(remoteUserId, error);
         }
 
-        public void OnInterval(int intervalsSinceStart)
+        void Write(ulong steamId, string result)
         {
-            if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
-            if (intervalsSinceStart % 10 != 0) return;
+            var playerName = ((MyDedicatedServerBase)MyMultiplayerMinimalBase.Instance).GetMemberName(steamId);
+            playerName ??= $"{steamId}";
 
-            while (_joinResponses.TryDequeue(out var p))
-            {
-                var (steamId, result) = p;
-                var playerName = ((MyDedicatedServerBase)MyMultiplayerMinimalBase.Instance).GetMemberName(steamId);
-                playerName ??= $"{steamId}";
+            TorchInfluxDbWriter
+                .Measurement("players_connectivity")
+                .Tag("player_name", playerName)
+                .Field("result", result)
+                .Write();
 
-                TorchInfluxDbWriter
-                    .Measurement("players_connectivity")
-                    .Tag("player_name", playerName)
-                    .Field("result", result)
-                    .Write();
-
-                Log.Debug($"join result: {steamId} {playerName} {result}");
-            }
+            Log.Info($"join result: {steamId} {playerName} {result}");
         }
     }
 }
