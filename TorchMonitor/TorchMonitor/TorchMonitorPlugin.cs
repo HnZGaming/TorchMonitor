@@ -1,6 +1,6 @@
-﻿using System.Threading;
+﻿using System.ComponentModel;
+using System.Threading;
 using System.Windows.Controls;
-using System.Windows.Threading;
 using Intervals;
 using Ipstack;
 using NLog;
@@ -25,6 +25,9 @@ namespace TorchMonitor
         CancellationTokenSource _canceller;
         IntervalRunner _intervalRunner;
         IpstackEndpoints _ipstackEndpoints;
+        FileLoggingConfigurator _fileLogger;
+        GeoLocationCollection _geoLocationCollection;
+        JoinResultMonitor _joinResultMonitor;
 
         UserControl IWpfPlugin.GetControl()
         {
@@ -41,6 +44,16 @@ namespace TorchMonitor
 
             _canceller = new CancellationTokenSource();
 
+            _fileLogger = new FileLoggingConfigurator(
+                nameof(TorchMonitor),
+                new[]
+                {
+                    $"{nameof(TorchMonitor)}.*",
+                    $"{nameof(Intervals)}.*",
+                },
+                TorchMonitorConfig.DefaultLogPath);
+            _fileLogger.Initialize();
+
             ReloadConfig();
 
             _ipstackEndpoints = new IpstackEndpoints();
@@ -53,6 +66,8 @@ namespace TorchMonitor
             var playerNameConflictSolver = new NameConflictSolver<ulong>();
             Nexus = new TorchMonitorNexus();
 
+            _geoLocationCollection = new GeoLocationCollection(_ipstackEndpoints);
+
             _intervalRunner = new IntervalRunner(1);
             _intervalRunner.AddListeners(new IIntervalListener[]
             {
@@ -63,7 +78,7 @@ namespace TorchMonitor
                 //new VoxelMonitor(),
                 new PingMonitor(),
                 new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb, Nexus),
-                new GeoLocationMonitor(_ipstackEndpoints),
+                new GeoLocationMonitor(_geoLocationCollection),
                 new BlockTypeProfilerMonitor(),
                 new EntityTypeProfilerMonitor(),
                 new FactionProfilerMonitor(),
@@ -77,7 +92,10 @@ namespace TorchMonitor
                 new PhysicsProfilerMonitor(),
                 new PhysicsSimulateProfilerMonitor(),
                 new PhysicsSimulateMtProfilerMonitor(),
+                new ClientPingMonitor(_geoLocationCollection),
             });
+
+            _joinResultMonitor = new JoinResultMonitor();
         }
 
         void OnGameLoaded()
@@ -92,10 +110,16 @@ namespace TorchMonitor
             _ipstackEndpoints?.Dispose();
             _canceller?.Cancel();
             _canceller?.Dispose();
+            _joinResultMonitor?.Dispose();
         }
 
         public void ReloadConfig()
         {
+            if (_config != null)
+            {
+                _config.Data.PropertyChanged -= OnConfigChanged;
+            }
+
             var configFilePath = this.MakeConfigFilePath();
             _config?.Dispose();
             _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
@@ -106,7 +130,16 @@ namespace TorchMonitor
                 _userControl.InitializeComponent();
             });
 
+            _fileLogger.Configure(TorchMonitorConfig.Instance);
+
+            _config.Data.PropertyChanged += OnConfigChanged;
+
             Log.Info("reloaded configs");
+        }
+
+        void OnConfigChanged(object sender, PropertyChangedEventArgs e)
+        {
+            _fileLogger.Configure(TorchMonitorConfig.Instance);
         }
     }
 }

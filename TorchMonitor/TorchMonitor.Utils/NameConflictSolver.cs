@@ -16,7 +16,11 @@ namespace TorchMonitor.Utils
         [MethodImpl(MethodImplOptions.Synchronized)]
         public string GetSafeName(string name, T id)
         {
-            name.ThrowIfNull(nameof(name));
+            if (string.IsNullOrEmpty(name))
+            {
+                name = "<noname>";
+            }
+
             var ids = GetIdsByName(name);
             ids.Add(id);
 

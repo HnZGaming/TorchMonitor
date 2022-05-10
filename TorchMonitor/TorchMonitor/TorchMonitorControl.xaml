@@ -6,7 +6,8 @@
              xmlns:torchMonitor="clr-namespace:TorchMonitor"
              mc:Ignorable="d"
              d:DesignHeight="1000"
-             d:DesignWidth="400" d:DataContext="{x:Static torchMonitor:TorchMonitorConfig.Instance }">
+             d:DesignWidth="400"
+             d:DataContext="{x:Static torchMonitor:TorchMonitorConfig.Instance }">
     <UserControl.Resources>
         <ObjectDataProvider x:Key="AllCommands"
                             ObjectType="{x:Type torchMonitor:TorchMonitorCommandModule}"
@@ -30,8 +31,26 @@
             <Label Content="Enabled" />
             <CheckBox IsChecked="{Binding Enabled}" VerticalAlignment="Center" />
 
+            <Label Content="Ignore Animals" />
+            <CheckBox IsChecked="{Binding IgnoreAnimals}" VerticalAlignment="Center" />
+
             <Label Content="Warmup (seconds)"></Label>
             <TextBox Text="{Binding FirstIgnoredSeconds}" VerticalAlignment="Center"></TextBox>
+        </UniformGrid>
+
+        <Label Content="Logging" FontWeight="700" Margin="0,10,0,0" />
+        <UniformGrid Columns="2">
+            <Label Content="Log File Path" />
+            <TextBox Text="{Binding LogFilePath}" VerticalAlignment="Center"></TextBox>
+
+            <Label Content="Suppress Console Output"></Label>
+            <CheckBox IsChecked="{Binding SuppressWpfOutput}" VerticalAlignment="Center" />
+
+            <Label Content="Enable DEBUG Logs"></Label>
+            <CheckBox IsChecked="{Binding EnableLoggingDebug}" VerticalAlignment="Center" />
+
+            <Label Content="Enable TRACE Logs"></Label>
+            <CheckBox IsChecked="{Binding EnableLoggingTrace}" VerticalAlignment="Center" />
         </UniformGrid>
 
         <Label Content="Session Monitor" FontWeight="700" Margin="0,10,0,0" />
