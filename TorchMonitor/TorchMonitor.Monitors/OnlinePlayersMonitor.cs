@@ -69,7 +69,7 @@ namespace TorchMonitor.Monitors
                     .Measurement("players_players")
                     .Tag("player_name", playerName)
                     .Tag("faction_tag", factionTag)
-                    .Field("steam_id", steamId)
+                    .Tag("steam_id", $"{steamId}")
                     .Field("is_online", 1)
                     .Field("online_time", onlineTime)
                     .Write();
