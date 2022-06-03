@@ -1,9 +1,12 @@
-﻿using Havok;
+﻿using System;
+using Havok;
 using InfluxDb.Torch;
+using NLog;
 using Profiler.Basics;
 using Sandbox.Game.World;
 using TorchMonitor.Utils;
 using Utils.General;
+using VRage.Game.ModAPI;
 
 namespace TorchMonitor.ProfilerMonitors
 {
@@ -20,8 +23,18 @@ namespace TorchMonitor.ProfilerMonitors
         {
             foreach (var (world, entity) in result.GetTopEntities(5))
             {
-                // this usually doesn't happen but just in case
-                if (!PhysicsUtils.TryGetHeaviestGrid(world, out var heaviestGrid)) continue;
+                IMyCubeGrid heaviestGrid;
+
+                try
+                {
+                    // this usually doesn't happen but just in case
+                    if (!PhysicsUtils.TryGetHeaviestGrid(world, out heaviestGrid)) continue;
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e);
+                    continue;
+                }
 
                 heaviestGrid.BigOwners.TryGetFirst(out var ownerId);
                 var faction = MySession.Static.Factions.GetPlayerFaction(ownerId);

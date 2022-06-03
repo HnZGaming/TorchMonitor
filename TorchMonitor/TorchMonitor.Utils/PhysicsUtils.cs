@@ -11,6 +11,7 @@ namespace TorchMonitor.Utils
         {
             var grids = world
                 .GetEntities()
+                .ToArray()
                 .Where(e => e is IMyCubeGrid)
                 .Cast<IMyCubeGrid>()
                 .Where(e => e.IsTopMostParent())
