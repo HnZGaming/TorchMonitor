@@ -42,7 +42,8 @@ namespace TorchMonitor.Monitors
             TorchInfluxDbWriter
                 .Measurement("players_connectivity")
                 .Tag("player_name", playerName)
-                .Field("result", result)
+                .Tag("result", result)
+                .Field("count", 1)
                 .Write();
 
             Log.Info($"join result: {steamId} {playerName} {result}");
