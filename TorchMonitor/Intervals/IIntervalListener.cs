@@ -2,6 +2,8 @@
 {
     public interface IIntervalListener
     {
+        public bool Enabled { get; set; }
+        
         /// <summary>
         /// Called every interval
         /// </summary>

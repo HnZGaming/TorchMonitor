@@ -22,6 +22,8 @@ namespace TorchMonitor.Monitors
             _ping = new Ping();
         }
 
+        public bool Enabled { get; set; }
+
         public void Dispose()
         {
             _ping.Dispose();
@@ -30,6 +32,7 @@ namespace TorchMonitor.Monitors
 
         public void OnInterval(int intervalsSinceStart)
         {
+            if (!Enabled) return;
             if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % 10 != 0) return;
 

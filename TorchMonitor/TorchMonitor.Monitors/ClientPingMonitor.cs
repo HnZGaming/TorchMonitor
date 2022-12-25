@@ -21,8 +21,11 @@ namespace TorchMonitor.Monitors
             _locations = locations;
         }
 
+        public bool Enabled { get; set; }
+
         public void OnInterval(int intervalsSinceStart)
         {
+            if (!Enabled) return;
             if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % 10 != 0) return;
 

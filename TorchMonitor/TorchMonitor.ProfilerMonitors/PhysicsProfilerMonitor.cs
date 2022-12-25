@@ -17,9 +17,11 @@ namespace TorchMonitor.ProfilerMonitors
     {
         static readonly ILogger Log = LogManager.GetCurrentClassLogger();
 
+        public bool Enabled { get; set; }
+
         public void OnInterval(int intervalsSinceStart)
         {
-            if (!TorchMonitorConfig.Instance.PhysicsEnabled) return;
+            if (!Enabled) return;
             if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % TorchMonitorConfig.Instance.PhysicsInterval != 0) return;
 

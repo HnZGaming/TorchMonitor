@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,28 +14,24 @@ namespace Intervals
     {
         static readonly Logger Log = LogManager.GetCurrentClassLogger();
         readonly int _intervalSeconds;
-        readonly List<IIntervalListener> _listeners;
+        readonly Dictionary<string, IIntervalListener> _listeners;
 
         public IntervalRunner(int intervalSeconds)
         {
             _intervalSeconds = intervalSeconds;
-            _listeners = new List<IIntervalListener>();
+            _listeners = new Dictionary<string, IIntervalListener>();
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void AddListeners(IEnumerable<IIntervalListener> listeners)
+        public void AddListeners(IReadOnlyDictionary<string, IIntervalListener> listeners)
         {
             _listeners.AddRange(listeners);
         }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void AddListener(IIntervalListener listener)
-        {
-            _listeners.Add(listener);
-        }
-
         public async Task LoopIntervals(CancellationToken canceller)
         {
+            Log.Debug("loop started");
+            
             var intervalSinceStart = 0;
 
             while (!canceller.IsCancellationRequested)
@@ -67,10 +64,11 @@ namespace Intervals
         [MethodImpl(MethodImplOptions.Synchronized)]
         void RunIntervalOnce(int currentInterval)
         {
-            Parallel.ForEach(_listeners, (listener, _, i) =>
+            Parallel.ForEach(_listeners, (p, _, i) =>
             {
                 try
                 {
+                    var (_, listener) = p;
                     var startTime = DateTime.UtcNow;
 
                     listener.OnInterval(currentInterval + (int)i);
@@ -85,11 +83,24 @@ namespace Intervals
             });
         }
 
+        public IEnumerable<(string, bool)> GetListeners()
+        {
+            return _listeners.Select(p => (p.Key, p.Value.Enabled));
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void SetEnabled(string name, bool enabled)
+        {
+            _listeners[name].Enabled = enabled;
+            Log.Debug($"set enabled: {name}, {enabled}");
+        }
+
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Dispose()
         {
-            foreach (var listener in _listeners)
+            foreach (var p in _listeners)
             {
+                var (_, listener) = p;
                 if (listener is IDisposable disposable)
                 {
                     disposable.Dispose();
