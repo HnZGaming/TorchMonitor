@@ -155,12 +155,9 @@ namespace TorchMonitor
         {
             _fileLogger.Configure(TorchMonitorConfig.Instance);
 
-            if ((e?.PropertyName ?? "") is "" or nameof(TorchMonitorConfig.Features))
+            foreach (var (name, enabled) in _config.Data.Features)
             {
-                foreach (var (name, enabled) in _config.Data.Features)
-                {
-                    _intervalRunner.SetEnabled(name, enabled);
-                }
+                _intervalRunner.SetEnabled(name, enabled);
             }
         }
 
