@@ -5,6 +5,7 @@ using NLog;
 using Profiler.Basics;
 using Profiler.Core;
 using Utils.General;
+using Utils.Torch;
 
 namespace TorchMonitor.ProfilerMonitors
 {
@@ -35,6 +36,8 @@ namespace TorchMonitor.ProfilerMonitors
                 profiler.MarkEnd();
 
                 var result = profiler.GetResult();
+
+                await VRageUtils.MoveToGameLoop();
                 OnProfilingFinished(result);
             }
         }

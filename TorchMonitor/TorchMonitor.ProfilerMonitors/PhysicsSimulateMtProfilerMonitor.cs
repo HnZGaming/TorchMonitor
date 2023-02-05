@@ -1,12 +1,10 @@
 ﻿using System;
 using Havok;
 using InfluxDb.Torch;
-using NLog;
 using Profiler.Basics;
 using Sandbox.Game.World;
 using TorchMonitor.Utils;
 using Utils.General;
-using VRage.Game.ModAPI;
 
 namespace TorchMonitor.ProfilerMonitors
 {
@@ -21,25 +19,25 @@ namespace TorchMonitor.ProfilerMonitors
 
         protected override void OnProfilingFinished(BaseProfilerResult<HkWorld> result)
         {
+            var noneCount = 0;
             foreach (var (world, entity) in result.GetTopEntities(5))
             {
-                IMyCubeGrid heaviestGrid;
-
-                try
+                // this usually doesn't happen but just in case
+                string factionTag;
+                string gridName;
+                if (PhysicsUtils.TryGetHeaviestGrid(world, out var heaviestGrid))
                 {
-                    // this usually doesn't happen but just in case
-                    if (!PhysicsUtils.TryGetHeaviestGrid(world, out heaviestGrid)) continue;
+                    heaviestGrid.BigOwners.TryGetFirst(out var ownerId);
+                    var faction = MySession.Static.Factions.GetPlayerFaction(ownerId);
+                    factionTag = faction?.Tag ?? "n/a";
+                    gridName = heaviestGrid.DisplayName.OrNull() ?? $"none ({noneCount++})";
                 }
-                catch (Exception e)
+                else
                 {
-                    Log.Error(e);
-                    continue;
+                    factionTag = "n/a";
+                    gridName = $"none ({noneCount++})";
                 }
 
-                heaviestGrid.BigOwners.TryGetFirst(out var ownerId);
-                var faction = MySession.Static.Factions.GetPlayerFaction(ownerId);
-                var factionTag = faction?.Tag ?? "<n/a>";
-                var gridName = heaviestGrid.DisplayName.OrNull() ?? "<no name>";
                 var mainMs = entity.MainThreadTime / result.TotalFrameCount;
 
                 TorchInfluxDbWriter

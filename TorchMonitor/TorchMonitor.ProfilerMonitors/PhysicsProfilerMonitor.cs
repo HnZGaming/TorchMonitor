@@ -51,15 +51,24 @@ namespace TorchMonitor.ProfilerMonitors
 
         void ProcessResult(BaseProfilerResult<HkWorld> result)
         {
+            var noneCount = 0;
             foreach (var (world, entity) in result.GetTopEntities(TorchMonitorConfig.Instance.PhysicsMaxClusterCount))
             {
-                // this usually doesn't happen but just in case
-                if (!PhysicsUtils.TryGetHeaviestGrid(world, out var heaviestGrid)) continue;
+                string factionTag;
+                string gridName;
+                if (PhysicsUtils.TryGetHeaviestGrid(world, out var heaviestGrid))
+                {
+                    heaviestGrid.BigOwners.TryGetFirst(out var ownerId);
+                    var faction = MySession.Static.Factions.GetPlayerFaction(ownerId);
+                    factionTag = faction?.Tag ?? "n/a";
+                    gridName = heaviestGrid.DisplayName.OrNull() ?? $"none ({noneCount++})";
+                }
+                else // this happens for some reason
+                {
+                    factionTag = "n/a";
+                    gridName = $"none ({noneCount++})";
+                }
 
-                heaviestGrid.BigOwners.TryGetFirst(out var ownerId);
-                var faction = MySession.Static.Factions.GetPlayerFaction(ownerId);
-                var factionTag = faction?.Tag ?? "<n/a>";
-                var gridName = heaviestGrid.DisplayName.OrNull() ?? "<no name>";
                 var mainMs = entity.MainThreadTime / result.TotalFrameCount;
 
                 TorchInfluxDbWriter
