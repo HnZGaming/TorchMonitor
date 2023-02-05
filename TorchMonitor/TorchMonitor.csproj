@@ -193,6 +193,7 @@
         <Compile Include="TorchMonitor.ProfilerMonitors\ScriptProfilerMonitor.cs" />
         <Compile Include="TorchMonitor.Reflections\MultiplayerManagerDedicated_UserRejected.cs" />
         <Compile Include="TorchMonitor.Reflections\MyDedicatedServerBase_ConnectionFailed.cs" />
+        <Compile Include="TorchMonitor.Reflections\MyCubeGrid_Close.cs" />
         <Compile Include="TorchMonitor.Reflections\MySteamGameService_Networking.cs" />
         <Compile Include="TorchMonitor.Utils\GeoLocationCollection.cs" />
         <Compile Include="TorchMonitor.Utils\NameConflictSolver.cs" />
