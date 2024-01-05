@@ -10,6 +10,7 @@ using NLog;
 using Torch;
 using Torch.API;
 using Torch.API.Plugins;
+using Torch.API.Session;
 using TorchMonitor.Monitors;
 using TorchMonitor.ProfilerMonitors;
 using TorchMonitor.Utils;
@@ -42,8 +43,8 @@ namespace TorchMonitor
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
-            this.ListenOnGameLoaded(OnGameLoaded);
-            this.ListenOnGameUnloading(OnGameUnloading);
+            this.OnSessionStateChanged(TorchSessionState.Loaded, OnGameLoaded);
+            this.OnSessionStateChanged(TorchSessionState.Unloading, OnGameUnloading);
 
             _canceller = new CancellationTokenSource();
 
