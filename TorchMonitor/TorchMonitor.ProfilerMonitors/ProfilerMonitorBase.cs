@@ -5,6 +5,7 @@ using NLog;
 using Profiler.Basics;
 using Profiler.Core;
 using Utils.General;
+using Utils.Torch;
 
 namespace TorchMonitor.ProfilerMonitors
 {
@@ -14,8 +15,11 @@ namespace TorchMonitor.ProfilerMonitors
 
         protected abstract int SamplingSeconds { get; }
 
+        public bool Enabled { get; set; }
+
         public void OnInterval(int intervalsSinceStart)
         {
+            if (!Enabled) return;
             if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % SamplingSeconds != 0) return;
 
@@ -32,6 +36,8 @@ namespace TorchMonitor.ProfilerMonitors
                 profiler.MarkEnd();
 
                 var result = profiler.GetResult();
+
+                await VRageUtils.MoveToGameLoop();
                 OnProfilingFinished(result);
             }
         }

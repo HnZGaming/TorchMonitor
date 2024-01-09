@@ -1,4 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
 using Intervals;
@@ -7,6 +10,7 @@ using NLog;
 using Torch;
 using Torch.API;
 using Torch.API.Plugins;
+using Torch.API.Session;
 using TorchMonitor.Monitors;
 using TorchMonitor.ProfilerMonitors;
 using TorchMonitor.Utils;
@@ -39,8 +43,8 @@ namespace TorchMonitor
         public override void Init(ITorchBase torch)
         {
             base.Init(torch);
-            this.ListenOnGameLoaded(OnGameLoaded);
-            this.ListenOnGameUnloading(OnGameUnloading);
+            this.OnSessionStateChanged(TorchSessionState.Loaded, OnGameLoaded);
+            this.OnSessionStateChanged(TorchSessionState.Unloading, OnGameUnloading);
 
             _canceller = new CancellationTokenSource();
 
@@ -54,7 +58,7 @@ namespace TorchMonitor
                 TorchMonitorConfig.DefaultLogPath);
             _fileLogger.Initialize();
 
-            ReloadConfig();
+            LoadConfig();
 
             _ipstackEndpoints = new IpstackEndpoints();
 
@@ -68,34 +72,41 @@ namespace TorchMonitor
 
             _geoLocationCollection = new GeoLocationCollection(_ipstackEndpoints);
 
-            _intervalRunner = new IntervalRunner(1);
-            _intervalRunner.AddListeners(new IIntervalListener[]
+            var listeners = new Dictionary<string, IIntervalListener>
             {
-                new SyncMonitor(),
-                new GridMonitor(),
-                //new FloatingObjectsMonitor(Config),
-                new RamUsageMonitor(),
-                //new VoxelMonitor(),
-                new PingMonitor(),
-                new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb, Nexus),
-                new GeoLocationMonitor(_geoLocationCollection),
-                new BlockTypeProfilerMonitor(),
-                new EntityTypeProfilerMonitor(),
-                new FactionProfilerMonitor(),
-                new GameLoopProfilerMonitor(),
-                new GridProfilerMonitor(gridNameConflictSolver),
-                new MethodNameProfilerMonitor(),
-                new SessionComponentsProfilerMonitor(),
-                new PlayerProfilerMonitor(playerNameConflictSolver),
-                new ScriptProfilerMonitor(gridNameConflictSolver),
-                new NetworkEventProfilerMonitor(),
-                new PhysicsProfilerMonitor(),
-                new PhysicsSimulateProfilerMonitor(),
-                new PhysicsSimulateMtProfilerMonitor(),
-                new ClientPingMonitor(_geoLocationCollection),
-            });
+                { "server_sync", new SyncMonitor() },
+                { "blocks_all, grids_all, blocks_grids, blocks_players, blocks_factions, concealment", new GridMonitor() },
+                { "floating_objects", new FloatingObjectsMonitor() },
+                { "resource (ram)", new RamUsageMonitor() },
+                { "voxels", new VoxelMonitor() },
+                { "ping", new PingMonitor() },
+                { "players_players, players_factions, server, nexus", new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb, Nexus) },
+                { "players_continents, players_countries", new GeoLocationMonitor(_geoLocationCollection) },
+                { "profiler_block_types", new BlockTypeProfilerMonitor() },
+                { "profiler_entity_types", new EntityTypeProfilerMonitor() },
+                { "profiler_factions", new FactionProfilerMonitor() },
+                { "profiler_game_loop", new GameLoopProfilerMonitor() },
+                { "profiler", new GridProfilerMonitor(gridNameConflictSolver) },
+                { "methods", new MethodNameProfilerMonitor() },
+                { "profiler_game_loop_session_components", new SessionComponentsProfilerMonitor() },
+                { "profiler_players", new PlayerProfilerMonitor(playerNameConflictSolver) },
+                { "profiler_scripts", new ScriptProfilerMonitor(gridNameConflictSolver) },
+                { "profiler_network_events", new NetworkEventProfilerMonitor() },
+                { "profiler_physics_grids", new PhysicsProfilerMonitor() },
+                { "profiler_physics_simulate", new PhysicsSimulateProfilerMonitor() },
+                { "profiler_physics_simulate_mt", new PhysicsSimulateMtProfilerMonitor() },
+                { "players_pings", new ClientPingMonitor(_geoLocationCollection) },
+            };
+
+            _intervalRunner = new IntervalRunner(1);
+            _intervalRunner.AddListeners(listeners);
+
+            // make sure all the features are listed up in the config
+            _config.Data.InitializeFeatureCollection(listeners.Select(p => p.Key));
 
             _joinResultMonitor = new JoinResultMonitor();
+
+            OnConfigChanged(null, null);
         }
 
         void OnGameLoaded()
@@ -113,33 +124,53 @@ namespace TorchMonitor
             _joinResultMonitor?.Dispose();
         }
 
-        public void ReloadConfig()
+        void LoadConfig()
         {
             if (_config != null)
             {
-                _config.Data.PropertyChanged -= OnConfigChanged;
+                PropertyChangedEventManager.RemoveHandler(_config.Data, OnConfigChanged, "");
             }
 
-            var configFilePath = this.MakeConfigFilePath();
+            var configFilePath = this.MakeFilePath($"{nameof(TorchMonitorPlugin)}.cfg");
             _config?.Dispose();
             _config = Persistent<TorchMonitorConfig>.Load(configFilePath);
+            PropertyChangedEventManager.AddHandler(_config.Data, OnConfigChanged, "");
+
             TorchMonitorConfig.Instance = _config.Data;
+
             _userControl?.Dispatcher.Invoke(() =>
             {
                 _userControl.DataContext = TorchMonitorConfig.Instance;
                 _userControl.InitializeComponent();
             });
+        }
 
-            _fileLogger.Configure(TorchMonitorConfig.Instance);
-
-            _config.Data.PropertyChanged += OnConfigChanged;
-
+        public void ReloadConfig()
+        {
+            LoadConfig();
+            OnConfigChanged(null, null);
             Log.Info("reloaded configs");
         }
 
         void OnConfigChanged(object sender, PropertyChangedEventArgs e)
         {
             _fileLogger.Configure(TorchMonitorConfig.Instance);
+
+            foreach (var (name, enabled) in _config.Data.Features)
+            {
+                _intervalRunner.SetEnabled(name, enabled);
+            }
+        }
+
+        public IEnumerable<(string, bool)> GetFeatures()
+        {
+            return _intervalRunner.GetListeners();
+        }
+
+        public void SetFeatureEnabled(string name, bool enabled)
+        {
+            _intervalRunner.SetEnabled(name, enabled);
+            _config.Data.SetFeatureEnabled(name, enabled);
         }
     }
 }

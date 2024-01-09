@@ -18,8 +18,11 @@ namespace TorchMonitor.Monitors
 
         const int MaxMonitoredCount = 5;
 
+        public bool Enabled { get; set; }
+
         public void OnInterval(int intervalsSinceStart)
         {
+            if (!Enabled) return;
             if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % 60 != 0) return;
 

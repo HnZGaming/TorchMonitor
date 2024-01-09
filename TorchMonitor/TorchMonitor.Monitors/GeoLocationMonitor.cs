@@ -21,8 +21,11 @@ namespace TorchMonitor.Monitors
             _locations = locations;
         }
 
+        public bool Enabled { get; set; }
+
         public void OnInterval(int intervalsSinceStart)
         {
+            if (!Enabled) return;
             if (!TorchMonitorConfig.Instance.GeoLocationEnabled) return;
             if (intervalsSinceStart % 20 != 0) return;
 

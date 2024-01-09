@@ -7,8 +7,11 @@ namespace TorchMonitor.Monitors
 {
     public class VoxelMonitor : IIntervalListener
     {
+        public bool Enabled { get; set; }
+
         public void OnInterval(int intervalsSinceStart)
         {
+            if (!Enabled) return;
             if (intervalsSinceStart % 600 != 0) return;
 
             var voxels = MyEntities

@@ -12,6 +12,9 @@
         <ObjectDataProvider x:Key="AllCommands"
                             ObjectType="{x:Type torchMonitor:TorchMonitorCommandModule}"
                             MethodName="GetAllCommands" />
+        <ObjectDataProvider x:Key="Features"
+                            ObjectType="{x:Type torchMonitor:TorchMonitorConfig}"
+                            MethodName="GetFeatures" />
     </UserControl.Resources>
     <StackPanel Orientation="Vertical" Margin="10, 10, 10, 10">
         <Label Content="Commands" FontWeight="700" Margin="0,10,0,0" />
@@ -52,6 +55,18 @@
             <Label Content="Enable TRACE Logs"></Label>
             <CheckBox IsChecked="{Binding EnableLoggingTrace}" VerticalAlignment="Center" />
         </UniformGrid>
+
+        <Label Content="Features" FontWeight="700" Margin="0,10,0,0" />
+        <ItemsControl ItemsSource="{Binding Source={StaticResource Features}}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{Binding Enabled}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding Name}" MinWidth="70" />
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
         <Label Content="Session Monitor" FontWeight="700" Margin="0,10,0,0" />
         <UniformGrid Columns="2">
@@ -107,18 +122,14 @@
 
         <Label Content="Physics Monitor (Continuous Profiling)" FontWeight="700" Margin="0,10,0,0" />
         <UniformGrid Columns="2">
-            <Label Content="Enabled" />
-            <CheckBox IsChecked="{Binding PhysicsEnabled}" VerticalAlignment="Center" />
-
             <Label Content="Interval (seconds)" />
-            <TextBox Text="{Binding PhysicsInterval}" VerticalAlignment="Center" IsEnabled="{Binding PhysicsEnabled}"></TextBox>
+            <TextBox Text="{Binding PhysicsInterval}" VerticalAlignment="Center"></TextBox>
 
             <Label Content="Length (frames)" />
-            <TextBox Text="{Binding PhysicsFrameCount}" VerticalAlignment="Center" IsEnabled="{Binding PhysicsEnabled}"></TextBox>
+            <TextBox Text="{Binding PhysicsFrameCount}" VerticalAlignment="Center"></TextBox>
 
             <Label Content="Cluster count" />
-            <TextBox Text="{Binding PhysicsMaxClusterCount}" VerticalAlignment="Center"
-                     IsEnabled="{Binding PhysicsEnabled}">
+            <TextBox Text="{Binding PhysicsMaxClusterCount}" VerticalAlignment="Center">
             </TextBox>
         </UniformGrid>
 

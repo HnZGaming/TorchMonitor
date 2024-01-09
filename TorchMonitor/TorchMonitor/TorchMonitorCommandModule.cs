@@ -21,7 +21,7 @@ namespace TorchMonitor
         }
 
         TorchMonitorPlugin Plugin => (TorchMonitorPlugin)Context.Plugin;
-        
+
         public static IEnumerable<CommandAttribute> GetAllCommands()
         {
             return CommandModuleUtils.GetCommandMethods(typeof(TorchMonitorCommandModule)).Select(p => p.Command);
@@ -48,6 +48,36 @@ namespace TorchMonitor
         public void ReloadConfigs()
         {
             Plugin.ReloadConfig();
+            Context.Respond("success");
+        }
+
+        [Command("features", "List features")]
+        [Permission(MyPromoteLevel.Admin)]
+        public void ShowFeatures()
+        {
+            var sb = new StringBuilder();
+            var features = Plugin.GetFeatures();
+            foreach (var (name, enabled) in features)
+            {
+                sb.AppendLine($"> {name}: {(enabled ? "enabled" : "disabled")}");
+            }
+
+            Context.Respond($"Features:\n{sb}");
+        }
+
+        [Command("enable", "Enable specific feature")]
+        [Permission(MyPromoteLevel.Admin)]
+        public void EnableFeature(string name)
+        {
+            Plugin.SetFeatureEnabled(name, true);
+            Context.Respond("success");
+        }
+
+        [Command("disable", "Disable specific feature")]
+        [Permission(MyPromoteLevel.Admin)]
+        public void DisableFeature(string name)
+        {
+            Plugin.SetFeatureEnabled(name, false);
             Context.Respond("success");
         }
 

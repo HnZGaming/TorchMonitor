@@ -28,8 +28,11 @@ namespace TorchMonitor.Monitors
             _nexus = nexus;
         }
 
+        public bool Enabled { get; set; }
+
         public void OnInterval(int intervalsSinceStart)
         {
+            if (!Enabled) return;
             if (intervalsSinceStart % IntervalSecs != 0) return;
 
             var onlinePlayers = MySession.Static.Players.GetOnlinePlayers().ToArray();
@@ -69,6 +72,7 @@ namespace TorchMonitor.Monitors
                     .Measurement("players_players")
                     .Tag("player_name", playerName)
                     .Tag("faction_tag", factionTag)
+                    .Tag("steam_id", $"{steamId}")
                     .Field("is_online", 1)
                     .Field("online_time", onlineTime)
                     .Write();

@@ -16,11 +16,14 @@ namespace TorchMonitor.Monitors
             _simSpeeds = new float[IntervalsPerWrite];
         }
 
+        public bool Enabled { get; set; }
+
         public void OnInterval(int intervalsSinceStart)
         {
             var simSpeed = Sync.ServerSimulationRatio;
             _simSpeeds[intervalsSinceStart % _simSpeeds.Length] = simSpeed;
 
+            if (!Enabled) return;
             if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
             if (intervalsSinceStart % IntervalsPerWrite != 0) return;
 

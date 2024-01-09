@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 using System.Xml.Serialization;
 using NLog;
 using Torch;
@@ -23,7 +27,7 @@ namespace TorchMonitor
         int _physicsInterval = 60;
         int _physicsFrameCount = 10;
         int _physicsMaxClusterCount = 5;
-        bool _physicsEnabled = true;
+        ViewModelCollection<TorchMonitorFeature> _features;
 
         bool _enableNexusFeature;
         double _nexusOriginPositionX;
@@ -37,6 +41,11 @@ namespace TorchMonitor
         bool _enableLoggingDebug;
         string _logFilePath = DefaultLogPath;
         bool _ignoreAnimals = true;
+
+        public TorchMonitorConfig()
+        {
+            Features = new ViewModelCollection<TorchMonitorFeature>();
+        }
 
         [XmlElement]
         public bool Enabled
@@ -90,13 +99,6 @@ namespace TorchMonitor
         }
 
         [XmlElement]
-        public bool PhysicsEnabled
-        {
-            get => _physicsEnabled;
-            set => SetValue(ref _physicsEnabled, value);
-        }
-
-        [XmlElement]
         public int PhysicsInterval
         {
             get => _physicsInterval;
@@ -115,6 +117,77 @@ namespace TorchMonitor
         {
             get => _physicsMaxClusterCount;
             set => SetValue(ref _physicsMaxClusterCount, value);
+        }
+
+        [XmlArray]
+        public ViewModelCollection<TorchMonitorFeature> Features
+        {
+            get => _features;
+            set
+            {
+                if (_features != null)
+                {
+                    CollectionChangedEventManager.RemoveHandler(_features, OnFeatureCollectionChanged);
+                    PropertyChangedEventManager.RemoveHandler(_features, OnFeatureCollectionChanged, "");
+                }
+
+                _features = value;
+
+                CollectionChangedEventManager.AddHandler(_features, OnFeatureCollectionChanged);
+                PropertyChangedEventManager.AddHandler(_features, OnFeatureCollectionChanged, "");
+
+                OnPropertyChanged(nameof(Features));
+            }
+        }
+
+        void OnFeatureCollectionChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            Log.Debug("feature collection changed as property");
+            OnPropertyChanged(nameof(Features));
+        }
+
+        void OnFeatureCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            Log.Debug("feature collection changed as collection");
+            OnPropertyChanged(nameof(Features));
+        }
+
+        // wpf
+        public static ViewModelCollection<TorchMonitorFeature> GetFeatures() => Instance._features;
+
+        public void InitializeFeatureCollection(IEnumerable<string> featureNames)
+        {
+            var existingFeatures = _features.ToDictionary(p => p.Name, p => p.Enabled);
+            var features = new ViewModelCollection<TorchMonitorFeature>();
+            foreach (var featureName in featureNames)
+            {
+                if (existingFeatures.TryGetValue(featureName, out var enabled))
+                {
+                    features.Add(new TorchMonitorFeature(featureName, enabled));
+                }
+                else
+                {
+                    features.Add(new TorchMonitorFeature(featureName, false));
+                }
+            }
+
+            Features = features;
+        }
+
+        public void SetFeatureEnabled(string name, bool enabled)
+        {
+            foreach (var f in _features)
+            {
+                if (f.Name == name)
+                {
+                    f.Enabled = enabled;
+                    OnPropertyChanged(nameof(Features));
+                    return;
+                }
+            }
+
+            // if not found in the existing file
+            throw new InvalidOperationException($"feature not found: {name}");
         }
 
         [XmlElement]
