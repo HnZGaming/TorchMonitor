@@ -62,7 +62,7 @@ namespace TorchMonitor
 
             _ipstackEndpoints = new IpstackEndpoints();
 
-            var localDbFilePath = this.MakeFilePath($"{nameof(TorchMonitor)}.json");
+            var localDbFilePath = this.MakeFilePath("players-online-time.json");
             var playerOnlineTimeDb = new PlayerOnlineTimeDb(localDbFilePath);
             playerOnlineTimeDb.Read();
 
