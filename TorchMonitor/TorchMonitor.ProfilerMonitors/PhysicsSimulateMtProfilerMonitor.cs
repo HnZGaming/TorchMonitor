@@ -38,12 +38,12 @@ namespace TorchMonitor.ProfilerMonitors
                     gridName = $"none ({noneCount++})";
                 }
 
-                var mainMs = entity.MainThreadTime / result.TotalFrameCount;
-
                 TorchInfluxDbWriter
                     .Measurement("profiler_physics_simulate_mt")
                     .Tag("grid", $"[{factionTag}] {gridName}")
-                    .Field("main_ms", mainMs)
+                    .Field("main_ms", entity.MainThreadTime / result.TotalFrameCount)
+                    .Field("sub_ms", entity.OffThreadTime / result.TotalFrameCount)
+                    .Field("total_ms", entity.TotalTime / result.TotalFrameCount)
                     .Write();
             }
         }

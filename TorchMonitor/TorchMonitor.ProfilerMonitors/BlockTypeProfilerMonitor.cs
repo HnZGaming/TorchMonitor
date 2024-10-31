@@ -24,6 +24,8 @@ namespace TorchMonitor.ProfilerMonitors
                     .Measurement("profiler_block_types")
                     .Tag("block_type", type.Name)
                     .Field("main_ms", (float) entry.MainThreadTime / result.TotalFrameCount)
+                    .Field("sub_ms", (float) entry.OffThreadTime / result.TotalFrameCount)
+                    .Field("total_ms", (float) entry.TotalTime / result.TotalFrameCount)
                     .Write();
             }
         }

@@ -34,13 +34,14 @@ namespace TorchMonitor.ProfilerMonitors
                 if (grid == null) return;
 
                 var gridName = _nameConflictSolver.GetSafeName(grid.DisplayName, grid.EntityId);
-                var mainMs = (float)entity.MainThreadTime / result.TotalFrameCount;
 
                 TorchInfluxDbWriter
                     .Measurement("profiler_scripts")
                     .Tag("grid_name", gridName)
-                    .Field("main_ms", mainMs)
                     .Tag("block_name", pb.DisplayName)
+                    .Field("main_ms", (float)entity.MainThreadTime / result.TotalFrameCount)
+                    .Field("sub_ms", (float)entity.OffThreadTime / result.TotalFrameCount)
+                    .Field("total_ms", (float)entity.TotalTime / result.TotalFrameCount)
                     .Write();
             }
         }

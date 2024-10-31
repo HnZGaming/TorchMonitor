@@ -36,14 +36,16 @@ namespace TorchMonitor.ProfilerMonitors
             {
                 onlineFactions.TryGetValue(faction.Tag, out var onlinePlayerCount);
                 onlinePlayerCount = Math.Max(1, onlinePlayerCount); // fix zero division
-                var mainMs = entity.MainThreadTime / result.TotalFrameCount;
-                var mainMsPerMember = mainMs / onlinePlayerCount;
 
                 TorchInfluxDbWriter
                     .Measurement("profiler_factions")
                     .Tag("faction_tag", faction.Tag)
-                    .Field("main_ms", mainMs)
-                    .Field("main_ms_per_member", mainMsPerMember)
+                    .Field("main_ms", entity.MainThreadTime / result.TotalFrameCount)
+                    .Field("main_ms_per_member", entity.MainThreadTime / result.TotalFrameCount / onlinePlayerCount)
+                    .Field("sub_ms", entity.OffThreadTime / result.TotalFrameCount)
+                    .Field("sub_ms_per_member", entity.OffThreadTime / result.TotalFrameCount / onlinePlayerCount)
+                    .Field("total_ms", entity.TotalTime / result.TotalFrameCount)
+                    .Field("total_ms_per_member", entity.TotalTime / result.TotalFrameCount / onlinePlayerCount)
                     .Write();
             }
         }

@@ -18,8 +18,6 @@ namespace TorchMonitor.ProfilerMonitors
         {
             foreach (var (comp, entity) in result.GetTopEntities())
             {
-                var ms = (float) entity.MainThreadTime / result.TotalFrameCount;
-
                 var type = comp.GetType();
                 var name = TorchMonitorConfig.Instance.MonitorSessionComponentNamespace
                     ? $"{type.Namespace}/{type.Name}"
@@ -28,7 +26,9 @@ namespace TorchMonitor.ProfilerMonitors
                 TorchInfluxDbWriter
                     .Measurement("profiler_game_loop_session_components")
                     .Tag("comp_name", name)
-                    .Field("main_ms", ms)
+                    .Field("main_ms", (float) entity.MainThreadTime / result.TotalFrameCount)
+                    .Field("sub_ms", (float) entity.OffThreadTime / result.TotalFrameCount)
+                    .Field("total_ms", (float) entity.TotalTime / result.TotalFrameCount)
                     .Write();
             }
         }

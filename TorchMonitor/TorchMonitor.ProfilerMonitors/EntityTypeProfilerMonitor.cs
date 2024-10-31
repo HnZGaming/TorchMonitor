@@ -18,12 +18,12 @@ namespace TorchMonitor.ProfilerMonitors
         {
             foreach (var (name, entry) in result.GetTopEntities(MaxDisplayCount))
             {
-                var ms = (float)entry.MainThreadTime / result.TotalFrameCount;
-
                 TorchInfluxDbWriter
                     .Measurement("profiler_entity_types")
                     .Tag("entity_type", name)
-                    .Field("main_ms", ms)
+                    .Field("main_ms", (float)entry.MainThreadTime / result.TotalFrameCount)
+                    .Field("sub_ms", (float)entry.OffThreadTime / result.TotalFrameCount)
+                    .Field("total_ms", (float)entry.TotalTime / result.TotalFrameCount)
                     .Write();
             }
         }
