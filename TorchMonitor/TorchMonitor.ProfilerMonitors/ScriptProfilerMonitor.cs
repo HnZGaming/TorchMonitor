@@ -40,6 +40,7 @@ namespace TorchMonitor.ProfilerMonitors
                     .Measurement("profiler_scripts")
                     .Tag("grid_name", gridName)
                     .Field("main_ms", mainMs)
+                    .Tag("block_name", pb.DisplayName)
                     .Write();
             }
         }
