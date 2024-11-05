@@ -38,7 +38,7 @@ namespace TorchMonitor.ProfilerMonitors
                 TorchInfluxDbWriter
                     .Measurement("profiler_scripts")
                     .Tag("grid_name", gridName)
-                    .Tag("block_name", pb.DisplayName)
+                    .Tag("block_name", pb.DisplayNameText ?? "<anon>")
                     .Field("main_ms", (float)entity.MainThreadTime / result.TotalFrameCount)
                     .Field("sub_ms", (float)entity.OffThreadTime / result.TotalFrameCount)
                     .Field("total_ms", (float)entity.TotalTime / result.TotalFrameCount)
