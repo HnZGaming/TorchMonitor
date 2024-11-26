@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
@@ -62,7 +61,7 @@ namespace TorchMonitor
 
             _ipstackEndpoints = new IpstackEndpoints();
 
-            var localDbFilePath = this.MakeFilePath($"{nameof(TorchMonitor)}.json");
+            var localDbFilePath = this.MakeFilePath("players-online-time.json");
             var playerOnlineTimeDb = new PlayerOnlineTimeDb(localDbFilePath);
             playerOnlineTimeDb.Read();
 
@@ -78,6 +77,7 @@ namespace TorchMonitor
                 { "blocks_all, grids_all, blocks_grids, blocks_players, blocks_factions, concealment", new GridMonitor() },
                 { "floating_objects", new FloatingObjectsMonitor() },
                 { "resource (ram)", new RamUsageMonitor() },
+                { "resource (cpu)", new CpuUsageMonitor() },
                 { "voxels", new VoxelMonitor() },
                 { "ping", new PingMonitor() },
                 { "players_players, players_factions, server, nexus", new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb, Nexus) },

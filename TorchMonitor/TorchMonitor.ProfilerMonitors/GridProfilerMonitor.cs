@@ -42,6 +42,8 @@ namespace TorchMonitor.ProfilerMonitors
                     .Measurement("profiler")
                     .Tag("grid_name", GridToResultText(grid))
                     .Field("main_ms", (float) entity.MainThreadTime / result.TotalFrameCount)
+                    .Field("sub_ms", (float) entity.OffThreadTime / result.TotalFrameCount)
+                    .Field("total_ms", (float) entity.TotalTime / result.TotalFrameCount)
                     .Write();
             }
         }

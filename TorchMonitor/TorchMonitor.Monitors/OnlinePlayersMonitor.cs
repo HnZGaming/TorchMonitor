@@ -49,7 +49,10 @@ namespace TorchMonitor.Monitors
                 var steamId = onlinePlayer.SteamId();
                 if (steamId == 0) continue;
 
-                _playerOnlineTimeDb.IncrementPlayerOnlineTime(steamId, (double)IntervalSecs / 3600);
+                var playerName = onlinePlayer.DisplayName;
+                playerName = _nameConflictSolver.GetSafeName(playerName, steamId);
+
+                _playerOnlineTimeDb.IncrementPlayerOnlineTime(steamId, playerName, (double)IntervalSecs / 3600);
                 var onlineTime = _playerOnlineTimeDb.GetPlayerOnlineTime(steamId);
 
                 var faction = factionList.FirstOrDefault(f => f.Members.ContainsKey(playerId));
@@ -62,9 +65,6 @@ namespace TorchMonitor.Monitors
                 {
                     continue;
                 }
-
-                var playerName = onlinePlayer.DisplayName;
-                playerName = _nameConflictSolver.GetSafeName(playerName, steamId);
 
                 Log.Trace($"player name: {playerName}, faction tag: {factionTag}");
 
@@ -122,7 +122,7 @@ namespace TorchMonitor.Monitors
                 }
             }
 
-            _playerOnlineTimeDb.WriteToDb();
+            _playerOnlineTimeDb.Write();
         }
     }
 }

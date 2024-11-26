@@ -50,7 +50,7 @@ namespace TorchMonitor.Monitors
                 var gridBlockCounts = new Dictionary<long, int>();
                 foreach (var grid in allGrids)
                 {
-                    gridBlockCounts.Increment(grid.EntityId);
+                    gridBlockCounts.Increment(grid.EntityId, grid.BlocksCount);
                 }
 
                 var topGridBlockCounts = gridBlockCounts.OrderByDescending(p => p.Value).Take(MaxMonitoredCount);

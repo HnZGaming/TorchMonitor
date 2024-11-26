@@ -22,6 +22,8 @@ namespace TorchMonitor.ProfilerMonitors
                     .Measurement("profiler_network_events")
                     .Tag("site_name", eventName)
                     .Field("main_ms", (float)entry.MainThreadTime / result.TotalFrameCount)
+                    .Field("sub_ms", (float)entry.OffThreadTime / result.TotalFrameCount)
+                    .Field("total_ms", (float)entry.TotalTime / result.TotalFrameCount)
                     .Write();
             }
         }

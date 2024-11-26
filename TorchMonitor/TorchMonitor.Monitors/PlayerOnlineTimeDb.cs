@@ -1,85 +1,78 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using Utils.General;
 
 namespace TorchMonitor.Monitors
 {
     public sealed class PlayerOnlineTimeDb
     {
-        class Document
+        class Entry
         {
-            [JsonConstructor]
-            Document()
-            {
-            }
+            [JsonProperty("steam_id")]
+            public ulong SteamId { get; set; }
 
-            public Document(ulong steamId, double onlineTime)
-            {
-                SteamId = $"{steamId}";
-                OnlineTime = onlineTime;
-            }
-
-            [JsonProperty("steam_id"), StupidDbId]
-            public string SteamId { get; private set; }
+            [JsonProperty("player_name")]
+            public string PlayerName { get; set; }
 
             [JsonProperty("online_time")]
-            public double OnlineTime { get; private set; }
+            public double OnlineTime { get; set; }
         }
 
-        readonly StupidDb<Document> _localDb;
-        readonly Dictionary<ulong, double> _dbCopy;
+        readonly string _filePath;
+        readonly Dictionary<ulong, Entry> _entries;
 
         internal PlayerOnlineTimeDb(string filePath)
         {
-            _localDb = new StupidDb<Document>(filePath);
-            _dbCopy = new Dictionary<ulong, double>();
+            _filePath = filePath;
+            _entries = new Dictionary<ulong, Entry>();
         }
 
         public void Read()
         {
-            _dbCopy.Clear();
-            _localDb.Read();
+            if (!File.Exists(_filePath)) return;
 
-            foreach (var doc in _localDb.QueryAll())
+            var text = File.ReadAllText(_filePath);
+            var entries = JsonConvert.DeserializeObject<Entry[]>(text);
+            foreach (var entry in entries)
             {
-                if (!ulong.TryParse(doc.SteamId, out var steamId)) continue;
-                _dbCopy[steamId] = doc.OnlineTime;
+                _entries[entry.SteamId] = entry;
             }
-
-            WriteToDb();
         }
 
-        public void IncrementPlayerOnlineTime(ulong steamId, double addedOnlineTime)
+        public void IncrementPlayerOnlineTime(ulong steamId, string playerName, double addedOnlineTime)
         {
-            _dbCopy.TryGetValue(steamId, out var onlineTime);
-            onlineTime += addedOnlineTime;
-            _dbCopy[steamId] = onlineTime;
+            if (_entries.TryGetValue(steamId, out var entry))
+            {
+                entry.PlayerName = playerName;
+                entry.OnlineTime += addedOnlineTime;
+            }
+            else // new entry
+            {
+                _entries[steamId] = new Entry
+                {
+                    SteamId = steamId,
+                    PlayerName = playerName,
+                    OnlineTime = addedOnlineTime,
+                };
+            }
         }
 
         public double GetPlayerOnlineTime(ulong steamId)
         {
-            _dbCopy.TryGetValue(steamId, out var onlineTime);
-            return onlineTime;
+            return _entries.GetValueOrDefault(steamId)?.OnlineTime ?? 0d;
         }
 
         public double GetTotalOnlineTime()
         {
-            return _dbCopy.Sum(p => p.Value);
+            return _entries.Values.Sum(d => d.OnlineTime);
         }
 
-        public void WriteToDb()
+        public void Write()
         {
-            var docs = new List<Document>();
-            foreach (var (steamId, onlineTime) in _dbCopy)
-            {
-                var doc = new Document(steamId, onlineTime);
-                docs.Add(doc);
-            }
-
-            _localDb.Clear();
-            _localDb.InsertAll(docs);
-            _localDb.Write();
+            var entries = _entries.Values.OrderBy(v => v.SteamId).ToArray();
+            var text = JsonConvert.SerializeObject(entries);
+            File.WriteAllText(_filePath, text);
         }
     }
 }

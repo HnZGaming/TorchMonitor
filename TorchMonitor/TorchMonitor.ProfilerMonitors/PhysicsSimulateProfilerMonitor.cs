@@ -20,6 +20,8 @@ namespace TorchMonitor.ProfilerMonitors
                     .Measurement("profiler_physics_simulate")
                     .Tag("method_name", methodName)
                     .Field("main_ms", (float)entity.MainThreadTime / result.TotalFrameCount)
+                    .Field("sub_ms", (float)entity.OffThreadTime / result.TotalFrameCount)
+                    .Field("total_ms", (float)entity.TotalTime / result.TotalFrameCount)
                     .Write();
             }
         }
