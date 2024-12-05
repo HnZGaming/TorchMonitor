@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using NLog;
 
 namespace TorchMonitor.Monitors
 {
@@ -19,6 +21,7 @@ namespace TorchMonitor.Monitors
             public double OnlineTime { get; set; }
         }
 
+        static readonly ILogger Log = LogManager.GetCurrentClassLogger();
         readonly string _filePath;
         readonly Dictionary<ulong, Entry> _entries;
 
@@ -32,11 +35,18 @@ namespace TorchMonitor.Monitors
         {
             if (!File.Exists(_filePath)) return;
 
-            var text = File.ReadAllText(_filePath);
-            var entries = JsonConvert.DeserializeObject<Entry[]>(text);
-            foreach (var entry in entries)
+            try
             {
-                _entries[entry.SteamId] = entry;
+                var text = File.ReadAllText(_filePath);
+                var entries = JsonConvert.DeserializeObject<Entry[]>(text);
+                foreach (var entry in entries)
+                {
+                    _entries[entry.SteamId] = entry;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Error(e);
             }
         }
 
