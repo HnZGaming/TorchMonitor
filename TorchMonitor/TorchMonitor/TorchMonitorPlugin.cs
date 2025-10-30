@@ -77,7 +77,7 @@ namespace TorchMonitor
                 { "blocks_all, grids_all, blocks_grids, blocks_players, blocks_factions, concealment", new GridMonitor() },
                 { "floating_objects", new FloatingObjectsMonitor() },
                 { "resource (ram)", new RamUsageMonitor() },
-                { "resource (cpu)", new CpuUsageMonitor() },
+                { "resource_cpu_self", new CpuUsageMonitor() },
                 { "voxels", new VoxelMonitor() },
                 { "ping", new PingMonitor() },
                 { "players_players, players_factions, server, nexus", new OnlinePlayersMonitor(playerNameConflictSolver, playerOnlineTimeDb, Nexus) },

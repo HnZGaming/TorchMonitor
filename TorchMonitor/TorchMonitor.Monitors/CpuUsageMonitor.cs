@@ -9,24 +9,19 @@ namespace TorchMonitor.Monitors
     {
         const int Interval = 10;
 
-        readonly PerformanceCounter[] _cpuCounters;
-        readonly float[] _buffer;
+        readonly Process _process;
+        TimeSpan _lastProc;
+        DateTime _lastTime;
+        bool _doneFirstInterval;
+        double _procSum;
 
         public bool Enabled { get; set; }
 
         public CpuUsageMonitor()
         {
-            // Get the number of processors (cores)
-            var coreCount = Environment.ProcessorCount;
-
-            // Create an array of PerformanceCounter for each core
-            _cpuCounters = new PerformanceCounter[coreCount];
-            _buffer = new float[coreCount];
-
-            for (var i = 0; i < coreCount; i++)
-            {
-                _cpuCounters[i] = new PerformanceCounter("Processor", "% Processor Time", $"{i}");
-            }
+            _process = Process.GetCurrentProcess();
+            _lastTime = DateTime.UtcNow;
+            _lastProc = _process.TotalProcessorTime;
         }
 
         public void OnInterval(int intervalsSinceStart)
@@ -34,25 +29,32 @@ namespace TorchMonitor.Monitors
             if (!Enabled) return;
             if (intervalsSinceStart < TorchMonitorConfig.Instance.FirstIgnoredSeconds) return;
 
-            for (var i = 0; i < _cpuCounters.Length; i++)
+            var time = DateTime.UtcNow;
+            var proc = _process.TotalProcessorTime;
+
+            if (!_doneFirstInterval)
             {
-                _buffer[i] += _cpuCounters[i].NextValue();
+                _doneFirstInterval = true;
             }
+            else
+            {
+                var deltaProc = (proc - _lastProc).TotalMilliseconds;
+                var deltaTime = (time - _lastTime).TotalMilliseconds;
+                _procSum += deltaProc / deltaTime;
+            }
+
+            _lastTime = time;
+            _lastProc = proc;
 
             if (intervalsSinceStart % Interval == 0)
             {
-                // Retrieve and display CPU usage for each core
-                for (var i = 0; i < _buffer.Length; i++)
-                {
-                    var cpuUsage = _buffer[i] / Interval;
-                    _buffer[i] = 0f;
+                var avgProcPercentage = (_procSum / Interval) * 100;
+                _procSum = 0;
 
-                    TorchInfluxDbWriter
-                        .Measurement("resource_cpu")
-                        .Tag("core", $"{i}")
-                        .Field("percentage", cpuUsage)
-                        .Write();
-                }
+                TorchInfluxDbWriter
+                    .Measurement("resource_cpu_self")
+                    .Field("percentage", avgProcPercentage)
+                    .Write();
             }
         }
     }
