@@ -19,7 +19,7 @@ namespace TorchMonitor
         public static TorchMonitorConfig Instance { get; set; }
 
         bool _enabled = true;
-        string _ipstackApiKey = "apikey";
+        string _ipstackApiKey = "";
         int _firstIgnoredSeconds = 120;
         bool _gridProfilerDetailOutput;
         bool _resolveNameConflict = true;

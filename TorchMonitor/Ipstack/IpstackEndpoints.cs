@@ -26,8 +26,7 @@ namespace Ipstack
         {
             ipAddress.ThrowIfNullOrEmpty(nameof(ipAddress));
 
-            var apiKey = TorchMonitorConfig.Instance.IpStackApiKey;
-            if (string.IsNullOrEmpty(apiKey)) return null; // not enabled
+            if (!GetApiKey(out var apiKey)) return null;
 
             var url = $"{Base}/{ipAddress}?access_key={apiKey}";
             using (var res = await _httpClient.GetAsync(url).ConfigureAwait(false))
@@ -40,6 +39,26 @@ namespace Ipstack
                 var json = await res.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IpstackLocation>(json);
             }
+        }
+
+        static bool GetApiKey(out string apiKey)
+        {
+            var config = TorchMonitorConfig.Instance.IpStackApiKey;
+            if (!string.IsNullOrEmpty(config))
+            {
+                apiKey = config;
+                return true;
+            }
+
+            var envVar = Environment.GetEnvironmentVariable("IPSTACK_API_KEY");
+            if (!string.IsNullOrEmpty(envVar))
+            {
+                apiKey = envVar;
+                return true;
+            }
+
+            apiKey = null;
+            return false;
         }
     }
 }
