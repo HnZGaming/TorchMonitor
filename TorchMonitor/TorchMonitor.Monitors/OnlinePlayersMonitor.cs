@@ -97,7 +97,7 @@ namespace TorchMonitor.Monitors
 
             TorchInfluxDbWriter
                 .Measurement("server")
-                .Field("players", onlinePlayers.Length)
+                .Field("players", (float)onlinePlayers.Length)
                 .Field("online_time", totalOnlineTime)
                 .Write();
 
